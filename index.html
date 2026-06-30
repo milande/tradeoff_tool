@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Trade-Off Tool</title>
+<title>DecisionLab</title>
 <style>
 :root{
   --accent:#18c8ff;
@@ -46,9 +46,17 @@ body{margin:0;font-family:Inter,Arial,sans-serif;background:#0d1117;color:#fff;p
 .help-sensitivity h3{color:#4ade80}
 .help-data{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1)}
 .help-data h3{color:#aac}
+.help-pro{background:rgba(255,215,0,.06);border:1px solid rgba(255,215,0,.2)}
+.help-pro h3{color:#ffd700}
 
 /* Toolbar */
-.toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.project-header{display:flex;gap:12px;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,.07)}
+.project-input{background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,.15);color:#fff;font-family:inherit;padding:5px 2px;outline:none;transition:border-color .15s}
+.project-input:focus{border-bottom-color:rgba(255,255,255,.45)}
+.project-input::placeholder{color:rgba(255,255,255,.2)}
+.project-input-name{flex:1;font-size:1.05rem;font-weight:600}
+.project-input-author{flex:0 0 180px;font-size:0.85rem}
 .toolbar-actions{display:flex;gap:8px;align-items:center}
 .app-brand{display:flex;align-items:center;gap:8px}
 .app-name{font-weight:700;font-size:1rem;color:#fff;letter-spacing:-.02em}
@@ -57,9 +65,13 @@ body{margin:0;font-family:Inter,Arial,sans-serif;background:#0d1117;color:#fff;p
 .btn-toolbar{padding:7px 16px;border:1px solid rgba(255,255,255,.12);border-radius:8px;background:transparent;color:#aac;cursor:pointer;font-size:0.82rem;transition:background .15s;font-family:inherit}
 .btn-toolbar:hover{background:rgba(255,255,255,.07);color:#ddf}
 .btn-toolbar input[type=file]{display:none}
+.lang-toggle{font-weight:700;letter-spacing:.04em}
 
 /* Tabs */
-.tabs{display:flex;gap:8px;margin-bottom:24px}
+.tabs{display:flex;gap:8px;margin-bottom:24px;align-items:center}
+.pro-toggle{margin-left:auto;padding:6px 14px;border-radius:20px;border:1px solid rgba(255,215,0,.25);background:rgba(255,215,0,.06);color:rgba(255,215,0,.45);cursor:pointer;font-size:0.78rem;font-weight:600;letter-spacing:.04em;transition:all .2s;font-family:inherit}
+.pro-toggle:hover{border-color:rgba(255,215,0,.45);color:rgba(255,215,0,.7);background:rgba(255,215,0,.1)}
+.pro-toggle.active{border-color:rgba(255,215,0,.7);background:rgba(255,215,0,.14);color:#ffd700;box-shadow:0 0 10px rgba(255,215,0,.15)}
 .tab-btn{padding:10px 28px;border:none;border-radius:10px;cursor:pointer;font-size:1rem;font-weight:600;transition:background .15s,color .15s,opacity .15s}
 .tab-btn[data-tab="criteria"]{background:rgba(24,200,255,.1);color:rgba(24,200,255,.7)}
 .tab-btn[data-tab="solutions"]{background:rgba(244,114,182,.1);color:rgba(244,114,182,.7)}
@@ -117,11 +129,22 @@ input[type=text]{width:100%;padding:10px;margin:8px 0;border-radius:10px;border:
 .rating-btn:hover{background:#263041}
 .rating-btn.active{background:var(--accent);color:var(--accent-text)}
 
+/* Rating impact */
+.ri-sol-header{font-weight:700;font-size:0.9rem;margin:20px 0 10px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.08)}
+.ri-sol-header:first-child{margin-top:0}
+.rs-ticks{position:absolute;top:34px;left:0;width:100%}
+.rs-tick{position:absolute;transform:translateX(-50%);font-size:0.65rem;color:rgba(255,255,255,.4)}
+#ratingImpactContainer .be-track-wrap{cursor:ew-resize}
+.ri-ranking{margin-top:28px;padding-top:16px;border-top:1px solid rgba(255,255,255,.08)}
+.ri-ranking h3{font-size:0.85rem;font-weight:600;opacity:.6;margin:0 0 12px;text-transform:uppercase;letter-spacing:.05em}
+.ri-rank-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;font-size:0.88rem}
+
 /* Breakeven analysis */
 .be-legend{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:20px}
 .be-legend-item{display:flex;align-items:center;gap:7px;font-size:0.85rem;opacity:.85}
 .be-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
-.be-row{display:flex;align-items:flex-start;gap:14px;margin-bottom:20px}
+.be-row{display:flex;align-items:flex-start;gap:14px;margin-bottom:28px}
+#sensImpact .be-row{margin-bottom:10px}
 .be-label{width:130px;font-size:0.9rem;flex-shrink:0;padding-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .be-track-wrap{flex:1;position:relative;cursor:ew-resize;user-select:none}
 .be-track{height:28px;display:flex;border-radius:6px;overflow:hidden}
@@ -137,8 +160,24 @@ th,td{padding:10px;border-bottom:1px solid #2a3344;text-align:left}
 th{font-weight:bold;opacity:.8}
 
 /* Visibility */
-#compareSection,#resultsSection{display:none}
-#compareSection.active,#resultsSection.active{display:block}
+#compareSection,#resultsSection,#fineTuneSection{display:none}
+#compareSection.active,#resultsSection.active,#fineTuneSection.active{display:block}
+.fine-tune-row{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.fine-tune-row:last-child{border-bottom:none}
+.fine-tune-name{flex:1;font-size:0.9rem;color:#cce}
+.fine-tune-input{width:68px;padding:5px 8px;background:#1a2332;border:1px solid rgba(255,255,255,.12);border-radius:6px;color:#fff;font-size:0.9rem;text-align:right;appearance:textfield;-moz-appearance:textfield}
+.fine-tune-input::-webkit-inner-spin-button,.fine-tune-input::-webkit-outer-spin-button{display:none}
+.fine-tune-input:focus{outline:none;border-color:var(--accent)}
+.fine-tune-pct{font-size:0.8rem;color:rgba(255,255,255,.3);width:10px}
+.fine-tune-bar{flex:1;height:5px;background:#1a2332;border-radius:3px;overflow:hidden;min-width:40px}
+.fine-tune-bar-fill{height:100%;background:var(--accent);border-radius:3px;transition:width .25s}
+.fine-tune-reason{flex:2;padding:4px 6px;background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,.08);color:#aac;font-size:0.8rem;font-style:italic;outline:none;font-family:inherit;min-width:60px}
+.fine-tune-reason::placeholder{color:rgba(255,255,255,.18)}
+.fine-tune-reason:focus{border-bottom-color:rgba(255,255,255,.3);color:#ddf}
+.fine-tune-actions{margin-top:16px;display:flex;align-items:center;gap:12px}
+.optional-label{font-size:0.73rem;color:rgba(255,255,255,.28);font-weight:400;margin-left:6px}
+.custom-badge{font-size:0.72rem;background:rgba(24,200,255,.12);color:var(--accent);border:1px solid rgba(24,200,255,.25);border-radius:20px;padding:2px 8px;margin-left:8px;display:none}
+.custom-badge.visible{display:inline}
 
 @media(max-width:600px){
   .pair-btn{font-size:0.75rem;padding:8px 4px}
@@ -152,76 +191,94 @@ th{font-weight:bold;opacity:.8}
 <div class="container">
   <div class="toolbar">
     <div class="app-brand">
-      <span class="app-name">Trade-Off Tool</span>
-      <span class="app-version">v0.1</span>
+      <span class="app-name">DecisionLab</span>
+      <span class="app-version">v0.2</span>
     </div>
     <div class="toolbar-actions">
-      <button id="printBtn" class="btn-toolbar">⎙ Print</button>
-      <button id="helpBtn" class="btn-toolbar">? Help</button>
-      <button id="newBtn" class="btn-toolbar">✕ New</button>
-      <button id="exportHtmlBtn" class="btn-toolbar">↓ Export</button>
-      <button id="exportBtn" class="btn-toolbar">↓ Save</button>
-      <label class="btn-toolbar">↑ Import<input type="file" id="importInput" accept=".json"></label>
+      <button id="langToggle" class="btn-toolbar lang-toggle">DE</button>
+      <button id="helpBtn" class="btn-toolbar" data-i18n="help">? Help</button>
+      <button id="printBtn" class="btn-toolbar" data-i18n="print">⎙ Print</button>
+      <button id="newBtn" class="btn-toolbar" data-i18n="newSession">✕ New</button>
+      <button id="exportHtmlBtn" class="btn-toolbar" data-i18n="exportHtml">↓ Export</button>
+      <button id="exportBtn" class="btn-toolbar" data-i18n="save">↓ Save</button>
+      <label class="btn-toolbar"><span data-i18n="load">↑ Load</span><input type="file" id="importInput" accept=".json"></label>
     </div>
   </div>
 
   <div id="helpOverlay" class="help-overlay hidden">
     <div class="help-modal">
       <button id="helpClose" class="help-close">✕</button>
-      <h2 class="help-title">How to use the Trade-Off Tool</h2>
-      <p class="help-intro">A structured way to compare options when multiple things matter — no gut feel, just weighted evidence.</p>
+      <h2 class="help-title" data-i18n="helpTitle">How to use the DecisionLab</h2>
+      <p class="help-intro" data-i18n-html="helpIntro">A structured way to compare options when multiple things matter — no gut feel, just weighted evidence.</p>
 
       <div class="help-section help-criteria">
-        <h3>① Criteria</h3>
-        <p>List what matters to you (e.g. Cost, Speed, Quality). Then compare each pair: which is more important? The tool converts your answers into percentage weights.</p>
+        <h3 data-i18n="helpCriteriaTitle">① Criteria</h3>
+        <p data-i18n-html="helpCriteriaText">List what matters to you (e.g. Cost, Speed, Quality). Then compare each pair: which is more important? The tool converts your answers into percentage weights.</p>
       </div>
 
       <div class="help-section help-solutions">
-        <h3>② Solutions</h3>
-        <p>Add the options you're deciding between. For each criterion, rate every solution from <strong>0</strong> (worst) to <strong>4</strong> (best). The weighted ranking updates instantly.</p>
-      </div>
-
-      <div class="help-section help-sensitivity">
-        <h3>③ Sensitivity</h3>
-        <p>Drag the white line on any criterion bar to explore: <em>"What if this mattered more — or less?"</em> The ranking updates live. Color segments show which solution leads at each weight, and breakpoint labels mark where the winner switches.</p>
+        <h3 data-i18n="helpSolutionsTitle">② Solutions</h3>
+        <p data-i18n-html="helpSolutionsText">Add the options you're deciding between. For each criterion, rate every solution from <strong>0</strong> (worst) to <strong>4</strong> (best). The weighted ranking updates instantly.</p>
       </div>
 
       <div class="help-section help-data">
-        <h3>↓ / ↑ Data</h3>
-        <p>Your session auto-saves in the browser. <strong>↓ HTML</strong> exports a fully self-contained file with your data baked in — open it anywhere, embed it in Confluence, or share it. <strong>↓ JSON</strong> exports just the data for re-importing. <strong>↑ Import</strong> loads a JSON file. <strong>New</strong> clears everything.</p>
+        <h3 data-i18n="helpDataTitle">↓ / ↑ Data</h3>
+        <p data-i18n-html="helpDataText">Your session auto-saves in the browser. <strong>↓ HTML</strong> exports a fully self-contained file with your data baked in — open it anywhere, embed it in Confluence, or share it. <strong>↓ JSON</strong> exports just the data for re-importing. <strong>↑ Load</strong> loads a JSON file. <strong>New</strong> clears everything.</p>
+      </div>
+
+      <div class="help-section help-pro">
+        <h3 data-i18n="helpProTitle">⚡ Pro Mode</h3>
+        <p data-i18n-html="helpProText">Toggle <strong>⚡ Pro</strong> in the tab bar to unlock two advanced features:<br><br>
+        <strong>Fine-tune Weights</strong> — after the pairwise comparison sets your weights, you can manually nudge individual percentages. The others adjust proportionally so everything stays at 100%. A <em>Custom</em> badge appears when weights have been overridden; <em>↺ Reset to pairwise</em> reverts them.<br><br>
+        <strong>Sensitivity Analysis</strong> — drag the white marker on any criterion bar to explore <em>"What if this mattered more or less?".</em> The ranking updates live. Colored segments show which solution leads at each weight level, and labels mark the exact % where the winner switches.</p>
       </div>
     </div>
   </div>
 
+  <div class="project-header">
+    <input id="decisionNameInput" class="project-input project-input-name" type="text" data-i18n-placeholder="decisionNamePlaceholder" placeholder="Decision name…">
+    <input id="bearbeiterInput" class="project-input project-input-author" type="text" data-i18n-placeholder="bearbeiterPlaceholder" placeholder="Author…">
+  </div>
+
   <div class="tabs">
-    <button class="tab-btn active" data-tab="criteria">Criteria</button>
-    <button class="tab-btn" data-tab="solutions">Solutions</button>
-    <button class="tab-btn" data-tab="sensitivity">Sensitivity</button>
+    <button class="tab-btn active" data-tab="criteria" data-i18n="tabCriteria">Criteria</button>
+    <button class="tab-btn" data-tab="solutions" data-i18n="tabSolutions">Solutions</button>
+    <button class="tab-btn" data-tab="sensitivity" id="sensitivityTab" data-i18n="tabSensitivity">Sensitivity</button>
+    <button id="proToggle" class="pro-toggle">⚡ Pro</button>
   </div>
 
   <!-- CRITERIA TAB -->
   <div id="tab-criteria" class="tab-content active">
     <div class="section">
-      <h1>Pairwise Criteria Comparison</h1>
+      <h1 data-i18n="sectionTitle">Pairwise Criteria Comparison</h1>
       <div class="section-content">
-        <h2>Step 1: Add Your Criteria</h2>
+        <h2 data-i18n="step1">Step 1: Add Your Criteria</h2>
         <div id="criteriaList"></div>
-        <button id="addBtn" class="btn-add">+ Add Criterion</button>
+        <button id="addBtn" class="btn-add" data-i18n="addCriterion">+ Add Criterion</button>
       </div>
     </div>
     <div class="section" id="compareSection">
       <div class="section-content">
-        <h2>Step 2: Pairwise Comparison</h2>
+        <h2 data-i18n="step2">Step 2: Pairwise Comparison</h2>
         <div id="pairsContainer"></div>
       </div>
     </div>
     <div class="section" id="resultsSection">
       <div class="section-content">
-        <h2>Criteria Weights</h2>
+        <h2 data-i18n="criteriaWeights">Criteria Weights</h2>
         <table>
-          <thead><tr><th>Criterion</th><th>Points</th><th>Weight</th></tr></thead>
+          <thead><tr><th data-i18n="thCriterion">Criterion</th><th data-i18n="thPoints">Points</th><th data-i18n="thWeight">Weight</th></tr></thead>
           <tbody id="tbody"></tbody>
         </table>
+      </div>
+    </div>
+    <div class="section" id="fineTuneSection">
+      <div class="section-content">
+        <h2><span data-i18n="fineTuneWeights">Fine-tune Weights</span><span class="optional-label" data-i18n="optional">optional</span><span id="customBadge" class="custom-badge" data-i18n="custom">Custom</span></h2>
+        <div id="fineTuneList"></div>
+        <div class="fine-tune-actions">
+          <button id="resetFineBtn" class="btn-secondary" data-i18n="resetToPairwise">↺ Reset to pairwise</button>
+        </div>
       </div>
     </div>
   </div>
@@ -230,22 +287,22 @@ th{font-weight:bold;opacity:.8}
   <div id="tab-solutions" class="tab-content">
     <div class="section">
       <div class="section-content">
-        <h2>Step 3: Add Solutions</h2>
+        <h2 data-i18n="step3">Step 3: Add Solutions</h2>
         <div id="solutionList"></div>
-        <button id="addSolutionBtn" class="btn-add">+ Add Solution</button>
+        <button id="addSolutionBtn" class="btn-add" data-i18n="addSolution">+ Add Solution</button>
       </div>
     </div>
     <div class="section">
       <div class="section-content">
-        <h2>Rate Each Solution (0 – 4 per criterion)</h2>
+        <h2 data-i18n="rateSolutions">Rate Each Solution (0 – 4 per criterion)</h2>
         <div id="solutionMatrix"></div>
       </div>
     </div>
     <div class="section">
       <div class="section-content">
-        <h2>Ranking</h2>
+        <h2 data-i18n="ranking">Ranking</h2>
         <table>
-          <thead><tr><th>Solution</th><th>Score</th><th>Rating</th></tr></thead>
+          <thead><tr><th data-i18n="thSolution">Solution</th><th data-i18n="thScore">Score</th><th data-i18n="thRating">Rating</th></tr></thead>
           <tbody id="solutionRankingBody"></tbody>
         </table>
       </div>
@@ -256,24 +313,32 @@ th{font-weight:bold;opacity:.8}
   <div id="tab-sensitivity" class="tab-content">
     <div class="section">
       <div class="section-content">
-        <h2>Criterion Impact</h2>
-        <p class="hint">Drag the white line to explore how each criterion's weight affects the ranking.</p>
-        <button id="resetWeightsBtn" class="btn-secondary">↺ Reset to pairwise weights</button>
+        <h2 data-i18n="criterionImpact">Criterion Impact</h2>
+        <p class="hint" data-i18n="sensitivityHint">Drag the white line to explore how each criterion's weight affects the ranking.</p>
+        <button id="resetWeightsBtn" class="btn-secondary" data-i18n="resetToPairwiseWeights">↺ Reset to pairwise weights</button>
         <div id="sensImpact"></div>
       </div>
     </div>
     <div class="section">
       <div class="section-content">
-        <h2>Ranking</h2>
+        <h2 data-i18n="ranking">Ranking</h2>
         <table>
-          <thead><tr><th>Solution</th><th>Score</th><th>Rating</th></tr></thead>
+          <thead><tr><th data-i18n="thSolution">Solution</th><th data-i18n="thScore">Score</th><th data-i18n="thRating">Rating</th></tr></thead>
           <tbody id="sensRankingBody"></tbody>
         </table>
       </div>
     </div>
+    <div class="section">
+      <div class="section-content">
+        <h2 data-i18n="ratingImpact">Rating Impact</h2>
+        <p class="hint" data-i18n="ratingImpactHint">Drag the markers to explore how changing a rating affects the ranking. Other values stay fixed.</p>
+        <button id="resetRatingsBtn" class="btn-secondary" data-i18n="resetRatings">↺ Reset ratings</button>
+        <div id="ratingImpactContainer"></div>
+      </div>
+    </div>
   </div>
 </div>
-<p class="app-credit">Built by Claude &amp; Milan</p>
+<p class="app-credit" data-i18n="credit">Built by Claude &amp; Milan</p>
 <script>
 // Capture raw source before any DOM changes — used by HTML export
 const _scriptEl = document.currentScript;
@@ -285,22 +350,187 @@ for (const node of document.body.childNodes) {
   _bodyHtml += node.nodeType === 3 ? node.textContent : (node.outerHTML || '');
 }
 
+// ── i18n ─────────────────────────────────────────────────────
+let lang = 'en';
+
+const STRINGS = {
+  en: {
+    help:'? Help', print:'⎙ Print', newSession:'✕ New', exportHtml:'↓ Export', save:'↓ Save', load:'↑ Load',
+    tabCriteria:'Criteria', tabSolutions:'Solutions', tabSensitivity:'Sensitivity',
+    sectionTitle:'Pairwise Criteria Comparison', step1:'Step 1: Add Your Criteria',
+    addCriterion:'+ Add Criterion', criterionPlaceholder:'Criterion',
+    step2:'Step 2: Pairwise Comparison', equalBtn:'Equal',
+    criteriaWeights:'Criteria Weights', thCriterion:'Criterion', thPoints:'Points', thWeight:'Weight',
+    fineTuneWeights:'Fine-tune Weights', optional:'optional', custom:'Custom',
+    resetToPairwise:'↺ Reset to pairwise', reasonPlaceholder:'reason for adjustment…',
+    step3:'Step 3: Add Solutions', addSolution:'+ Add Solution', solutionPlaceholder:'Solution',
+    rateSolutions:'Rate Each Solution (0 – 4 per criterion)',
+    ranking:'Ranking', thSolution:'Solution', thScore:'Score', thRating:'Rating',
+    criterionImpact:'Criterion Impact',
+    sensitivityHint:'Drag the white line to explore how each criterion\'s weight affects the ranking.',
+    resetToPairwiseWeights:'↺ Reset to pairwise weights',
+    ratingImpact:'Rating Impact',
+    ratingImpactHint:'Drag the markers to explore how changing a rating affects the ranking. Other values stay fixed.',
+    resetRatings:'↺ Reset ratings',
+    hintAddCriteria:'Add and compare criteria first.',
+    hintAddSolutions:'Add solutions above.',
+    hintNeedSolutions:'Add at least 2 solutions with ratings to see breakeven analysis.',
+    moreImportantThan:(a,b)=>`<strong>${a}</strong> is more important than ${b}`,
+    equallyImportant:(a,b)=>`<strong>${a}</strong> and <strong>${b}</strong> are equally important`,
+    credit:'Built by Claude & Milan',
+    helpTitle:'How to use the DecisionLab',
+    helpIntro:'A structured way to compare options when multiple things matter — no gut feel, just weighted evidence.',
+    helpCriteriaTitle:'① Criteria',
+    helpCriteriaText:'List what matters to you (e.g. Cost, Speed, Quality). Then compare each pair: which is more important? The tool converts your answers into percentage weights.',
+    helpSolutionsTitle:'② Solutions',
+    helpSolutionsText:'Add the options you\'re deciding between. For each criterion, rate every solution from <strong>0</strong> (worst) to <strong>4</strong> (best). The weighted ranking updates instantly.',
+    helpDataTitle:'↓ / ↑ Data',
+    helpDataText:'Your session auto-saves in the browser. <strong>↓ HTML</strong> exports a fully self-contained file with your data baked in — open it anywhere, embed it in Confluence, or share it. <strong>↓ JSON</strong> exports just the data for re-importing. <strong>↑ Load</strong> loads a JSON file. <strong>New</strong> clears everything.',
+    helpProTitle:'⚡ Pro Mode',
+    helpProText:'Toggle <strong>⚡ Pro</strong> in the tab bar to unlock two advanced features:<br><br><strong>Fine-tune Weights</strong> — after the pairwise comparison sets your weights, you can manually nudge individual percentages. The others adjust proportionally so everything stays at 100%. A <em>Custom</em> badge appears when weights have been overridden; <em>↺ Reset to pairwise</em> reverts them.<br><br><strong>Sensitivity Analysis</strong> — drag the white marker on any criterion bar to explore <em>"What if this mattered more or less?".</em> The ranking updates live. Colored segments show which solution leads at each weight level, and labels mark the exact % where the winner switches.',
+    printGenerated:date=>`Generated ${date}`,
+    printCriteriaComparisons:'Criteria Comparisons', printCriteriaWeights:'Criteria Weights',
+    printWeightAdjustments:'Weight Adjustments', printSolutionRanking:'Solution Ranking',
+    printSensitivityAnalysis:'Sensitivity Analysis',
+    printThCriterion:'Criterion', printThWeight:'Weight', printThPairwise:'Pairwise',
+    printThAdjusted:'Adjusted', printThReason:'Reason', printThSolution:'Solution', printThScore:'Score',
+    promptTradeName:'Name of this decision:', promptYourName:'Your name (shown in the export):',
+    promptAnonymous:'Anonymous',
+    alertInvalidFile:'Could not read file — invalid format.',
+    confirmNewSession:'Clear everything and start over?',
+    exportedBy:'Exported by', exportedDate:'Date',
+    decisionNamePlaceholder:'Decision name…', bearbeiterPlaceholder:'Author…',
+  },
+  de: {
+    help:'? Hilfe', print:'⎙ Drucken', newSession:'✕ Neu', exportHtml:'↓ Exportieren', save:'↓ Speichern', load:'↑ Laden',
+    tabCriteria:'Kriterien', tabSolutions:'Lösungen', tabSensitivity:'Sensitivität',
+    sectionTitle:'Paarweiser Kriterienvergleich', step1:'Schritt 1: Kriterien hinzufügen',
+    addCriterion:'+ Kriterium', criterionPlaceholder:'Kriterium',
+    step2:'Schritt 2: Paarweiser Vergleich', equalBtn:'Gleich',
+    criteriaWeights:'Kriteriengewichte', thCriterion:'Kriterium', thPoints:'Punkte', thWeight:'Gewicht',
+    fineTuneWeights:'Gewichte anpassen', optional:'optional', custom:'Angepasst',
+    resetToPairwise:'↺ Paarweise zurücksetzen', reasonPlaceholder:'Begründung der Anpassung…',
+    step3:'Schritt 3: Lösungen hinzufügen', addSolution:'+ Lösung', solutionPlaceholder:'Lösung',
+    rateSolutions:'Jede Lösung bewerten (0 – 4 pro Kriterium)',
+    ranking:'Ranking', thSolution:'Lösung', thScore:'Wertung', thRating:'Bewertung',
+    criterionImpact:'Kriterieneinfluss',
+    sensitivityHint:'Weißen Strich ziehen, um zu sehen wie das Gewicht eines Kriteriums das Ranking beeinflusst.',
+    resetToPairwiseWeights:'↺ Paarweise Gewichte zurücksetzen',
+    ratingImpact:'Bewertungseinfluss',
+    ratingImpactHint:'Marker ziehen um zu sehen, wie eine Bewertungsänderung das Ranking beeinflusst. Alle anderen Werte bleiben fest.',
+    resetRatings:'↺ Bewertungen zurücksetzen',
+    hintAddCriteria:'Zuerst Kriterien hinzufügen und vergleichen.',
+    hintAddSolutions:'Lösungen oben hinzufügen.',
+    hintNeedSolutions:'Mindestens 2 Lösungen mit Bewertungen hinzufügen, um die Analyse zu sehen.',
+    moreImportantThan:(a,b)=>`<strong>${a}</strong> ist wichtiger als ${b}`,
+    equallyImportant:(a,b)=>`<strong>${a}</strong> und <strong>${b}</strong> sind gleich wichtig`,
+    credit:'Entwickelt von Claude & Milan',
+    helpTitle:'So nutzt du DecisionLab',
+    helpIntro:'Ein strukturierter Weg, Optionen zu vergleichen, wenn mehrere Faktoren wichtig sind — kein Bauchgefühl, nur gewichtete Belege.',
+    helpCriteriaTitle:'① Kriterien',
+    helpCriteriaText:'Liste auf, was dir wichtig ist (z.B. Kosten, Geschwindigkeit, Qualität). Vergleiche dann jedes Paar: Was ist wichtiger? Das Tool rechnet deine Antworten in Prozentwerte um.',
+    helpSolutionsTitle:'② Lösungen',
+    helpSolutionsText:'Füge die Optionen hinzu, zwischen denen du entscheidest. Bewerte für jedes Kriterium jede Lösung von <strong>0</strong> (schlechteste) bis <strong>4</strong> (beste). Das gewichtete Ranking aktualisiert sich sofort.',
+    helpDataTitle:'↓ / ↑ Daten',
+    helpDataText:'Deine Sitzung wird automatisch im Browser gespeichert. <strong>↓ HTML</strong> exportiert eine vollständig eigenständige Datei — öffne sie überall, binde sie in Confluence ein oder teile sie. <strong>↓ JSON</strong> exportiert nur die Daten. <strong>↑ Laden</strong> lädt eine JSON-Datei. <strong>Neu</strong> löscht alles.',
+    helpProTitle:'⚡ Pro-Modus',
+    helpProText:'<strong>⚡ Pro</strong> in der Tab-Leiste aktivieren, um zwei erweiterte Funktionen freizuschalten:<br><br><strong>Gewichte anpassen</strong> — nach dem paarweisen Vergleich können einzelne Prozentwerte manuell geändert werden. Die anderen passen sich proportional an. Ein <em>Angepasst</em>-Badge erscheint bei Überschreibung; <em>↺ Paarweise zurücksetzen</em> macht dies rückgängig.<br><br><strong>Sensitivitätsanalyse</strong> — den weißen Marker auf einem Kriteriumsbalken ziehen, um zu erkunden: <em>„Was wenn das mehr oder weniger wichtig wäre?"</em> Das Ranking aktualisiert sich live. Farbige Segmente zeigen, welche Lösung bei jedem Gewicht führt, und Labels markieren den genauen Wechselpunkt.',
+    printGenerated:date=>`Erstellt am ${date}`,
+    printCriteriaComparisons:'Kriterienvergleich', printCriteriaWeights:'Kriteriengewichte',
+    printWeightAdjustments:'Gewichtsanpassungen', printSolutionRanking:'Lösungsranking',
+    printSensitivityAnalysis:'Sensitivitätsanalyse',
+    printThCriterion:'Kriterium', printThWeight:'Gewicht', printThPairwise:'Paarweise',
+    printThAdjusted:'Angepasst', printThReason:'Begründung', printThSolution:'Lösung', printThScore:'Wertung',
+    promptTradeName:'Name dieser Entscheidung:', promptYourName:'Dein Name (wird im Export angezeigt):',
+    promptAnonymous:'Anonym',
+    alertInvalidFile:'Datei konnte nicht gelesen werden — ungültiges Format.',
+    confirmNewSession:'Alles löschen und neu beginnen?',
+    exportedBy:'Exportiert von', exportedDate:'Datum',
+    decisionNamePlaceholder:'Entscheidungsname…', bearbeiterPlaceholder:'Bearbeiter…',
+  },
+};
+
+function t(key) {
+  const s = STRINGS[lang];
+  const v = (s && s[key] !== undefined) ? s[key] : STRINGS.en[key];
+  return v !== undefined ? v : key;
+}
+
+function applyLang() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const v = t(el.dataset.i18n);
+    if (typeof v === 'string') el.textContent = v;
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => {
+    const v = t(el.dataset.i18nHtml);
+    if (typeof v === 'string') el.innerHTML = v;
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const v = t(el.dataset.i18nPlaceholder);
+    if (typeof v === 'string') el.placeholder = v;
+  });
+  document.getElementById('langToggle').textContent = lang === 'en' ? 'DE' : 'EN';
+  document.querySelectorAll('#criteriaList input').forEach(i => i.placeholder = t('criterionPlaceholder'));
+  document.querySelectorAll('#solutionList input').forEach(i => i.placeholder = t('solutionPlaceholder'));
+  if (comparisonStarted) renderPairs();
+  renderFineTune();
+  renderSolutionMatrix();
+  updateSensImpact(); updateRatingImpact(); updateRatingImpact();
+}
+
+document.getElementById('langToggle').onclick = () => {
+  lang = lang === 'en' ? 'de' : 'en';
+  applyLang();
+  saveState();
+};
+
 // ── Criteria tab ─────────────────────────────────────────────
 const list = document.getElementById('criteriaList');
 const addBtn = document.getElementById('addBtn');
 const compareSection = document.getElementById('compareSection');
 const resultsSection = document.getElementById('resultsSection');
+const fineTuneSection = document.getElementById('fineTuneSection');
+const customBadge = document.getElementById('customBadge');
+const sensitivityTab = document.getElementById('sensitivityTab');
+const proToggle = document.getElementById('proToggle');
 
+function applyProMode() {
+  proToggle.classList.toggle('active', proMode);
+  sensitivityTab.style.display = proMode ? '' : 'none';
+  if (comparisonStarted) {
+    fineTuneSection.classList.toggle('active', proMode);
+  }
+  if (!proMode && sensitivityTab.classList.contains('active')) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelector('.tab-btn[data-tab="criteria"]').classList.add('active');
+    document.getElementById('tab-criteria').classList.add('active');
+  }
+}
+
+document.getElementById('decisionNameInput').oninput = e => { decisionName = e.target.value; saveState(); };
+document.getElementById('bearbeiterInput').oninput = e => { bearbeiter = e.target.value; saveState(); };
+
+proToggle.onclick = () => {
+  proMode = !proMode;
+  applyProMode();
+  saveState();
+};
+
+let decisionName = '', bearbeiter = '';
 let criteria = [], pairs = [], pairStates = {};
 let comparisonStarted = false;
 let inputDebounce = null;
+let customWeights = null;
+let customWeightReasons = {};
+let proMode = false;
 
 function addCriterionInput(value = '') {
   const item = document.createElement('div');
   item.className = 'criteria-item';
   const input = document.createElement('input');
   input.type = 'text';
-  input.placeholder = 'Criterion';
+  input.placeholder = t('criterionPlaceholder');
   input.value = value;
   input.addEventListener('input', () => {
     clearTimeout(inputDebounce);
@@ -336,6 +566,12 @@ function computeScores() {
 }
 
 function computeWeights() {
+  if (customWeights) {
+    const total = Object.values(customWeights).reduce((s, v) => s + v, 0);
+    const w = {};
+    criteria.forEach(c => w[c] = total > 0 ? (customWeights[c] ?? 0) / total : 1 / criteria.length);
+    return w;
+  }
   const scores = computeScores();
   const total = Object.values(scores).reduce((s, v) => s + v, 0);
   const weights = {};
@@ -344,9 +580,9 @@ function computeWeights() {
 }
 
 function pairLabel(a, b, state) {
-  if (state === -1) return `<strong>${a}</strong> is more important than ${b}`;
-  if (state === 1) return `<strong>${b}</strong> is more important than ${a}`;
-  return `<strong>${a}</strong> and <strong>${b}</strong> are equally important`;
+  if (state === -1) return t('moreImportantThan')(a, b);
+  if (state === 1) return t('moreImportantThan')(b, a);
+  return t('equallyImportant')(a, b);
 }
 
 function animateRows(tbody, entries) {
@@ -391,9 +627,10 @@ function updateResults() {
     return { key: c, html: `<td>${c}</td><td>${p.toFixed(1)}</td><td><div class="weight-cell"><span>${label}</span><div class="weight-bar-wrap"><div class="weight-bar" style="width:${pct}%"></div></div></div></td>` };
   });
   animateRows(document.getElementById('tbody'), entries);
+  renderFineTune();
   updateSolutionRanking();
   updateSensRanking();
-  updateSensImpact();
+  updateSensImpact(); updateRatingImpact();
 }
 
 function updateTabState() {
@@ -410,17 +647,21 @@ function checkAndStartComparison() {
   } else if (comparisonStarted) {
     compareSection.classList.remove('active');
     resultsSection.classList.remove('active');
+    fineTuneSection.classList.remove('active');
     comparisonStarted = false;
-    criteria = []; pairs = []; pairStates = {};
+    criteria = []; pairs = []; pairStates = {}; customWeights = null; customWeightReasons = {};
+    applyProMode();
     updateTabState();
     updateSolutionRanking();
     updateSensRanking();
-    updateSensImpact();
+    updateSensImpact(); updateRatingImpact();
   }
 }
 
-function startComparison() {
-  criteria = getCriteria();
+function startComparison(preserveWeights = false, suppressScroll = false) {
+  const incoming = getCriteria();
+  if (!preserveWeights && criteriaKey(incoming) !== criteriaKey(criteria)) { customWeights = null; customWeightReasons = {}; }
+  criteria = incoming;
   pairs = [];
   for (let i = 0; i < criteria.length; i++)
     for (let j = i + 1; j < criteria.length; j++)
@@ -436,12 +677,13 @@ function startComparison() {
   comparisonStarted = true;
   compareSection.classList.add('active');
   resultsSection.classList.add('active');
+  if (proMode) fineTuneSection.classList.add('active');
   renderPairs();
   updateResults();
   updateTabState();
   renderSolutionMatrix();
-  initSensWeights();
-  compareSection.scrollIntoView({ behavior: 'smooth' });
+  initSensWeights(); initExplorationRatings();
+  if (!suppressScroll) compareSection.scrollIntoView({ behavior: 'smooth' });
 }
 
 function renderPairs() {
@@ -457,7 +699,7 @@ function renderPairs() {
     label.innerHTML = pairLabel(a, b, state);
     const btns = document.createElement('div');
     btns.className = 'pair-buttons';
-    [[-1, a], [0, 'Equal'], [1, b]].forEach(([v, text]) => {
+    [[-1, a], [0, t('equalBtn')], [1, b]].forEach(([v, text]) => {
       const btn = document.createElement('button');
       btn.className = 'pair-btn' + (state === v ? ' active' : '');
       btn.textContent = text;
@@ -476,6 +718,63 @@ function renderPairs() {
   });
 }
 
+function renderFineTune() {
+  const container = document.getElementById('fineTuneList');
+  const w = computeWeights();
+  container.innerHTML = '';
+  criteria.forEach(c => {
+    const pct = w[c] * 100;
+    const row = document.createElement('div');
+    row.className = 'fine-tune-row';
+    row.innerHTML = `
+      <span class="fine-tune-name">${c}</span>
+      <input type="number" class="fine-tune-input" value="${pct.toFixed(1)}" min="0" max="100" step="0.1" data-criterion="${c}">
+      <span class="fine-tune-pct">%</span>
+      <div class="fine-tune-bar"><div class="fine-tune-bar-fill" style="width:${pct}%"></div></div>
+      <input type="text" class="fine-tune-reason" placeholder="${t('reasonPlaceholder')}" value="${customWeightReasons[c] || ''}" data-criterion="${c}">`;
+    container.appendChild(row);
+  });
+  container.querySelectorAll('.fine-tune-input').forEach(input => {
+    input.addEventListener('change', () => {
+      const newPct = Math.max(0, Math.min(100, parseFloat(input.value) || 0));
+      const c = input.dataset.criterion;
+      const w = computeWeights();
+      const oldPct = w[c] * 100;
+      const remaining = 100 - newPct;
+      const otherTotal = 100 - oldPct;
+      customWeights = {};
+      criteria.forEach(cc => {
+        if (cc === c) {
+          customWeights[cc] = newPct / 100;
+        } else {
+          const share = w[cc] * 100;
+          customWeights[cc] = otherTotal > 0 ? (share / otherTotal) * remaining / 100 : remaining / (criteria.length - 1) / 100;
+        }
+      });
+      updateResults();
+      updateSolutionRanking();
+      updateSensRanking();
+      updateSensImpact(); updateRatingImpact();
+    });
+  });
+  container.querySelectorAll('.fine-tune-reason').forEach(input => {
+    input.addEventListener('input', () => {
+      customWeightReasons[input.dataset.criterion] = input.value;
+      saveState();
+    });
+  });
+  customBadge.classList.toggle('visible', customWeights !== null);
+}
+
+document.getElementById('resetFineBtn').onclick = () => {
+  customWeights = null;
+  customWeightReasons = {};
+  updateResults();
+  updateSolutionRanking();
+  updateSensRanking();
+  updateSensImpact(); updateRatingImpact();
+};
+
 addBtn.onclick = () => addCriterionInput();
 for (let i = 0; i < 3; i++) addCriterionInput();
 
@@ -490,16 +789,16 @@ function addSolutionInput(value = '') {
   item.className = 'criteria-item';
   const input = document.createElement('input');
   input.type = 'text';
-  input.placeholder = 'Solution';
+  input.placeholder = t('solutionPlaceholder');
   input.value = value;
   input.addEventListener('input', () => {
     clearTimeout(solutionDebounce);
-    solutionDebounce = setTimeout(() => { renderSolutionMatrix(); updateSensRanking(); updateSensImpact(); }, 350);
+    solutionDebounce = setTimeout(() => { renderSolutionMatrix(); updateSensRanking(); updateSensImpact(); updateRatingImpact(); }, 350);
   });
   const btn = document.createElement('button');
   btn.className = 'btn-remove';
   btn.textContent = '−';
-  btn.onclick = () => { item.remove(); renderSolutionMatrix(); updateSensRanking(); updateSensImpact(); };
+  btn.onclick = () => { item.remove(); renderSolutionMatrix(); updateSensRanking(); updateSensImpact(); updateRatingImpact(); };
   item.appendChild(input);
   item.appendChild(btn);
   solutionList.appendChild(item);
@@ -515,12 +814,12 @@ function renderSolutionMatrix() {
   container.innerHTML = '';
 
   if (!comparisonStarted || criteria.length === 0) {
-    container.innerHTML = '<p class="hint">Add and compare criteria first.</p>';
+    container.innerHTML = `<p class="hint">${t('hintAddCriteria')}</p>`;
     updateSolutionRanking();
     return;
   }
   if (sols.length === 0) {
-    container.innerHTML = '<p class="hint">Add solutions above.</p>';
+    container.innerHTML = `<p class="hint">${t('hintAddSolutions')}</p>`;
     updateSolutionRanking();
     return;
   }
@@ -552,7 +851,7 @@ function renderSolutionMatrix() {
           [...btnsEl.children].forEach((el, i) => el.classList.toggle('active', i === v));
           updateSolutionRanking();
           updateSensRanking();
-          updateSensImpact();
+          updateSensImpact(); updateRatingImpact();
         };
         btnsEl.appendChild(btn);
       }
@@ -565,10 +864,10 @@ function renderSolutionMatrix() {
   updateSolutionRanking();
 }
 
-function scoreSolutions(weights) {
+function scoreSolutions(weights, ratingsObj = ratings) {
   const sols = getSolutions();
   return sols.map(sol => {
-    const score = criteria.reduce((sum, c) => sum + (ratings[`${sol}|${c}`] ?? 0) * (weights[c] ?? 0), 0);
+    const score = criteria.reduce((sum, c) => sum + (ratingsObj[`${sol}|${c}`] ?? 0) * (weights[c] ?? 0), 0);
     return { sol, score };
   }).sort((a, b) => b.score - a.score);
 }
@@ -616,19 +915,28 @@ function adjustSensWeight(changedC, newVal) {
   if (total > 0) criteria.forEach(c => sensWeights[c] /= total);
 
   updateSensRanking();
-  updateSensImpact();
+  updateSensImpact(); updateRatingImpact();
 }
 
 function updateSensRanking() {
   const sols = getSolutions();
   const tbody = document.getElementById('sensRankingBody');
   if (!comparisonStarted || criteria.length === 0 || sols.length === 0) { tbody.innerHTML = ''; return; }
-  const entries = scoreSolutions(sensWeights).map(({ sol, score }) => {
+  const entries = scoreSolutions(sensWeights, explorationRatings).map(({ sol, score }) => {
     const pct = (score / 4) * 100;
     const color = SOL_COLORS[sols.indexOf(sol) % SOL_COLORS.length];
     return { key: sol, html: `<td style="color:${color};font-weight:600">${sol}</td><td>${score.toFixed(2)}</td><td><div class="weight-cell"><span>${pct.toFixed(1)}%</span><div class="weight-bar-wrap"><div class="weight-bar" style="width:${pct}%;background:${color}"></div></div></div></td>` };
   });
   animateRows(tbody, entries);
+}
+
+function segmentBg(winner, sols) {
+  const ws = Array.isArray(winner) ? winner : [winner];
+  const colors = ws.map(s => SOL_COLORS[sols.indexOf(s) % SOL_COLORS.length]);
+  if (colors.length === 1) return `background:${colors[0]};opacity:.85`;
+  const sz = 5;
+  const stops = colors.flatMap((c, i) => [`${c} ${i*sz}px`, `${c} ${(i+1)*sz}px`]).join(',');
+  return `background:repeating-linear-gradient(-45deg,${stops});opacity:.9`;
 }
 
 function computeBreakevens(C, sols) {
@@ -639,22 +947,22 @@ function computeBreakevens(C, sols) {
   function beta(sol) {
     if (otherSum < 1e-10) {
       return others.length > 0
-        ? others.reduce((s, x) => s + (ratings[`${sol}|${x}`] ?? 0), 0) / others.length
+        ? others.reduce((s, x) => s + (explorationRatings[`${sol}|${x}`] ?? 0), 0) / others.length
         : 0;
     }
-    return others.reduce((s, x) => s + (ratings[`${sol}|${x}`] ?? 0) * (sensWeights[x] ?? 0) / otherSum, 0);
+    return others.reduce((s, x) => s + (explorationRatings[`${sol}|${x}`] ?? 0) * (sensWeights[x] ?? 0) / otherSum, 0);
   }
 
   function scoreAt(sol, t) {
     const b = beta(sol);
-    return b + t * ((ratings[`${sol}|${C}`] ?? 0) - b);
+    return b + t * ((explorationRatings[`${sol}|${C}`] ?? 0) - b);
   }
 
   const bps = new Set([0, 1]);
   for (let i = 0; i < sols.length; i++) {
     for (let j = i + 1; j < sols.length; j++) {
       const A = sols[i], B = sols[j];
-      const aA = ratings[`${A}|${C}`] ?? 0, aB = ratings[`${B}|${C}`] ?? 0;
+      const aA = explorationRatings[`${A}|${C}`] ?? 0, aB = explorationRatings[`${B}|${C}`] ?? 0;
       const bA = beta(A), bB = beta(B);
       const denom = (aA - bA) - (aB - bB);
       if (Math.abs(denom) > 1e-10) {
@@ -665,16 +973,22 @@ function computeBreakevens(C, sols) {
   }
 
   const sorted = [...bps].sort((a, b) => a - b);
+  const solKey = w => Array.isArray(w) ? [...w].sort().join('\0') : w;
   const segments = sorted.slice(0, -1).map((from, i) => {
     const to = sorted[i + 1];
     const mid = (from + to) / 2;
-    const winner = sols.reduce((best, sol) => scoreAt(sol, mid) > scoreAt(best, mid) ? sol : best, sols[0]);
-    return { from, to, sol: winner };
+    let topScore = -Infinity, topSols = [];
+    sols.forEach(sol => {
+      const s = scoreAt(sol, mid);
+      if (Math.abs(s - topScore) < 1e-9) topSols.push(sol);
+      else if (s > topScore) { topScore = s; topSols = [sol]; }
+    });
+    return { from, to, sol: topSols.length === 1 ? topSols[0] : topSols };
   });
 
   const merged = [];
   segments.forEach(seg => {
-    if (merged.length > 0 && merged[merged.length - 1].sol === seg.sol) {
+    if (merged.length > 0 && solKey(merged[merged.length - 1].sol) === solKey(seg.sol)) {
       merged[merged.length - 1].to = seg.to;
     } else {
       merged.push({ ...seg });
@@ -688,7 +1002,7 @@ function updateSensImpact() {
   const container = document.getElementById('sensImpact');
 
   if (!comparisonStarted || criteria.length === 0 || sols.length < 2) {
-    container.innerHTML = '<p class="hint">Add at least 2 solutions with ratings to see breakeven analysis.</p>';
+    container.innerHTML = `<p class="hint">${t('hintNeedSolutions')}</p>`;
     return;
   }
 
@@ -705,8 +1019,8 @@ function updateSensImpact() {
     html += `<div class="be-row"><span class="be-label" title="${C}">${C}</span><div class="be-track-wrap" data-criterion="${C}"><div class="be-track">`;
     segments.forEach(seg => {
       const w = (seg.to - seg.from) * 100;
-      const color = SOL_COLORS[sols.indexOf(seg.sol) % SOL_COLORS.length];
-      html += `<div class="be-segment" style="width:${w}%;background:${color}" title="${seg.sol}: ${Math.round(seg.from*100)}%–${Math.round(seg.to*100)}%"></div>`;
+      const label = Array.isArray(seg.sol) ? seg.sol.join(' & ') : seg.sol;
+      html += `<div class="be-segment" style="width:${w}%;${segmentBg(seg.sol, sols)}" title="${label}: ${Math.round(seg.from*100)}%–${Math.round(seg.to*100)}%"></div>`;
     });
     html += `</div><div class="be-current" style="left:${currentPct.toFixed(2)}%"></div>`;
 
@@ -730,7 +1044,7 @@ function updateSensImpact() {
 document.getElementById('resetWeightsBtn').onclick = () => {
   initSensWeights();
   updateSensRanking();
-  updateSensImpact();
+  updateSensImpact(); updateRatingImpact();
 };
 
 // Drag the white line to set a criterion's weight
@@ -778,6 +1092,114 @@ let sensImpactDrag = null;
   }, { passive: true });
 }());
 
+// ── Rating impact ─────────────────────────────────────────────
+let explorationRatings = {};
+
+function initExplorationRatings() {
+  explorationRatings = { ...ratings };
+}
+
+function computeRatingBreakevens(sol, C, sols, weights, rObj) {
+  const r = rObj || explorationRatings;
+  const wC = weights[C] ?? 0;
+  const baseScore = criteria.reduce((s, c) => c === C ? s : s + (r[`${sol}|${c}`] ?? 0) * (weights[c] ?? 0), 0);
+  const otherScores = {};
+  sols.filter(s => s !== sol).forEach(s => {
+    otherScores[s] = criteria.reduce((sum, c) => sum + (r[`${s}|${c}`] ?? 0) * (weights[c] ?? 0), 0);
+  });
+  const bps = wC > 0
+    ? Object.values(otherScores).map(os => (os - baseScore) / wC).filter(v => v > 0 && v < 4)
+    : [];
+  const points = [0, ...bps.sort((a, b) => a - b), 4];
+  const winKey = w => Array.isArray(w) ? [...w].sort().join('\0') : w;
+  const segments = [];
+  for (let i = 0; i < points.length - 1; i++) {
+    const mid = (points[i] + points[i + 1]) / 2;
+    const solMid = baseScore + mid * wC;
+    let topScore = solMid, topSols = [sol];
+    Object.entries(otherScores).forEach(([s, sc]) => {
+      if (Math.abs(sc - topScore) < 1e-9) topSols.push(s);
+      else if (sc > topScore) { topScore = sc; topSols = [s]; }
+    });
+    const winner = topSols.length === 1 ? topSols[0] : topSols;
+    segments.push({ from: points[i] / 4, to: points[i + 1] / 4, winner });
+  }
+  return segments.reduce((acc, seg) => {
+    if (acc.length && winKey(acc[acc.length - 1].winner) === winKey(seg.winner)) acc[acc.length - 1].to = seg.to;
+    else acc.push({ ...seg });
+    return acc;
+  }, []);
+}
+
+function updateRatingImpact() {
+  const container = document.getElementById('ratingImpactContainer');
+  if (!container) return;
+  const sols = getSolutions();
+  if (!comparisonStarted || criteria.length === 0 || sols.length < 2) {
+    container.innerHTML = `<p class="hint">${t('hintNeedSolutions')}</p>`;
+    return;
+  }
+  const weights = sensWeights;
+  let html = '<div class="be-legend">';
+  sols.forEach((s, i) => { html += `<span class="be-legend-item"><span class="be-dot" style="background:${SOL_COLORS[i % SOL_COLORS.length]}"></span>${s}</span>`; });
+  html += '</div>';
+  sols.forEach((sol, si) => {
+    const solColor = SOL_COLORS[si % SOL_COLORS.length];
+    html += `<div class="ri-sol-header" style="color:${solColor}">${sol}</div>`;
+    criteria.forEach(C => {
+      const segs = computeRatingBreakevens(sol, C, sols, weights);
+      const cur = ((explorationRatings[`${sol}|${C}`] ?? 0) / 4 * 100).toFixed(2);
+      html += `<div class="be-row"><span class="be-label" title="${C}">${C}</span>`;
+      html += `<div class="be-track-wrap" data-sol="${sol}" data-crit="${C}">`;
+      html += `<div class="be-track">`;
+      segs.forEach(seg => {
+        const label = Array.isArray(seg.winner) ? seg.winner.join(' & ') : seg.winner;
+        html += `<div class="be-segment" style="width:${((seg.to - seg.from) * 100).toFixed(3)}%;${segmentBg(seg.winner, sols)}" title="${label}"></div>`;
+      });
+      html += `</div><div class="be-current" style="left:${cur}%"></div>`;
+      html += `<div class="rs-ticks">`;
+      for (let i = 0; i <= 4; i++) html += `<span class="rs-tick" style="left:${i * 25}%">${i}</span>`;
+      html += `</div></div></div>`;
+    });
+  });
+  container.innerHTML = html;
+}
+
+document.getElementById('resetRatingsBtn').onclick = () => {
+  initExplorationRatings();
+  updateRatingImpact();
+  updateSensRanking();
+};
+
+(function setupRatingImpactDrag() {
+  const container = document.getElementById('ratingImpactContainer');
+  let active = null;
+  function getVal(e, rect) {
+    const x = e.touches ? e.touches[0].clientX : e.clientX;
+    return Math.round(Math.max(0, Math.min(4, ((x - rect.left) / rect.width) * 4)));
+  }
+  function onDown(e) {
+    const wrap = e.target.closest('[data-sol][data-crit]');
+    if (!wrap || !container.contains(wrap)) return;
+    active = { sol: wrap.dataset.sol, crit: wrap.dataset.crit, rect: wrap.getBoundingClientRect() };
+    onMove(e);
+  }
+  function onMove(e) {
+    if (!active) return;
+    e.preventDefault();
+    explorationRatings[`${active.sol}|${active.crit}`] = getVal(e, active.rect);
+    updateRatingImpact();
+    updateSensRanking();
+  }
+  function onUp() { active = null; }
+  container.addEventListener('mousedown', onDown);
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('mouseup', onUp);
+  container.addEventListener('touchstart', onDown, { passive: false });
+  document.addEventListener('touchmove', onMove, { passive: false });
+  document.addEventListener('touchend', onUp);
+}());
+
 // ── Persistence ───────────────────────────────────────────────
 const STORAGE_KEY = 'tradeoff_v1';
 
@@ -785,8 +1207,13 @@ function saveState() {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({
       version: 1,
+      decisionName, bearbeiter,
       criteria: getCriteria(),
       pairStates,
+      customWeights,
+      customWeightReasons,
+      proMode,
+      lang,
       solutions: getSolutions(),
       ratings,
     }));
@@ -800,8 +1227,17 @@ function applyState(state) {
   (state.criteria || []).forEach(c => addCriterionInput(c));
   clearTimeout(inputDebounce);
 
+  decisionName = state.decisionName || '';
+  bearbeiter = state.bearbeiter || '';
+  document.getElementById('decisionNameInput').value = decisionName;
+  document.getElementById('bearbeiterInput').value = bearbeiter;
   pairStates = state.pairStates || {};
-  if ((state.criteria || []).length >= 2) startComparison();
+  customWeights = state.customWeights || null;
+  customWeightReasons = state.customWeightReasons || {};
+  proMode = state.proMode || false;
+  lang = state.lang || 'en';
+  if ((state.criteria || []).length >= 2) startComparison(true, true);
+  applyProMode();
 
   solutionList.innerHTML = '';
   (state.solutions || []).forEach(s => addSolutionInput(s));
@@ -810,16 +1246,17 @@ function applyState(state) {
   ratings = state.ratings || {};
   renderSolutionMatrix();
   updateSolutionRanking();
-  initSensWeights();
+  initSensWeights(); initExplorationRatings();
   updateTabState();
 
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
   document.querySelector('[data-tab="criteria"]').classList.add('active');
   document.getElementById('tab-criteria').classList.add('active');
+  applyLang();
 }
 
-function generatePrintView() {
+function generatePrintView(tradeName = '', exporter = '') {
   const criteria = getCriteria();
   const weights = computeWeights();
   const scores = computeScores();
@@ -828,12 +1265,33 @@ function generatePrintView() {
   const ranked = scoreSolutions(computeWeights());
   const CYAN = '#18c8ff';
 
+  const pairwiseScores = computeScores();
+  const pairwiseTotalPts = Object.values(pairwiseScores).reduce((s, v) => s + v, 0);
+  const pairwiseWeights = (() => {
+    const w = {};
+    criteria.forEach(c => w[c] = pairwiseTotalPts > 0 ? pairwiseScores[c] / pairwiseTotalPts : 1 / criteria.length);
+    return w;
+  })();
+
   const criteriaRows = Object.entries(scores)
     .sort((a, b) => b[1] - a[1])
     .map(([c, p]) => {
       const pct = totalPts > 0 ? (100 * p / totalPts).toFixed(1) : '0.0';
       return `<tr><td>${c}</td><td>${pct}%</td><td><div class="bar-wrap"><div class="bar" style="width:${pct}%;background:${CYAN}"></div></div></td></tr>`;
     }).join('');
+
+  const fineTuneRows = customWeights ? criteria.map(c => {
+    const custom = (computeWeights()[c] * 100).toFixed(1);
+    const pairwise = (pairwiseWeights[c] * 100).toFixed(1);
+    const reason = customWeightReasons[c] || '';
+    const changed = Math.abs(parseFloat(custom) - parseFloat(pairwise)) > 0.05;
+    return `<tr>
+      <td>${c}</td>
+      <td style="color:#888">${pairwise}%</td>
+      <td style="font-weight:${changed ? '600' : '400'}">${custom}%</td>
+      <td style="color:#666;font-style:italic">${reason}</td>
+    </tr>`;
+  }).join('') : '';
 
   const rankRatingColors = ['#f1f5f9','#fde68a','#86efac','#4ade80','#16a34a'];
   const solRankThds = criteria.map(c => `<th title="${c}">${c}</th>`).join('');
@@ -857,32 +1315,52 @@ function generatePrintView() {
   }).join('');
 
 
+  function printLegend(solList) {
+    return '<div class="legend">' + solList.map((sol, i) =>
+      `<span class="legend-item"><span class="legend-dot" style="background:${SOL_COLORS[i % SOL_COLORS.length]}"></span>${sol}</span>`
+    ).join('') + '</div>';
+  }
+
   let sensHtml = '';
   if (sols.length >= 2) {
-    sensHtml += '<div class="legend">';
-    sols.forEach((sol, i) => {
-      sensHtml += `<span class="legend-item"><span class="legend-dot" style="background:${SOL_COLORS[i % SOL_COLORS.length]}"></span>${sol}</span>`;
-    });
-    sensHtml += '</div>';
+    sensHtml += printLegend(sols);
     criteria.forEach(C => {
       const segs = computeBreakevens(C, sols);
       const curPct = ((sensWeights[C] ?? 0) * 100).toFixed(2);
       sensHtml += `<div class="be-row"><span class="be-label" title="${C}">${C}</span><div class="be-track-wrap"><div class="be-track">`;
       segs.forEach(seg => {
         const w = ((seg.to - seg.from) * 100).toFixed(3);
-        const color = SOL_COLORS[sols.indexOf(seg.sol) % SOL_COLORS.length];
-        sensHtml += `<div class="be-segment" style="width:${w}%;background:${color};opacity:.85"></div>`;
+        sensHtml += `<div class="be-segment" style="width:${w}%;${segmentBg(seg.sol, sols)}"></div>`;
       });
       sensHtml += `</div>`;
-      // current weight line + label above
       sensHtml += `<div class="be-current" style="left:${curPct}%"></div>`;
       sensHtml += `<div class="be-cur-label" style="left:${curPct}%">${Math.round(parseFloat(curPct))}%</div>`;
-      // breakeven tick labels below
       segs.slice(1).forEach(seg => {
         const pct = (seg.from * 100).toFixed(1);
         sensHtml += `<div class="be-tick" style="left:${pct}%">${Math.round(parseFloat(pct))}%</div>`;
       });
       sensHtml += `</div></div>`;
+    });
+  }
+
+  let ratingHtml = '';
+  if (sols.length >= 2) {
+    ratingHtml += printLegend(sols);
+    sols.forEach((sol, si) => {
+      const solColor = SOL_COLORS[si % SOL_COLORS.length];
+      ratingHtml += `<div class="ri-sol-header" style="color:${solColor}">${sol}</div>`;
+      criteria.forEach(C => {
+        const segs = computeRatingBreakevens(sol, C, sols, sensWeights);
+        const cur = ((explorationRatings[`${sol}|${C}`] ?? 0) / 4 * 100).toFixed(2);
+        ratingHtml += `<div class="be-row"><span class="be-label" title="${C}">${C}</span><div class="be-track-wrap"><div class="be-track">`;
+        segs.forEach(seg => {
+          const w = ((seg.to - seg.from) * 100).toFixed(3);
+          ratingHtml += `<div class="be-segment" style="width:${w}%;${segmentBg(seg.winner, sols)}"></div>`;
+        });
+        ratingHtml += `</div><div class="be-current" style="left:${cur}%"></div>`;
+        for (let i = 0; i <= 4; i++) ratingHtml += `<div class="be-tick" style="left:${i * 25}%">${i}</div>`;
+        ratingHtml += `</div></div>`;
+      });
     });
   }
 
@@ -916,33 +1394,41 @@ th{font-weight:600;color:#aaa;font-size:0.73rem;text-transform:uppercase;letter-
 .be-current{position:absolute;top:0;height:20px;width:2px;background:#333;border-radius:1px;transform:translateX(-50%)}
 .be-cur-label{position:absolute;top:-18px;transform:translateX(-50%);font-size:0.7rem;font-weight:700;color:#333;white-space:nowrap;background:#fff;padding:0 2px}
 .be-tick{position:absolute;top:24px;transform:translateX(-50%);font-size:0.68rem;color:#888;white-space:nowrap}
+.ri-sol-header{font-size:0.85rem;font-weight:600;margin:16px 0 4px}
 @media print{body{padding:20px}@page{margin:15mm}}
 </style>
 </head>
 <body>
-<h1>Trade-Off Tool</h1>
-<p class="meta">Generated ${date}</p>
-${pairs.length ? `<h2>Criteria Comparisons</h2><table><tbody>${pairListRows}</tbody></table>` : ''}
-<h2>Criteria Weights</h2>
-<table><thead><tr><th>Criterion</th><th>Weight</th><th></th></tr></thead><tbody>${criteriaRows}</tbody></table>
-<h2>Solution Ranking</h2>
-<table><thead><tr><th>Solution</th><th>Score</th><th></th>${solRankThds}</tr></thead><tbody>${solRows}</tbody></table>
-${sols.length >= 2 ? `<h2>Sensitivity Analysis</h2>${sensHtml}` : ''}
+<div style="display:flex;justify-content:space-between;align-items:baseline;border-bottom:2px solid #1a1a2e;padding-bottom:10px;margin-bottom:6px">
+  <div><h1>${tradeName ? `${tradeName} <span style="font-size:.8rem;font-weight:400;color:#888">· DecisionLab v0.2</span>` : 'DecisionLab <span style="font-size:.8rem;font-weight:400;color:#888">v0.2</span>'}</h1></div>
+  <div style="text-align:right;font-size:0.75rem;color:#888">${exporter ? `<div><strong>${t('exportedBy')}:</strong> ${exporter}</div>` : ''}<div>${t('printGenerated')(date)}</div></div>
+</div>
+${pairs.length ? `<h2>${t('printCriteriaComparisons')}</h2><table><tbody>${pairListRows}</tbody></table>` : ''}
+<h2>${t('printCriteriaWeights')}</h2>
+<table><thead><tr><th>${t('printThCriterion')}</th><th>${t('printThWeight')}</th><th></th></tr></thead><tbody>${criteriaRows}</tbody></table>
+${customWeights ? `<h2>${t('printWeightAdjustments')}</h2><table><thead><tr><th>${t('printThCriterion')}</th><th>${t('printThPairwise')}</th><th>${t('printThAdjusted')}</th><th>${t('printThReason')}</th></tr></thead><tbody>${fineTuneRows}</tbody></table>` : ''}
+<h2>${t('printSolutionRanking')}</h2>
+<table><thead><tr><th>${t('printThSolution')}</th><th>${t('printThScore')}</th><th></th>${solRankThds}</tr></thead><tbody>${solRows}</tbody></table>
+${sols.length >= 2 ? `<h2>${t('criterionImpact')}</h2>${sensHtml}<h2>${t('ratingImpact')}</h2>${ratingHtml}` : ''}
 </body>
 </html>`;
 }
 
 document.getElementById('printBtn').onclick = () => {
   const win = window.open('', '_blank', 'width=860,height=700');
-  win.document.write(generatePrintView());
+  win.document.write(generatePrintView(decisionName, bearbeiter || t('promptAnonymous')));
   win.document.close();
   win.focus();
   setTimeout(() => win.print(), 350);
 };
 
 document.getElementById('exportHtmlBtn').onclick = () => {
+  const tradeName = decisionName;
+  const exporter = bearbeiter || t('promptAnonymous');
+  const exportedAt = new Date().toLocaleString(lang === 'de' ? 'de-DE' : 'en-GB', { dateStyle: 'medium', timeStyle: 'short' });
+
   const state = JSON.stringify({
-    version: 1, criteria: getCriteria(), pairStates, solutions: getSolutions(), ratings,
+    version: 1, decisionName, bearbeiter, criteria: getCriteria(), pairStates, customWeights, customWeightReasons, proMode: true, lang, solutions: getSolutions(), ratings,
   });
 
   // Use lastIndexOf so we always find the actual auto-load block at the end of the file,
@@ -955,29 +1441,43 @@ document.getElementById('exportHtmlBtn').onclick = () => {
   const bakedScript = _scriptText.slice(0, si) + newBlock + _scriptText.slice(ei);
 
   const readOnlyCss = '\n/* Read-only export */\n' +
-    '[data-readonly] .toolbar,[data-readonly] #criteriaList,[data-readonly] #addBtn,' +
-    '[data-readonly] .btn-remove,[data-readonly] .pair-buttons,[data-readonly] #solutionList,' +
-    '[data-readonly] #addSolutionBtn{display:none}\n' +
-    '[data-readonly] .rating-btn{pointer-events:none}\n';
+    '[data-readonly] #criteriaList,[data-readonly] #addBtn,[data-readonly] .btn-remove,' +
+    '[data-readonly] .pair-buttons,[data-readonly] #solutionList,[data-readonly] #addSolutionBtn,' +
+    '[data-readonly] #proToggle,[data-readonly] .app-brand,[data-readonly] #helpBtn,' +
+    '[data-readonly] #printBtn,[data-readonly] #newBtn,[data-readonly] #exportHtmlBtn,' +
+    '[data-readonly] #exportBtn,[data-readonly] label.btn-toolbar{display:none}\n' +
+    '[data-readonly] .toolbar{justify-content:flex-end;margin-bottom:0}\n' +
+    '[data-readonly] .rating-btn{pointer-events:none}\n' +
+    '[data-readonly] .project-header{display:none}\n' +
+    '.export-info{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px;padding:14px 0 18px;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:24px}\n' +
+    '.export-info-title{font-size:1.05rem;font-weight:700;color:#fff;letter-spacing:-.01em}\n' +
+    '.export-info-title span{font-size:0.72rem;font-weight:400;color:rgba(255,255,255,.4);background:rgba(255,255,255,.08);padding:2px 8px;border-radius:20px;margin-left:8px;vertical-align:middle}\n' +
+    '.export-info-meta{font-size:0.72rem;color:rgba(255,255,255,.4);display:flex;gap:16px}\n' +
+    '.export-info-meta strong{color:rgba(255,255,255,.6)}\n';
 
-  const out = '<!DOCTYPE html>\n<html data-readonly lang="en">\n<head>\n<meta charset="UTF-8">\n' +
-    '<meta name="viewport" content="width=device-width,initial-scale=1">\n<title>Trade-Off Tool</title>\n' +
+  const tradeLabel = tradeName ? `<span style="color:#fff;font-size:.95rem;font-weight:600">${tradeName}</span> · ` : '';
+  const infoBanner = `<div class="export-info"><div class="export-info-title">${tradeLabel}DecisionLab<span>v0.2</span></div><div class="export-info-meta"><span><strong>${t('exportedBy')}:</strong> ${exporter}</span><span><strong>${t('exportedDate')}:</strong> ${exportedAt}</span></div></div>\n`;
+  const pageTitle = tradeName ? `${tradeName} – DecisionLab` : 'DecisionLab';
+
+  const out = '<!DOCTYPE html>\n<html data-readonly lang="' + lang + '">\n<head>\n<meta charset="UTF-8">\n' +
+    '<meta name="viewport" content="width=device-width,initial-scale=1">\n<title>' + pageTitle + '</title>\n' +
     '<style>\n' + _styleText + readOnlyCss + '</style>\n</head>\n<body>\n' +
-    _bodyHtml + '\n<script>\n' + bakedScript + '\n<\/script>\n</body>\n</html>';
+    _bodyHtml.replace('<div class="container">', '<div class="container">\n' + infoBanner) +
+    '\n<script>\n' + bakedScript + '\n<\/script>\n</body>\n</html>';
 
   const a = Object.assign(document.createElement('a'), {
     href: URL.createObjectURL(new Blob([out], { type: 'text/html' })),
-    download: 'tradeoff.html',
+    download: (decisionName ? decisionName.replace(/[^a-z0-9äöüß\-_ ]/gi, '').trim() + ' – ' : '') + 'DecisionLab.html',
   });
   a.click();
   URL.revokeObjectURL(a.href);
 };
 
 document.getElementById('exportBtn').onclick = () => {
-  const data = JSON.stringify({ version: 1, criteria: getCriteria(), pairStates, solutions: getSolutions(), ratings }, null, 2);
+  const data = JSON.stringify({ version: 1, decisionName, bearbeiter, criteria: getCriteria(), pairStates, customWeights, customWeightReasons, proMode, lang, solutions: getSolutions(), ratings }, null, 2);
   const a = Object.assign(document.createElement('a'), {
     href: URL.createObjectURL(new Blob([data], { type: 'application/json' })),
-    download: 'tradeoff.json',
+    download: (decisionName ? decisionName.replace(/[^a-z0-9äöüß\-_ ]/gi, '').trim() + ' – ' : '') + 'DecisionLab.json',
   });
   a.click();
   URL.revokeObjectURL(a.href);
@@ -989,7 +1489,7 @@ document.getElementById('importInput').onchange = e => {
   const reader = new FileReader();
   reader.onload = ev => {
     try { applyState(JSON.parse(ev.target.result)); }
-    catch { alert('Could not read file — invalid format.'); }
+    catch { alert(t('alertInvalidFile')); }
   };
   reader.readAsText(file);
   e.target.value = '';
@@ -1002,7 +1502,7 @@ helpOverlay.addEventListener('click', e => { if (e.target === helpOverlay) helpO
 document.addEventListener('keydown', e => { if (e.key === 'Escape') helpOverlay.classList.add('hidden'); });
 
 document.getElementById('newBtn').onclick = () => {
-  if (!confirm('Clear everything and start over?')) return;
+  if (!confirm(t('confirmNewSession'))) return;
   localStorage.removeItem(STORAGE_KEY);
   location.reload();
 };
@@ -1016,7 +1516,7 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.classList.add('active');
     document.getElementById(`tab-${btn.dataset.tab}`).classList.add('active');
     if (btn.dataset.tab === 'solutions') renderSolutionMatrix();
-    if (btn.dataset.tab === 'sensitivity') { initSensWeights(); updateSensRanking(); updateSensImpact(); }
+    if (btn.dataset.tab === 'sensitivity') { initSensWeights(); initExplorationRatings(); updateSensRanking(); updateSensImpact(); updateRatingImpact(); }
   };
 });
 
@@ -1026,7 +1526,8 @@ updateTabState();
 try {
   const saved = localStorage.getItem(STORAGE_KEY);
   if (saved) applyState(JSON.parse(saved));
-} catch (e) {}
+  else applyProMode();
+} catch (e) { applyProMode(); }
 // END Auto-load
 </script>
 </body>
