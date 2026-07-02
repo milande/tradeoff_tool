@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DecisionLab</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="container">
+
+  <div class="toolbar">
+    <div class="app-brand">
+      <span class="app-name">DecisionLab</span>
+      <span class="app-version">v0.4</span>
+    </div>
+    <div class="toolbar-actions">
+      <button id="langToggle" class="btn-toolbar lang-toggle">DE</button>
+      <button id="helpBtn" class="btn-toolbar" data-i18n="help"></button>
+      <button id="printBtn" class="btn-toolbar" data-i18n="print"></button>
+      <button id="newBtn" class="btn-toolbar" data-i18n="newSession"></button>
+      <button id="exportHtmlBtn" class="btn-toolbar" data-i18n="exportHtml"></button>
+      <button id="exportBtn" class="btn-toolbar" data-i18n="save"></button>
+      <label class="btn-toolbar"><span data-i18n="load"></span><input type="file" id="importInput" accept=".json"></label>
+    </div>
+  </div>
+
+  <div id="helpOverlay" class="help-overlay hidden">
+    <div class="help-modal">
+      <button id="helpClose" class="help-close">✕</button>
+      <h2 class="help-title" data-i18n="helpTitle"></h2>
+      <p class="help-intro" data-i18n-html="helpIntro"></p>
+
+      <div class="help-section help-criteria">
+        <h3 data-i18n="helpCriteriaTitle"></h3>
+        <p data-i18n-html="helpCriteriaText"></p>
+      </div>
+
+      <div class="help-section help-solutions">
+        <h3 data-i18n="helpSolutionsTitle"></h3>
+        <p data-i18n-html="helpSolutionsText"></p>
+      </div>
+
+      <div class="help-section help-data">
+        <h3 data-i18n="helpDataTitle"></h3>
+        <p data-i18n-html="helpDataText"></p>
+      </div>
+
+      <div class="help-section help-pro">
+        <h3 data-i18n="helpProTitle"></h3>
+        <p data-i18n-html="helpProText"></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="project-header">
+    <input id="decisionNameInput" class="project-input project-input-name" type="text" data-i18n-placeholder="decisionNamePlaceholder" placeholder="">
+    <input id="bearbeiterInput" class="project-input project-input-author" type="text" data-i18n-placeholder="bearbeiterPlaceholder" placeholder="">
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="criteria" data-i18n="tabCriteria"></button>
+    <button class="tab-btn" data-tab="solutions" data-i18n="tabSolutions"></button>
+    <button class="tab-btn" data-tab="sensitivity" id="sensitivityTab" data-i18n="tabSensitivity"></button>
+    <button id="proToggle" class="pro-toggle">⚡ Pro</button>
+  </div>
+
+  <!-- CRITERIA TAB -->
+  <div id="tab-criteria" class="tab-content active">
+    <div class="section" id="criteriaInputSection">
+      <div class="section-content">
+        <h2 data-i18n="step1"></h2>
+        <div id="criteriaList"></div>
+        <button id="addBtn" class="btn-add" data-i18n="addCriterion"></button>
+      </div>
+    </div>
+    <div class="section" id="compareSection">
+      <div class="section-content">
+        <h2 data-i18n="step2"></h2>
+        <div id="pairsContainer"></div>
+      </div>
+    </div>
+    <div class="section" id="resultsSection">
+      <div class="section-content">
+        <h2 data-i18n="criteriaWeights"></h2>
+        <table>
+          <thead><tr><th data-i18n="thCriterion"></th><th data-i18n="thPoints"></th><th data-i18n="thWeight"></th></tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="section" id="fineTuneSection">
+      <div class="section-content">
+        <h2><span data-i18n="fineTuneWeights"></span><span class="optional-label" data-i18n="optional"></span><span id="customBadge" class="custom-badge" data-i18n="custom"></span></h2>
+        <div id="fineTuneList"></div>
+        <div class="fine-tune-actions">
+          <button id="resetFineBtn" class="btn-secondary" data-i18n="resetToPairwise"></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SOLUTIONS TAB -->
+  <div id="tab-solutions" class="tab-content">
+    <div class="section">
+      <div class="section-content">
+        <h2 data-i18n="step3"></h2>
+        <div id="solutionList"></div>
+        <button id="addSolutionBtn" class="btn-add" data-i18n="addSolution"></button>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-content">
+        <h2 data-i18n="rateSolutions"></h2>
+        <div id="solutionMatrix"></div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-content">
+        <h2 data-i18n="ranking"></h2>
+        <table>
+          <thead><tr><th data-i18n="thSolution"></th><th data-i18n="thScore"></th><th data-i18n="thRating"></th></tr></thead>
+          <tbody id="solutionRankingBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- SENSITIVITY TAB -->
+  <div id="tab-sensitivity" class="tab-content">
+    <div class="section">
+      <div class="section-content">
+        <h2 data-i18n="criterionImpact"></h2>
+        <p class="hint" data-i18n="sensitivityHint"></p>
+        <button id="resetWeightsBtn" class="btn-secondary" data-i18n="resetToPairwiseWeights"></button>
+        <div id="sensImpact"></div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-content">
+        <h2 data-i18n="ranking"></h2>
+        <table>
+          <thead><tr><th data-i18n="thSolution"></th><th data-i18n="thScore"></th><th data-i18n="thRating"></th></tr></thead>
+          <tbody id="sensRankingBody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-content">
+        <h2 data-i18n="ratingImpact"></h2>
+        <p class="hint" data-i18n="ratingImpactHint"></p>
+        <button id="resetRatingsBtn" class="btn-secondary" data-i18n="resetRatings"></button>
+        <div id="ratingImpactContainer"></div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-content">
+        <h2 data-i18n="scenarios"></h2>
+        <p class="hint" data-i18n="scenarioHint"></p>
+        <div class="scenario-save-row">
+          <input type="text" id="scenarioNameInput" data-i18n-placeholder="scenarioNamePlaceholder" placeholder="">
+          <button id="saveScenarioBtn" class="btn-secondary" data-i18n="scenarioSave"></button>
+        </div>
+        <div id="scenariosContainer"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+<p class="app-credit"><span data-i18n="credit"></span> · <a class="app-credit-link" href="https://github.com/milande/tradeoff_tool/" target="_blank" rel="noopener">Source &amp; build on GitHub</a></p>
+<!-- build:js -->
+<script src="js/lang/en.js"></script>
+<script src="js/lang/de.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/state.js"></script>
+<script src="js/criteria.js"></script>
+<script src="js/solutions.js"></script>
+<script src="js/sensitivity.js"></script>
+<script src="js/scenarios.js"></script>
+<script src="js/export.js"></script>
+<script src="js/main.js"></script>
+<!-- endbuild -->
+</body>
+</html>

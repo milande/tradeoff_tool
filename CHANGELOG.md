@@ -1,5 +1,60 @@
 # DecisionLab — Changelog
 
+## v0.4 (2026-07-02)
+
+### Multi-file Source + Build Step
+- Source restructured from a single `index.html` into `src/` with one full HTML file, separate CSS, JS modules, and language files
+- `src/index.html` opens directly in the browser for development — no build step needed
+- `build.js` assembles and minifies all sources into a single portable `dist/index.html` (no npm dependencies)
+- Minification: CSS comments and whitespace stripped; JS `//` comments removed (export sentinels preserved globally); HTML blank lines collapsed
+- GitHub source link added to the credit footer
+
+### Scenario Comparison *(Pro)*
+- New section in the Sensitivity tab (Pro only) for comparing named configurations side by side
+- Each scenario is a full snapshot: the current sensitivity **weights and exploration ratings**
+- Comparison table shows the Baseline (pairwise/fine-tuned weights + committed ratings) plus all saved scenarios as columns
+- Every column lists all values: weight per criterion, rank + score per solution, and per-criterion rating + weighted contribution
+- Values that differ from the Baseline are highlighted (amber weight cells, amber rating badges)
+- **Click a column header** (Baseline or scenario) to load its weights and ratings back into the sensitivity bars
+- Winner cells per column are highlighted with the solution's colour; knocked-out solutions show a dash
+- Criteria rows ordered by importance; delete scenarios with the ✕ button
+- Scenarios persist in localStorage, JSON save/load, and HTML export; cleared automatically when criteria change
+- Fully translated (EN / DE)
+
+### Sensitivity Fixes & Persistence
+- Fixed: dragging a Criterion Impact bar could zero out all other weights when the internal state was stale (e.g. after renaming criteria or loading a session)
+- Weight-drag math now derives from the actual current weights instead of assuming they sum to 100%
+- Self-healing: sensitivity state is validated before every render and re-derived from pairwise weights if corrupt; missing exploration ratings are back-filled from committed ratings
+- Fixed: tweaking ratings in Rating Impact now updates the Criterion Impact bars live
+- Fixed: opening the Sensitivity tab no longer resets your exploration weights/ratings
+- Fixed: committing a rating in the Solutions tab now propagates to the sensitivity exploration state
+- Sensitivity weights and exploration ratings are saved to localStorage, JSON, and HTML export
+- Stale keys from renamed criteria are cleaned up; stopping the comparison clears sensitivity state
+
+### Consistent Criteria Ordering
+- Criteria are listed by importance (highest weight first) everywhere: fine-tune list, solution rating matrix, sensitivity bars, scenario table, and all print sections
+- Ordering follows committed weights (pairwise + fine-tune), so bars don't reshuffle while dragging
+
+### Print View
+- Knocked-out solutions are struck through, dimmed, sorted to the bottom, and show the failing must-have criteria in red
+- Score Definitions section now always included: per-criterion 0–4 meanings when any custom anchors exist (custom values dark, standard defaults greyed), otherwise a compact generic 0–4 legend
+
+### HTML Export (read-only)
+- Fixed: exported HTML was broken by the minifier stripping the auto-load sentinels (string-literal collision)
+- All non-navigation controls are now disabled/hidden in the export: add/remove buttons, pairwise buttons, Must-have toggles, scenario save row; inputs are read-only
+- Sensitivity reset buttons stay active so viewers can return to the original values after exploring
+- The export respects the Pro mode status at export time (previously Pro was always forced on)
+- The criteria input section is removed entirely (criteria remain visible in the weights table)
+
+### UX / Cleanup
+- Criteria tab simplified: page title removed, "Step 1/2/3" prefixes dropped (tab order conveys the sequence)
+- New criterion inputs show numbered placeholders (Criteria 1, 2, … / Kriterium 1, 2, …) that survive language switching
+- ✕ New now also clears the decision name and author fields
+- Fixed: solution description notes were being treated as solutions in the ratings
+- All hardcoded fallback text removed from the HTML — the language files are the single source of truth for UI strings
+
+---
+
 ## v0.3 (2026-06-30)
 
 ### Solution Notes

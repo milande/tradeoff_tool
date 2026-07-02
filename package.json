@@ -1,0 +1,8 @@
+{
+  "name": "decisionlab",
+  "version": "0.4.0",
+  "private": true,
+  "scripts": {
+    "build": "node build.js"
+  }
+}
