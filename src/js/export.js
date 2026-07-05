@@ -11,74 +11,78 @@ function generatePrintView(tradeName = '', exporter = '') {
   const CYAN = '#18c8ff';
 
   const pairwiseWeights = {};
-  criteria.forEach(c => pairwiseWeights[c] = totalPts > 0 ? scores[c] / totalPts : 1 / criteria.length);
+  criteria.forEach(c => pairwiseWeights[c.id] = totalPts > 0 ? scores[c.id] / totalPts : 1 / criteria.length);
 
-  const criteriaRows = Object.entries(scores)
-    .sort((a, b) => b[1] - a[1])
-    .map(([c, p]) => {
-      const pct = totalPts > 0 ? (100 * p / totalPts).toFixed(1) : '0.0';
-      return `<tr><td>${c}</td><td>${pct}%</td><td><div class="bar-wrap"><div class="bar" style="width:${pct}%;background:${CYAN}"></div></div></td></tr>`;
+  const criteriaRows = [...criteria]
+    .sort((a, b) => scores[b.id] - scores[a.id])
+    .map(c => {
+      const pct = totalPts > 0 ? (100 * scores[c.id] / totalPts).toFixed(1) : '0.0';
+      return `<tr><td>${esc(c.name)}</td><td>${pct}%</td><td><div class="bar-wrap"><div class="bar" style="width:${pct}%;background:${CYAN}"></div></div></td></tr>`;
     }).join('');
 
   const orderedCriteria = criteriaByWeight();
   const fineTuneRows = customWeights ? orderedCriteria.map(c => {
-    const custom = (weights[c] * 100).toFixed(1);
-    const pairwise = (pairwiseWeights[c] * 100).toFixed(1);
-    const reason = customWeightReasons[c] || '';
+    const custom = (weights[c.id] * 100).toFixed(1);
+    const pairwise = (pairwiseWeights[c.id] * 100).toFixed(1);
+    const reason = customWeightReasons[c.id] || '';
     const changed = Math.abs(parseFloat(custom) - parseFloat(pairwise)) > 0.05;
     return `<tr>
-      <td>${c}</td>
+      <td>${esc(c.name)}</td>
       <td style="color:#888">${pairwise}%</td>
       <td style="font-weight:${changed ? '600' : '400'}">${custom}%</td>
-      <td style="color:#666;font-style:italic">${reason}</td>
+      <td style="color:#666;font-style:italic">${esc(reason)}</td>
     </tr>`;
   }).join('') : '';
 
   const rankRatingColors = ['#f1f5f9', '#fde68a', '#86efac', '#4ade80', '#16a34a'];
-  const solRankThds = orderedCriteria.map(c => `<th title="${c}">${c}</th>`).join('');
+  const solRankThds = orderedCriteria.map(c => `<th title="${esc(c.name)}">${esc(c.name)}</th>`).join('');
   const solRows = rankedOrdered.map(({ sol, score }) => {
-    const isKO = !!koSols[sol];
+    const isKO = !!koSols[sol.id];
     const pct = Math.min(100, (score / 4) * 100).toFixed(1);
-    const color = SOL_COLORS[sols.indexOf(sol) % SOL_COLORS.length];
+    const color = SOL_COLORS[sols.findIndex(s => s.id === sol.id) % SOL_COLORS.length];
     const ratingCells = orderedCriteria.map(c => {
-      const v = ratings[`${sol}|${c}`] ?? 0;
-      const rn = ratingNotes[`${sol}|${c}`];
-      const noteHtml = rn ? `<div style="font-size:0.65rem;color:#666;font-style:italic;margin-top:2px;line-height:1.2">${rn}</div>` : '';
+      const v = ratings[`${sol.id}|${c.id}`] ?? 0;
+      const rn = ratingNotes[`${sol.id}|${c.id}`];
+      const noteHtml = rn ? `<div style="font-size:0.65rem;color:#666;font-style:italic;margin-top:2px;line-height:1.2">${esc(rn)}</div>` : '';
       return `<td style="text-align:center;background:${rankRatingColors[v]};color:#1a1a2e;font-size:0.8rem;vertical-align:top"><div>${v}</div>${noteHtml}</td>`;
     }).join('');
-    const note = solutionNotes[sol] ? `<div style="font-size:0.72rem;color:#888;font-style:italic;font-weight:400;margin-top:2px">${solutionNotes[sol]}</div>` : '';
-    const koReason = isKO ? `<div style="font-size:0.65rem;color:#c00;font-style:italic;margin-top:2px">${t('knockedOut')}: ${koSols[sol].join(', ')}</div>` : '';
+    const note = solutionNotes[sol.id] ? `<div style="font-size:0.72rem;color:#888;font-style:italic;font-weight:400;margin-top:2px">${esc(solutionNotes[sol.id])}</div>` : '';
+    const koReason = isKO ? `<div style="font-size:0.65rem;color:#c00;font-style:italic;margin-top:2px">${t('knockedOut')}: ${esc(koSols[sol.id].map(critName).join(', '))}</div>` : '';
     // Strike only name and score — the KO reason and notes must stay readable
     const strike = isKO ? 'text-decoration:line-through;' : '';
     const rowStyle = isKO ? ' style="opacity:.55"' : '';
-    return `<tr${rowStyle}><td style="color:${color};font-weight:600"><div style="${strike}">${sol}</div>${note}${koReason}</td><td style="${strike}">${score.toFixed(2)}</td><td><div class="bar-inline"><div class="bar-wrap"><div class="bar" style="width:${pct}%;background:${color}"></div></div><span class="bar-pct">${pct}%</span></div></td>${ratingCells}</tr>`;
+    return `<tr${rowStyle}><td style="color:${color};font-weight:600"><div style="${strike}">${esc(sol.name)}</div>${note}${koReason}</td><td style="${strike}">${score.toFixed(2)}</td><td><div class="bar-inline"><div class="bar-wrap"><div class="bar" style="width:${pct}%;background:${color}"></div></div><span class="bar-pct">${pct}%</span></div></td>${ratingCells}</tr>`;
   }).join('');
 
-  const pairListRows = pairs.map(([a, b]) => {
-    const state = pairStates[`${a}|${b}`] ?? 0;
-    let left, mid, right;
-    if (state === -1)     { left = `<strong>${a}</strong>`; mid = '›'; right = b; }
-    else if (state === 1) { left = a; mid = '‹'; right = `<strong>${b}</strong>`; }
-    else                  { left = a; mid = '='; right = b; }
+  const pairListRows = pairs.map(([idA, idB]) => {
+    const state = pairStates[`${idA}|${idB}`] ?? 0;
+    const a = esc(critName(idA)), b = esc(critName(idB));
+    let left = a, mid = '=', right = b;
+    if (state === -1)      { left = `<strong>${a}</strong>`; mid = '›'; }
+    else if (state === 1)  { right = `<strong>${b}</strong>`; mid = '‹'; }
     return `<tr><td>${left}</td><td style="text-align:center;color:#aaa;font-weight:700;padding:7px 6px">${mid}</td><td>${right}</td></tr>`;
   }).join('');
 
   function printLegend(solList) {
-    return '<div class="legend">' + solList.map((sol, i) =>
-      `<span class="legend-item"><span class="legend-dot" style="background:${SOL_COLORS[i % SOL_COLORS.length]}"></span>${sol}</span>`
-    ).join('') + '</div>';
+    const koNow = getKnockedOut(explorationRatings);
+    return '<div class="legend">' + solList.map((sol, i) => {
+      const failed = koNow[sol.id];
+      const name = failed ? `<span style="text-decoration:line-through;opacity:.6">${esc(sol.name)}</span> <span style="color:#c00;font-size:.75rem">⊗ ${esc(failed.map(critName).join(', '))}</span>` : esc(sol.name);
+      return `<span class="legend-item"><span class="legend-dot" style="background:${SOL_COLORS[i % SOL_COLORS.length]}"></span>${name}</span>`;
+    }).join('') + '</div>';
   }
 
+  const koExp = getKnockedOut(explorationRatings);
   let sensHtml = '';
   if (proMode && sols.length >= 2) {
     sensHtml += printLegend(sols);
-    orderedCriteria.forEach(C => {
-      const segs = computeBreakevens(C, sols);
-      const curPct = ((sensWeights[C] ?? 0) * 100).toFixed(2);
-      sensHtml += `<div class="be-row"><span class="be-label" title="${C}">${C}</span><div class="be-track-wrap"><div class="be-track">`;
+    orderedCriteria.forEach(c => {
+      const segs = computeBreakevens(c.id, sols);
+      const curPct = ((sensWeights[c.id] ?? 0) * 100).toFixed(2);
+      sensHtml += `<div class="be-row"><span class="be-label" title="${esc(c.name)}">${esc(c.name)}</span><div class="be-track-wrap"><div class="be-track">`;
       segs.forEach(seg => {
         const w = ((seg.to - seg.from) * 100).toFixed(3);
-        sensHtml += `<div class="be-segment" style="width:${w}%;${segmentBg(seg.sol, sols)}"></div>`;
+        sensHtml += `<div class="be-segment" style="width:${w}%;${segmentBg(seg.sol, sols, koExp)}"></div>`;
       });
       sensHtml += `</div>`;
       sensHtml += `<div class="be-current" style="left:${curPct}%"></div>`;
@@ -96,14 +100,14 @@ function generatePrintView(tradeName = '', exporter = '') {
     ratingHtml += printLegend(sols);
     sols.forEach((sol, si) => {
       const solColor = SOL_COLORS[si % SOL_COLORS.length];
-      ratingHtml += `<div class="ri-sol-header" style="color:${solColor}">${sol}</div>`;
-      orderedCriteria.forEach(C => {
-        const segs = computeRatingBreakevens(sol, C, sols, sensWeights);
-        const cur = ((explorationRatings[`${sol}|${C}`] ?? 0) / 4 * 100).toFixed(2);
-        ratingHtml += `<div class="be-row"><span class="be-label" title="${C}">${C}</span><div class="be-track-wrap"><div class="be-track">`;
+      ratingHtml += `<div class="ri-sol-header" style="color:${solColor}">${esc(sol.name)}</div>`;
+      orderedCriteria.forEach(c => {
+        const segs = computeRatingBreakevens(sol, c.id, sols, sensWeights);
+        const cur = ((explorationRatings[`${sol.id}|${c.id}`] ?? 0) / 4 * 100).toFixed(2);
+        ratingHtml += `<div class="be-row"><span class="be-label" title="${esc(c.name)}">${esc(c.name)}</span><div class="be-track-wrap"><div class="be-track">`;
         segs.forEach(seg => {
           const w = ((seg.to - seg.from) * 100).toFixed(3);
-          ratingHtml += `<div class="be-segment" style="width:${w}%;${segmentBg(seg.winner, sols)}"></div>`;
+          ratingHtml += `<div class="be-segment" style="width:${w}%;${segmentBg(seg.winner, sols, koExp)}"></div>`;
         });
         ratingHtml += `</div><div class="be-current" style="left:${cur}%"></div>`;
         for (let i = 0; i <= 4; i++) ratingHtml += `<div class="be-tick" style="left:${i * 25}%">${i}</div>`;
@@ -112,13 +116,15 @@ function generatePrintView(tradeName = '', exporter = '') {
     });
   }
 
-  const koActive = orderedCriteria.filter(c => knockoutCriteria[c]);
+  const koActive = orderedCriteria.filter(c => knockoutCriteria[c.id]);
   let knockoutHtml = '';
   if (koActive.length > 0) {
     knockoutHtml = `<h2>${t('printKnockoutCriteria')}</h2><table><thead><tr><th>${t('printThCriterion')}</th><th>${t('printThSolution')}</th></tr></thead><tbody>`;
     koActive.forEach(c => {
-      const eliminated = Object.entries(koSols).filter(([, fc]) => fc.includes(c)).map(([s]) => s);
-      knockoutHtml += `<tr><td style="font-weight:600">${c}</td><td style="color:#c00">${eliminated.length ? eliminated.join(', ') : '—'}</td></tr>`;
+      const eliminated = Object.entries(koSols)
+        .filter(([, failedIds]) => failedIds.includes(c.id))
+        .map(([solId]) => (sols.find(s => s.id === solId) || {}).name || '');
+      knockoutHtml += `<tr><td style="font-weight:600">${esc(c.name)}</td><td style="color:#c00">${eliminated.length ? esc(eliminated.join(', ')) : '—'}</td></tr>`;
     });
     knockoutHtml += '</tbody></table>';
   }
@@ -127,7 +133,7 @@ function generatePrintView(tradeName = '', exporter = '') {
   const scaleLegend = `<div class="rating-scale">${[0, 1, 2, 3, 4].map(v =>
     `<span class="rs-item"><strong style="background:${rankRatingColors[v]}">${v}</strong> ${printAnchorDefaults[v]}</span>`
   ).join('')}</div>`;
-  const hasCustomAnchors = criteria.some(c => [0, 1, 2, 3, 4].some(v => criteriaAnchors[`${c}|${v}`]));
+  const hasCustomAnchors = criteria.some(c => [0, 1, 2, 3, 4].some(v => criteriaAnchors[`${c.id}|${v}`]));
   let anchorsHtml = `<h2>${t('printScoreDefinitions')}</h2>`;
   if (hasCustomAnchors) {
     // Per-criterion definitions. Custom values are shown in dark; criteria still
@@ -136,10 +142,10 @@ function generatePrintView(tradeName = '', exporter = '') {
     for (let v = 0; v <= 4; v++) anchorsHtml += `<th style="text-align:center"><span class="rs-num" style="background:${rankRatingColors[v]}">${v}</span></th>`;
     anchorsHtml += '</tr></thead><tbody>';
     orderedCriteria.forEach(c => {
-      anchorsHtml += `<tr><td style="font-weight:600">${c}</td>`;
+      anchorsHtml += `<tr><td style="font-weight:600">${esc(c.name)}</td>`;
       for (let v = 0; v <= 4; v++) {
-        const custom = criteriaAnchors[`${c}|${v}`];
-        const label = custom ? `<span style="color:#333;font-weight:500">${custom}</span>` : `<span style="color:#bbb">${printAnchorDefaults[v]}</span>`;
+        const custom = criteriaAnchors[`${c.id}|${v}`];
+        const label = custom ? `<span style="color:#333;font-weight:500">${esc(custom)}</span>` : `<span style="color:#bbb">${printAnchorDefaults[v]}</span>`;
         anchorsHtml += `<td style="font-size:0.78rem;text-align:center">${label}</td>`;
       }
       anchorsHtml += '</tr>';
@@ -189,8 +195,8 @@ th{font-weight:600;color:#aaa;font-size:0.73rem;text-transform:uppercase;letter-
 </head>
 <body>
 <div style="display:flex;justify-content:space-between;align-items:baseline;border-bottom:2px solid #1a1a2e;padding-bottom:10px;margin-bottom:6px">
-  <div><h1>${tradeName ? `${tradeName} <span style="font-size:.8rem;font-weight:400;color:#888">· DecisionLab v0.4</span>` : 'DecisionLab <span style="font-size:.8rem;font-weight:400;color:#888">v0.4</span>'}</h1></div>
-  <div style="text-align:right;font-size:0.75rem;color:#888">${exporter ? `<div><strong>${t('exportedBy')}:</strong> ${exporter}</div>` : ''}<div>${t('printGenerated')(date)}</div></div>
+  <div><h1>${tradeName ? `${esc(tradeName)} <span style="font-size:.8rem;font-weight:400;color:#888">· DecisionLab v0.5</span>` : 'DecisionLab <span style="font-size:.8rem;font-weight:400;color:#888">v0.5</span>'}</h1></div>
+  <div style="text-align:right;font-size:0.75rem;color:#888">${exporter ? `<div><strong>${t('exportedBy')}:</strong> ${esc(exporter)}</div>` : ''}<div>${t('printGenerated')(date)}</div></div>
 </div>
 ${pairs.length ? `<h2>${t('printCriteriaComparisons')}</h2><table><tbody>${pairListRows}</tbody></table>` : ''}
 <h2>${t('printCriteriaWeights')}</h2>
@@ -199,6 +205,7 @@ ${customWeights ? `<h2>${t('printWeightAdjustments')}</h2><table><thead><tr><th>
 ${knockoutHtml}${anchorsHtml}
 <h2>${t('printSolutionRanking')}</h2>
 <table><thead><tr><th>${t('printThSolution')}</th><th>${t('printThScore')}</th><th></th>${solRankThds}</tr></thead><tbody>${solRows}</tbody></table>
+${(() => { const r = computeRobustness(); if (!r) return ''; const txt = r.stable ? t('robustnessStable')(esc(r.winner.name)) : t('robustnessFlip')(esc(r.challenger), esc(r.crit.name), Math.round(r.cur * 100), Math.round(r.bp * 100)); return `<p style="font-size:0.78rem;color:#777;margin:6px 0 0">${txt}</p>`; })()}
 ${proMode && sols.length >= 2 ? `<h2>${t('criterionImpact')}</h2>${sensHtml}<h2>${t('ratingImpact')}</h2>${ratingHtml}` : ''}
 </body>
 </html>`;
@@ -219,9 +226,7 @@ document.getElementById('exportHtmlBtn').onclick = () => {
   const exporter = bearbeiter || t('promptAnonymous');
   const exportedAt = new Date().toLocaleString(lang === 'de' ? 'de-DE' : 'en-GB', { dateStyle: 'medium', timeStyle: 'short' });
 
-  const state = JSON.stringify({
-    version: 1, decisionName, bearbeiter, criteria: getCriteria(), pairStates, customWeights, customWeightReasons, proMode, lang, solutions: getSolutions(), ratings, ratingNotes, criteriaAnchors, knockoutCriteria, solutionNotes, scenarios, sensWeights, explorationRatings,
-  });
+  const state = JSON.stringify(buildState());
 
   // Use lastIndexOf so we always find the actual auto-load block at the end of the file,
   // not an earlier occurrence of the sentinel inside the replacement template string.
@@ -237,22 +242,23 @@ document.getElementById('exportHtmlBtn').onclick = () => {
     '[data-readonly] .pair-buttons,[data-readonly] #solutionList,[data-readonly] #addSolutionBtn,' +
     '[data-readonly] #proToggle,[data-readonly] .app-brand,[data-readonly] #helpBtn,' +
     '[data-readonly] #printBtn,[data-readonly] #newBtn,[data-readonly] #exportHtmlBtn,' +
+    '[data-readonly] #undoBtn,[data-readonly] #redoBtn,[data-readonly] #exportCsvBtn,' +
     '[data-readonly] #exportBtn,[data-readonly] label.btn-toolbar{display:none}\n' +
     '[data-readonly] .toolbar{justify-content:flex-end;margin-bottom:0}\n' +
     '[data-readonly] .rating-btn{pointer-events:none}\n' +
     '[data-readonly] .project-header{display:none}\n' +
     '[data-readonly] .scenario-save-row{display:none}\n' +
     '[data-readonly] #resetFineBtn,[data-readonly] .sc-del,[data-readonly] .knockout-toggle{display:none}\n' +
-    '[data-readonly] .fine-tune-input,[data-readonly] .fine-tune-reason,[data-readonly] .anchor-input,[data-readonly] .rating-note{pointer-events:none;opacity:.5}\n' +
+    '[data-readonly] .fine-tune-input,[data-readonly] .fine-tune-reason,[data-readonly] .fine-tune-bar,[data-readonly] .anchor-input,[data-readonly] .rating-note{pointer-events:none;opacity:.5}\n' +
     '.export-info{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px;padding:14px 0 18px;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:24px}\n' +
     '.export-info-title{font-size:1.05rem;font-weight:700;color:#fff;letter-spacing:-.01em}\n' +
     '.export-info-title span{font-size:0.72rem;font-weight:400;color:rgba(255,255,255,.4);background:rgba(255,255,255,.08);padding:2px 8px;border-radius:20px;margin-left:8px;vertical-align:middle}\n' +
     '.export-info-meta{font-size:0.72rem;color:rgba(255,255,255,.4);display:flex;gap:16px}\n' +
     '.export-info-meta strong{color:rgba(255,255,255,.6)}\n';
 
-  const tradeLabel = tradeName ? `<span style="color:#fff;font-size:.95rem;font-weight:600">${tradeName}</span> · ` : '';
-  const infoBanner = `<div class="export-info"><div class="export-info-title">${tradeLabel}DecisionLab<span>v0.4</span></div><div class="export-info-meta"><span><strong>${t('exportedBy')}:</strong> ${exporter}</span><span><strong>${t('exportedDate')}:</strong> ${exportedAt}</span></div></div>\n`;
-  const pageTitle = tradeName ? `${tradeName} – DecisionLab` : 'DecisionLab';
+  const tradeLabel = tradeName ? `<span style="color:#fff;font-size:.95rem;font-weight:600">${esc(tradeName)}</span> · ` : '';
+  const infoBanner = `<div class="export-info"><div class="export-info-title">${tradeLabel}DecisionLab<span>v0.5</span></div><div class="export-info-meta"><span><strong>${t('exportedBy')}:</strong> ${esc(exporter)}</span><span><strong>${t('exportedDate')}:</strong> ${exportedAt}</span></div></div>\n`;
+  const pageTitle = tradeName ? `${esc(tradeName)} – DecisionLab` : 'DecisionLab';
 
   const out = '<!DOCTYPE html>\n<html data-readonly lang="' + lang + '">\n<head>\n<meta charset="UTF-8">\n' +
     '<meta name="viewport" content="width=device-width,initial-scale=1">\n<title>' + pageTitle + '</title>\n' +
@@ -270,10 +276,48 @@ document.getElementById('exportHtmlBtn').onclick = () => {
 
 // ── JSON Save / Load ──────────────────────────────────────────
 document.getElementById('exportBtn').onclick = () => {
-  const data = JSON.stringify({ version: 1, decisionName, bearbeiter, criteria: getCriteria(), pairStates, customWeights, customWeightReasons, proMode, lang, solutions: getSolutions(), ratings, ratingNotes, criteriaAnchors, knockoutCriteria, solutionNotes, scenarios, sensWeights, explorationRatings }, null, 2);
+  const data = JSON.stringify(buildState(), null, 2);
   const a = Object.assign(document.createElement('a'), {
     href: URL.createObjectURL(new Blob([data], { type: 'application/json' })),
     download: (decisionName ? decisionName.replace(/[^a-z0-9äöüß\-_ ]/gi, '').trim() + ' – ' : '') + 'DecisionLab.json',
+  });
+  a.click();
+  URL.revokeObjectURL(a.href);
+};
+
+// ── CSV Export ────────────────────────────────────────────────
+// Decision matrix for spreadsheets: criteria rows (weight + rating per
+// solution), then score and rank. German locale gets ';' and decimal commas.
+document.getElementById('exportCsvBtn').onclick = () => {
+  const sols = getSolutions();
+  const ordered = criteriaByWeight();
+  const weights = computeWeights();
+  const sep = lang === 'de' ? ';' : ',';
+  const num = n => lang === 'de' ? n.toFixed(2).replace('.', ',') : n.toFixed(2);
+  const q = v => {
+    v = String(v);
+    return (v.includes(sep) || v.includes('"') || v.includes('\n')) ? '"' + v.replace(/"/g, '""') + '"' : v;
+  };
+
+  const rows = [];
+  rows.push([t('thCriterion'), t('thWeight'), ...sols.map(s => s.name)]);
+  ordered.forEach(c => {
+    rows.push([c.name, num((weights[c.id] ?? 0) * 100) + '%', ...sols.map(s => ratings[`${s.id}|${c.id}`] ?? 0)]);
+  });
+  const ranked = scoreSolutions(weights);
+  const ko = getKnockedOut();
+  const alive = ranked.filter(r => !ko[r.sol.id]);
+  rows.push([]);
+  rows.push([t('thScore'), '', ...sols.map(s => num(ranked.find(r => r.sol.id === s.id).score))]);
+  rows.push([t('csvRank'), '', ...sols.map(s => {
+    const i = alive.findIndex(r => r.sol.id === s.id);
+    return i >= 0 ? '#' + (i + 1) : `${t('knockedOut')}: ${ko[s.id].map(critName).join(' + ')}`;
+  })]);
+
+  const csv = '\ufeff' + rows.map(r => r.map(q).join(sep)).join('\n');
+  const a = Object.assign(document.createElement('a'), {
+    href: URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' })),
+    download: (decisionName ? decisionName.replace(/[^a-z0-9äöüß\-_ ]/gi, '').trim() + ' – ' : '') + 'DecisionLab.csv',
   });
   a.click();
   URL.revokeObjectURL(a.href);
@@ -284,7 +328,9 @@ document.getElementById('importInput').onchange = e => {
   if (!file) return;
   const reader = new FileReader();
   reader.onload = ev => {
-    try { applyState(JSON.parse(ev.target.result)); }
+    try {
+      if (!applyState(JSON.parse(ev.target.result))) alert(t('alertInvalidFile'));
+    }
     catch { alert(t('alertInvalidFile')); }
   };
   reader.readAsText(file);

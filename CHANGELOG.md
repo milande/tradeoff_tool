@@ -1,5 +1,62 @@
 # DecisionLab — Changelog
 
+## v0.5 (2026-07-04)
+
+### Fine-tune Weights UX
+- The weight bars are now draggable sliders — grab a bar to set the weight directly; the number field stays for precise values
+- Manually set values are **pinned**: they keep their weight when you adjust other criteria. Changes are absorbed by the not-yet-edited criteria first; only when everything is pinned do the other pinned values scale (second order)
+- Pinned numbers show bright with an accent border; auto-adjusted numbers stay dimmed
+- While dragging, all rows update in place without re-sorting; the list re-orders by importance only when you release
+- One undo step per drag; ↺ Reset to pairwise clears all pins
+
+### Undo / Redo
+- ↶ / ↷ toolbar buttons plus Ctrl/Cmd+Z and Ctrl/Cmd+Shift+Z (or Ctrl+Y)
+- Full-state snapshots on every change, up to 100 steps
+- Rapid changes collapse into one step only when they touch the same field/cell (typing a name, re-clicking the same rating) — distinct actions always get their own step
+- Sensitivity exploration is covered too: weight/rating drags (one step per drag), reset buttons, and scenario loads
+- Native text-field undo is preserved while typing in an input
+- Undo returns you to the tab you were on
+
+### CSV Export
+- New ↓ CSV toolbar button downloads the decision matrix for spreadsheets: criteria with weights and per-solution ratings, plus score and rank rows
+- Knocked-out solutions are marked with the failing criteria instead of a rank
+- German UI exports with semicolon separator and decimal commas (Excel-DE friendly); UTF-8 BOM included
+
+### Sensitivity & Must-have
+- Solutions currently failing a must-have criterion (per exploration ratings) are marked in the sensitivity legends: struck-through name + ⊗ with the failing criteria as tooltip
+- Their bar segments render as a diagonal hatch of their colour instead of solid — "would win here, but is currently disqualified"; legend dots hatch to match, and KO members of a tie stripe are dimmed
+- The breakeven bars still include them — they show the theoretical possibility; the same marking appears in the Rating Impact section headers and the print legends
+
+### Consistency Check
+- Circular preferences (A › B › C › A) are detected automatically across all answered pairs
+- An amber warning below the pairwise section lists the circle(s), so unreliable weights are visible at a glance
+
+### Robustness Verdict
+- A verdict line below the Solutions ranking states how stable the result is, computed from the committed weights and ratings
+- Robust: "no single criterion weight change would take the lead from X" (green)
+- Otherwise it names the closest flip: which challenger takes the lead if which criterion weight moves from X% to Y% (amber when within 5 points)
+- Also included in the print view under the Solution Ranking
+
+### Stable IDs (breaking change for saved files)
+- Criteria and solutions now carry internal stable IDs; all data (ratings, pairwise answers, weights, notes, anchors, must-have flags, sensitivity exploration, scenarios) is keyed by ID instead of by name
+- **Renaming a criterion or solution keeps everything attached** — it is now purely a label change; all views update live
+- Names may contain any character (previously `|` would have corrupted internal keys)
+- Save format bumped to version 2 — **JSON files and browser sessions from v0.4 and earlier cannot be loaded**; loading an old file shows the invalid-file message
+
+### Hardened Input Handling
+- All user-entered text (criteria, solutions, notes, reasons, anchors, scenario names, decision name, author) is HTML-escaped wherever it is rendered — in the app, the print view, and the HTML export
+- Names containing markup or quotes can no longer break the layout or inject content into shared exports
+
+### UX / Fixes
+- The solution description field has its own placeholder ("Description of solution…") — switching the language no longer overwrote it with "Solution"
+
+### Test Suite
+- The headless test suite now lives in the repo (`tests/run.js`, run with `npm test`)
+- ~80 checks cover the full lifecycle: pairwise weights, fine-tune pinning, ratings, knockout, sensitivity math and self-healing, scenarios, undo/redo, persistence round-trip, JSON/HTML/CSV export, print view, escaping, stable-ID renames, and EN/DE parity
+- Plus static sanity checks on the built `dist/index.html`
+
+---
+
 ## v0.4 (2026-07-02)
 
 ### Multi-file Source + Build Step

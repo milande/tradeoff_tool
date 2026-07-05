@@ -4,21 +4,24 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>DecisionLab</title>
-<style>:root{--accent:#18c8ff;--accent-hover:#4dd9ff;--accent-text:#00131b;--glow:rgba(0,255,255,.08)}#tab-solutions{--accent:#f472b6;--accent-hover:#f9a8d4;--accent-text:#1a0020;--glow:rgba(244,114,182,.08)}#tab-sensitivity{--accent:#4ade80;--accent-hover:#86efac;--accent-text:#002010;--glow:rgba(74,222,128,.08)}body{margin:0;font-family:Inter,Arial,sans-serif;background:#0d1117;color:#fff;padding:20px}.container{max-width:900px;margin:0 auto}.help-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px}.help-overlay.hidden{display:none}.help-modal{background:#131c27;border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:36px;max-width:560px;width:100%;position:relative;max-height:90vh;overflow-y:auto}.help-close{position:absolute;top:16px;right:16px;background:transparent;border:none;color:#aac;font-size:1.1rem;cursor:pointer;padding:4px 8px;border-radius:6px}.help-close:hover{background:rgba(255,255,255,.08);color:#fff}.help-title{margin:0 0 8px;font-size:1.3rem}.help-intro{margin:0 0 24px;opacity:.6;font-size:0.9rem;line-height:1.6}.help-section{border-radius:12px;padding:16px 20px;margin-bottom:12px}.help-section h3{margin:0 0 8px;font-size:0.95rem}.help-section p{margin:0;font-size:0.88rem;line-height:1.65;opacity:.8}.help-criteria{background:rgba(24,200,255,.08);border:1px solid rgba(24,200,255,.18)}.help-criteria h3{color:#18c8ff}.help-solutions{background:rgba(244,114,182,.08);border:1px solid rgba(244,114,182,.18)}.help-solutions h3{color:#f472b6}.help-data{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1)}.help-data h3{color:#aac}.help-pro{background:rgba(255,215,0,.06);border:1px solid rgba(255,215,0,.2)}.help-pro h3{color:#ffd700}.toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.project-header{display:flex;gap:12px;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,.07)}.project-input{background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,.15);color:#fff;font-family:inherit;padding:5px 2px;outline:none;transition:border-color .15s}.project-input:focus{border-bottom-color:rgba(255,255,255,.45)}.project-input::placeholder{color:rgba(255,255,255,.2)}.project-input-name{flex:1;font-size:1.05rem;font-weight:600}.project-input-author{flex:0 0 180px;font-size:0.85rem}.toolbar-actions{display:flex;gap:8px;align-items:center}.app-brand{display:flex;align-items:center;gap:8px}.app-name{font-weight:700;font-size:1rem;color:#fff;letter-spacing:-.02em}.app-version{font-size:0.72rem;color:rgba(255,255,255,.4);background:rgba(255,255,255,.08);padding:2px 8px;border-radius:20px}.app-credit{text-align:center;font-size:0.75rem;color:rgba(255,255,255,.2);margin:8px 0 0}.app-credit-link{color:rgba(255,255,255,.2);text-decoration:none;border-bottom:1px solid rgba(255,255,255,.1);transition:color .15s,border-color .15s}.app-credit-link:hover{color:rgba(255,255,255,.5);border-bottom-color:rgba(255,255,255,.3)}.btn-toolbar{padding:7px 16px;border:1px solid rgba(255,255,255,.12);border-radius:8px;background:transparent;color:#aac;cursor:pointer;font-size:0.82rem;transition:background .15s;font-family:inherit}.btn-toolbar:hover{background:rgba(255,255,255,.07);color:#ddf}.btn-toolbar input[type=file]{display:none}.lang-toggle{font-weight:700;letter-spacing:.04em}.tabs{display:flex;gap:8px;margin-bottom:24px;align-items:center}.pro-toggle{margin-left:auto;padding:6px 14px;border-radius:20px;border:1px solid rgba(255,215,0,.25);background:rgba(255,215,0,.06);color:rgba(255,215,0,.45);cursor:pointer;font-size:0.78rem;font-weight:600;letter-spacing:.04em;transition:all .2s;font-family:inherit}.pro-toggle:hover{border-color:rgba(255,215,0,.45);color:rgba(255,215,0,.7);background:rgba(255,215,0,.1)}.pro-toggle.active{border-color:rgba(255,215,0,.7);background:rgba(255,215,0,.14);color:#ffd700;box-shadow:0 0 10px rgba(255,215,0,.15)}.tab-btn{padding:10px 28px;border:none;border-radius:10px;cursor:pointer;font-size:1rem;font-weight:600;transition:background .15s,color .15s,opacity .15s}.tab-btn[data-tab="criteria"]{background:rgba(24,200,255,.1);color:rgba(24,200,255,.7)}.tab-btn[data-tab="solutions"]{background:rgba(244,114,182,.1);color:rgba(244,114,182,.7)}.tab-btn[data-tab="sensitivity"]{background:rgba(74,222,128,.1);color:rgba(74,222,128,.7)}.tab-btn:not(.disabled):hover{filter:brightness(1.25)}.tab-btn[data-tab="criteria"].active{background:#18c8ff;color:#00131b}.tab-btn[data-tab="solutions"].active{background:#f472b6;color:#1a0020}.tab-btn[data-tab="sensitivity"].active{background:#4ade80;color:#002010}.tab-btn.disabled{opacity:.25;cursor:not-allowed}.tab-content{display:none}.tab-content.active{display:block}.section{background:rgba(255,255,255,.06);backdrop-filter:blur(16px);padding:30px;border-radius:18px;box-shadow:0 0 40px var(--glow);margin-bottom:24px}.section h1{margin-top:0;margin-bottom:30px}.section h2{margin:0 0 20px 0;font-size:1.1rem;opacity:.9}.section-content{padding:10px}.hidden{display:none}.hint{opacity:.5;font-size:0.85rem;margin:0 0 16px}input[type=text]{width:100%;padding:10px;margin:8px 0;border-radius:10px;border:none;background:#1a2332;color:white;box-sizing:border-box}.criteria-item{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}.criteria-item input{margin:0;flex:1;min-width:0}.sol-note{width:100%;font-size:0.78rem;color:rgba(255,255,255,.45);background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,.08);padding:3px 2px;font-family:inherit;outline:none;transition:border-color .15s}.sol-note:focus{border-bottom-color:rgba(255,255,255,.3);color:rgba(255,255,255,.7)}.sol-note::placeholder{color:rgba(255,255,255,.18)}.rank-note{font-size:0.72rem;font-weight:400;color:rgba(255,255,255,.35);margin-top:2px;font-style:italic}.btn-remove{padding:10px 12px;background:#ff4444;color:white;border:none;border-radius:8px;cursor:pointer;font-weight:bold;flex-shrink:0}.btn-remove:hover{background:#ff6666}.btn-add{padding:12px 22px;border:none;border-radius:12px;background:var(--accent);color:var(--accent-text);font-weight:bold;cursor:pointer;margin-top:10px;transition:background .15s}.btn-add:hover{background:var(--accent-hover)}.btn-secondary{padding:10px 20px;border:1px solid rgba(255,255,255,.15);border-radius:10px;background:transparent;color:#aac;cursor:pointer;font-size:0.9rem;margin-top:0;margin-bottom:20px;transition:background .15s}.btn-secondary:hover{background:rgba(255,255,255,.07)}.pair-row{margin-bottom:14px;padding:16px;background:rgba(255,255,255,.04);border-radius:12px}.pair-label{font-size:0.95rem;margin-bottom:12px;line-height:1.5}.pair-label strong{color:var(--accent)}.pair-buttons{display:flex;gap:8px}.pair-btn{flex:1;padding:10px 8px;border:none;border-radius:8px;background:#1a2332;color:#9dd;cursor:pointer;font-size:0.85rem;transition:background .15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pair-btn:hover{background:#263041}.pair-btn.active{background:var(--accent);color:var(--accent-text);font-weight:bold}.weight-cell{display:flex;flex-direction:column;gap:4px}.weight-bar-wrap{height:6px;background:#1a2332;border-radius:4px;overflow:hidden;min-width:80px}.weight-bar{height:100%;background:var(--accent);border-radius:4px;transition:width .3s}.solution-card{background:rgba(255,255,255,.04);border-radius:12px;padding:16px;margin-bottom:14px}.criterion-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.solution-name{font-weight:bold;font-size:1.05rem;color:var(--accent)}.criterion-weight{font-size:0.8rem;opacity:.7;background:#1a2332;padding:3px 10px;border-radius:20px}.criterion-row{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:10px}.knockout-toggle{display:none;padding:3px 10px;border-radius:20px;border:1px solid rgba(255,165,0,.2);background:transparent;color:rgba(255,165,0,.35);cursor:pointer;font-size:0.68rem;font-weight:600;font-family:inherit;transition:all .15s;flex-shrink:0}.knockout-toggle:hover{border-color:rgba(255,165,0,.5);color:rgba(255,165,0,.65)}.knockout-toggle.active{border-color:rgba(255,165,0,.65);background:rgba(255,165,0,.1);color:#ffa500}.pro-on .knockout-toggle{display:inline-flex}.solution-card.knockout-active{border-left:3px solid rgba(255,165,0,.5);padding-left:13px}.rank-ko{opacity:.35}.rank-ko-name{text-decoration:line-through}.rank-ko-reason{font-size:0.7rem;font-weight:400;font-style:italic;color:rgba(255,100,0,.6);margin-top:2px;display:block}.anchor-strip{display:none;gap:6px;margin-bottom:12px;padding:8px 10px;background:rgba(255,255,255,.03);border-radius:8px;flex-wrap:wrap}.pro-on .anchor-strip{display:flex}.anchor-item{display:flex;align-items:center;gap:4px;flex:1;min-width:0}.anchor-label{font-size:0.7rem;font-weight:700;color:rgba(255,255,255,.35);flex-shrink:0;width:12px;text-align:center}.anchor-input{flex:1;min-width:0;font-size:0.72rem;color:rgba(255,255,255,.5);background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,.1);padding:2px 2px;font-family:inherit;outline:none;transition:border-color .15s}.anchor-input:focus{border-bottom-color:rgba(255,255,255,.35);color:rgba(255,255,255,.75)}.anchor-input::placeholder{color:rgba(255,255,255,.13)}.rating-note{display:none;width:100%;font-size:0.72rem;color:rgba(255,255,255,.4);background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,.07);padding:2px 2px 2px 0;font-family:inherit;outline:none;transition:border-color .15s;margin-top:-4px;margin-bottom:4px}.pro-on .rating-note{display:block}.rating-note:focus{border-bottom-color:rgba(255,255,255,.3);color:rgba(255,255,255,.65)}.rating-note::placeholder{color:rgba(255,255,255,.14)}.rating-note.has-note{border-bottom-color:rgba(255,255,255,.15);color:rgba(255,255,255,.45)}.criterion-name{flex:1;font-size:0.9rem;opacity:.75;min-width:80px}.rating-buttons{display:flex;gap:4px;flex-shrink:0}.rating-btn{width:36px;height:36px;border:none;border-radius:8px;background:#1a2332;color:#9dd;cursor:pointer;font-size:0.9rem;font-weight:600;transition:background .15s}.rating-btn:hover{background:#263041}.rating-btn.active{background:var(--accent);color:var(--accent-text)}.ri-sol-header{font-weight:700;font-size:0.9rem;margin:20px 0 10px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.08)}.ri-sol-header:first-child{margin-top:0}.rs-ticks{position:absolute;top:34px;left:0;width:100%}.rs-tick{position:absolute;transform:translateX(-50%);font-size:0.65rem;color:rgba(255,255,255,.4)}#ratingImpactContainer .be-track-wrap{cursor:ew-resize}.be-legend{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:20px}.be-legend-item{display:flex;align-items:center;gap:7px;font-size:0.85rem;opacity:.85}.be-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}.be-row{display:flex;align-items:flex-start;gap:14px;margin-bottom:28px}#sensImpact .be-row{margin-bottom:10px}.be-label{width:130px;font-size:0.9rem;flex-shrink:0;padding-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.be-track-wrap{flex:1;position:relative;cursor:ew-resize;user-select:none}.be-track{height:28px;display:flex;border-radius:6px;overflow:hidden}.be-segment{height:100%;opacity:.82}.be-current{position:absolute;top:0;height:28px;width:3px;background:#fff;border-radius:2px;transform:translateX(-50%);box-shadow:0 0 8px rgba(255,255,255,.55);pointer-events:none}.be-current::before{content:'';position:absolute;top:-5px;left:50%;transform:translateX(-50%);width:9px;height:9px;border-radius:50%;background:#fff;box-shadow:0 0 6px rgba(255,255,255,.7)}.be-bp-row{position:relative;height:20px;margin-top:4px}.be-bp-label{position:absolute;transform:translateX(-50%);font-size:0.72rem;opacity:.55;white-space:nowrap}table{width:100%;border-collapse:collapse;margin-top:8px}th,td{padding:10px;border-bottom:1px solid #2a3344;text-align:left}th{font-weight:bold;opacity:.8}#compareSection,#resultsSection,#fineTuneSection{display:none}#compareSection.active,#resultsSection.active,#fineTuneSection.active{display:block}.fine-tune-row{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05)}.fine-tune-row:last-child{border-bottom:none}.fine-tune-name{flex:1;font-size:0.9rem;color:#cce}.fine-tune-input{width:68px;padding:5px 8px;background:#1a2332;border:1px solid rgba(255,255,255,.12);border-radius:6px;color:#fff;font-size:0.9rem;text-align:right;appearance:textfield;-moz-appearance:textfield}.fine-tune-input::-webkit-inner-spin-button,.fine-tune-input::-webkit-outer-spin-button{display:none}.fine-tune-input:focus{outline:none;border-color:var(--accent)}.fine-tune-pct{font-size:0.8rem;color:rgba(255,255,255,.3);width:10px}.fine-tune-bar{flex:1;height:5px;background:#1a2332;border-radius:3px;overflow:hidden;min-width:40px}.fine-tune-bar-fill{height:100%;background:var(--accent);border-radius:3px;transition:width .25s}.fine-tune-reason{flex:2;padding:4px 6px;background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,.08);color:#aac;font-size:0.8rem;font-style:italic;outline:none;font-family:inherit;min-width:60px}.fine-tune-reason::placeholder{color:rgba(255,255,255,.18)}.fine-tune-reason:focus{border-bottom-color:rgba(255,255,255,.3);color:#ddf}.fine-tune-actions{margin-top:16px;display:flex;align-items:center;gap:12px}.optional-label{font-size:0.73rem;color:rgba(255,255,255,.28);font-weight:400;margin-left:6px}.custom-badge{font-size:0.72rem;background:rgba(24,200,255,.12);color:var(--accent);border:1px solid rgba(24,200,255,.25);border-radius:20px;padding:2px 8px;margin-left:8px;display:none}.custom-badge.visible{display:inline}.scenario-save-row{display:flex;gap:.5rem;margin:1rem 0 .5rem}.scenario-save-row input{flex:1;min-width:0}.sc-wrap{overflow-x:auto;margin-top:.5rem}.sc-table{width:100%;border-collapse:collapse;font-size:.87rem;white-space:nowrap}.sc-table thead th{padding:.4rem .8rem;text-align:right;color:rgba(255,255,255,.38);font-weight:500;font-size:.78rem;border-bottom:1px solid rgba(255,255,255,.08)}.sc-table thead th:first-child{text-align:left;color:transparent;min-width:8rem;width:8rem}.sc-del,.sc-load-btn{background:none;border:none;cursor:pointer;padding:0 0 0 .35rem;font-size:.72rem;vertical-align:middle;transition:color .15s;line-height:1}.sc-del{color:rgba(255,255,255,.22)}.sc-del:hover{color:rgba(255,255,255,.7)}.sc-load-btn{color:rgba(255,255,255,.3)}.sc-load-btn:hover{color:rgba(255,255,255,.85)}.sc-w-row td,.sc-s-row td{padding:.28rem .8rem;border-bottom:1px solid rgba(255,255,255,.04)}.sc-label{color:rgba(255,255,255,.5);font-size:.82rem;text-align:left}.sc-sol-name{font-weight:500}.sc-w{text-align:right;color:rgba(255,255,255,.42);font-variant-numeric:tabular-nums}.sc-sep td{padding:0;height:1px;background:rgba(255,255,255,.1)}.sc-cell{text-align:right;font-variant-numeric:tabular-nums;padding:.3rem .8rem;border-left:2px solid transparent}.sc-rank{font-weight:700}.sc-score{font-size:.77rem;color:rgba(255,255,255,.38);margin-left:.25rem}.sc-winner .sc-score{color:rgba(255,255,255,.6)}.sc-ko-cell{color:rgba(255,255,255,.18);text-align:right;padding:.3rem .8rem}.sc-ko .sc-label{opacity:.35}.sc-ko .sc-sol-name{text-decoration:line-through}.sc-cr-row td{padding:.12rem .8rem;border-bottom:none}.sc-cr-label{color:rgba(255,255,255,.3);font-size:.78rem;padding-left:1.2rem !important;white-space:nowrap}.sc-cr-badge{display:inline-block;background:rgba(255,255,255,.07);border-radius:3px;padding:0 .3rem;margin-left:.35rem;font-size:.72rem;color:rgba(255,255,255,.4);font-variant-numeric:tabular-nums}.sc-badge-hi{background:rgba(251,191,36,.18);color:#fbbf24}.sc-contrib{font-size:.77rem;color:rgba(255,255,255,.3);margin-left:.3rem;font-variant-numeric:tabular-nums}.sc-w-hi{color:#fbbf24;font-weight:600}.sc-cell-hi{background:rgba(251,191,36,.07)}.sc-cr-cell{text-align:right;color:rgba(255,255,255,.28);font-size:.78rem;font-variant-numeric:tabular-nums;padding:.12rem .8rem}.sc-s-row td{border-top:1px solid rgba(255,255,255,.07)}@media(max-width:600px){.pair-btn{font-size:0.75rem;padding:8px 4px}.rating-btn{width:30px;height:30px;font-size:0.8rem}.criterion-name{font-size:0.8rem}.be-label{width:80px}}</style>
+<style>:root{--accent:#18c8ff;--accent-hover:#4dd9ff;--accent-text:#00131b;--glow:rgba(0,255,255,.08)}#tab-solutions{--accent:#f472b6;--accent-hover:#f9a8d4;--accent-text:#1a0020;--glow:rgba(244,114,182,.08)}#tab-sensitivity{--accent:#4ade80;--accent-hover:#86efac;--accent-text:#002010;--glow:rgba(74,222,128,.08)}body{margin:0;font-family:Inter,Arial,sans-serif;background:#0d1117;color:#fff;padding:20px}.container{max-width:900px;margin:0 auto}.help-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px}.help-overlay.hidden{display:none}.help-modal{background:#131c27;border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:36px;max-width:560px;width:100%;position:relative;max-height:90vh;overflow-y:auto}.help-close{position:absolute;top:16px;right:16px;background:transparent;border:none;color:#aac;font-size:1.1rem;cursor:pointer;padding:4px 8px;border-radius:6px}.help-close:hover{background:rgba(255,255,255,.08);color:#fff}.help-title{margin:0 0 8px;font-size:1.3rem}.help-intro{margin:0 0 24px;opacity:.6;font-size:0.9rem;line-height:1.6}.help-section{border-radius:12px;padding:16px 20px;margin-bottom:12px}.help-section h3{margin:0 0 8px;font-size:0.95rem}.help-section p{margin:0;font-size:0.88rem;line-height:1.65;opacity:.8}.help-criteria{background:rgba(24,200,255,.08);border:1px solid rgba(24,200,255,.18)}.help-criteria h3{color:#18c8ff}.help-solutions{background:rgba(244,114,182,.08);border:1px solid rgba(244,114,182,.18)}.help-solutions h3{color:#f472b6}.help-data{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1)}.help-data h3{color:#aac}.help-pro{background:rgba(255,215,0,.06);border:1px solid rgba(255,215,0,.2)}.help-pro h3{color:#ffd700}.toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.project-header{display:flex;gap:12px;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,.07)}.project-input{background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,.15);color:#fff;font-family:inherit;padding:5px 2px;outline:none;transition:border-color .15s}.project-input:focus{border-bottom-color:rgba(255,255,255,.45)}.project-input::placeholder{color:rgba(255,255,255,.2)}.project-input-name{flex:1;font-size:1.05rem;font-weight:600}.project-input-author{flex:0 0 180px;font-size:0.85rem}.toolbar-actions{display:flex;gap:8px;align-items:center}.app-brand{display:flex;align-items:center;gap:8px}.app-name{font-weight:700;font-size:1rem;color:#fff;letter-spacing:-.02em}.app-version{font-size:0.72rem;color:rgba(255,255,255,.4);background:rgba(255,255,255,.08);padding:2px 8px;border-radius:20px}.app-credit{text-align:center;font-size:0.75rem;color:rgba(255,255,255,.2);margin:8px 0 0}.app-credit-link{color:rgba(255,255,255,.2);text-decoration:none;border-bottom:1px solid rgba(255,255,255,.1);transition:color .15s,border-color .15s}.app-credit-link:hover{color:rgba(255,255,255,.5);border-bottom-color:rgba(255,255,255,.3)}.btn-toolbar{padding:7px 16px;border:1px solid rgba(255,255,255,.12);border-radius:8px;background:transparent;color:#aac;cursor:pointer;font-size:0.82rem;transition:background .15s;font-family:inherit}.btn-toolbar:hover{background:rgba(255,255,255,.07);color:#ddf}.btn-toolbar:disabled{opacity:.3;cursor:default;pointer-events:none}.btn-toolbar input[type=file]{display:none}.lang-toggle{font-weight:700;letter-spacing:.04em}.tabs{display:flex;gap:8px;margin-bottom:24px;align-items:center}.pro-toggle{margin-left:auto;padding:6px 14px;border-radius:20px;border:1px solid rgba(255,215,0,.25);background:rgba(255,215,0,.06);color:rgba(255,215,0,.45);cursor:pointer;font-size:0.78rem;font-weight:600;letter-spacing:.04em;transition:all .2s;font-family:inherit}.pro-toggle:hover{border-color:rgba(255,215,0,.45);color:rgba(255,215,0,.7);background:rgba(255,215,0,.1)}.pro-toggle.active{border-color:rgba(255,215,0,.7);background:rgba(255,215,0,.14);color:#ffd700;box-shadow:0 0 10px rgba(255,215,0,.15)}.tab-btn{padding:10px 28px;border:none;border-radius:10px;cursor:pointer;font-size:1rem;font-weight:600;transition:background .15s,color .15s,opacity .15s}.tab-btn[data-tab="criteria"]{background:rgba(24,200,255,.1);color:rgba(24,200,255,.7)}.tab-btn[data-tab="solutions"]{background:rgba(244,114,182,.1);color:rgba(244,114,182,.7)}.tab-btn[data-tab="sensitivity"]{background:rgba(74,222,128,.1);color:rgba(74,222,128,.7)}.tab-btn:not(.disabled):hover{filter:brightness(1.25)}.tab-btn[data-tab="criteria"].active{background:#18c8ff;color:#00131b}.tab-btn[data-tab="solutions"].active{background:#f472b6;color:#1a0020}.tab-btn[data-tab="sensitivity"].active{background:#4ade80;color:#002010}.tab-btn.disabled{opacity:.25;cursor:not-allowed}.tab-content{display:none}.tab-content.active{display:block}.section{background:rgba(255,255,255,.06);backdrop-filter:blur(16px);padding:30px;border-radius:18px;box-shadow:0 0 40px var(--glow);margin-bottom:24px}.section h1{margin-top:0;margin-bottom:30px}.section h2{margin:0 0 20px 0;font-size:1.1rem;opacity:.9}.section-content{padding:10px}.hidden{display:none}.hint{opacity:.5;font-size:0.85rem;margin:0 0 16px}input[type=text]{width:100%;padding:10px;margin:8px 0;border-radius:10px;border:none;background:#1a2332;color:white;box-sizing:border-box}.criteria-item{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}.criteria-item input{margin:0;flex:1;min-width:0}.sol-note{width:100%;font-size:0.78rem;color:rgba(255,255,255,.45);background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,.08);padding:3px 2px;font-family:inherit;outline:none;transition:border-color .15s}.sol-note:focus{border-bottom-color:rgba(255,255,255,.3);color:rgba(255,255,255,.7)}.sol-note::placeholder{color:rgba(255,255,255,.18)}.rank-note{font-size:0.72rem;font-weight:400;color:rgba(255,255,255,.35);margin-top:2px;font-style:italic}.btn-remove{padding:10px 12px;background:#ff4444;color:white;border:none;border-radius:8px;cursor:pointer;font-weight:bold;flex-shrink:0}.btn-remove:hover{background:#ff6666}.btn-add{padding:12px 22px;border:none;border-radius:12px;background:var(--accent);color:var(--accent-text);font-weight:bold;cursor:pointer;margin-top:10px;transition:background .15s}.btn-add:hover{background:var(--accent-hover)}.btn-secondary{padding:10px 20px;border:1px solid rgba(255,255,255,.15);border-radius:10px;background:transparent;color:#aac;cursor:pointer;font-size:0.9rem;margin-top:0;margin-bottom:20px;transition:background .15s}.btn-secondary:hover{background:rgba(255,255,255,.07)}.pair-row{margin-bottom:14px;padding:16px;background:rgba(255,255,255,.04);border-radius:12px}.pair-label{font-size:0.95rem;margin-bottom:12px;line-height:1.5}.pair-label strong{color:var(--accent)}.pair-buttons{display:flex;gap:8px}.pair-btn{flex:1;padding:10px 8px;border:none;border-radius:8px;background:#1a2332;color:#9dd;cursor:pointer;font-size:0.85rem;transition:background .15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pair-btn:hover{background:#263041}.pair-btn.active{background:var(--accent);color:var(--accent-text);font-weight:bold}#consistencyHint{display:none;margin-top:14px;padding:10px 14px;border-radius:8px;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.25);font-size:.83rem;color:rgba(255,255,255,.75);line-height:1.6}#consistencyHint.visible{display:block}#consistencyHint strong{color:#fbbf24}.consistency-cycle{display:inline-block;background:rgba(255,255,255,.06);border-radius:5px;padding:1px 8px;margin:2px 4px 0 0;font-size:.8rem;white-space:nowrap}.be-legend-ko{opacity:.6}.be-ko-name{text-decoration:line-through}.be-ko-mark{color:rgba(255,100,0,.85);font-size:.78rem;margin-left:3px;cursor:help;text-decoration:none;display:inline-block}.robustness{margin-top:10px;font-size:.82rem;color:rgba(255,255,255,.5);line-height:1.5}.robustness.robust{color:rgba(52,211,153,.75)}.robustness.fragile{color:#fbbf24}.robustness strong{color:inherit}.weight-cell{display:flex;flex-direction:column;gap:4px}.weight-bar-wrap{height:6px;background:#1a2332;border-radius:4px;overflow:hidden;min-width:80px}.weight-bar{height:100%;background:var(--accent);border-radius:4px;transition:width .3s}.solution-card{background:rgba(255,255,255,.04);border-radius:12px;padding:16px;margin-bottom:14px}.criterion-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.solution-name{font-weight:bold;font-size:1.05rem;color:var(--accent)}.criterion-weight{font-size:0.8rem;opacity:.7;background:#1a2332;padding:3px 10px;border-radius:20px}.criterion-row{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:10px}.knockout-toggle{display:none;padding:3px 10px;border-radius:20px;border:1px solid rgba(255,165,0,.2);background:transparent;color:rgba(255,165,0,.35);cursor:pointer;font-size:0.68rem;font-weight:600;font-family:inherit;transition:all .15s;flex-shrink:0}.knockout-toggle:hover{border-color:rgba(255,165,0,.5);color:rgba(255,165,0,.65)}.knockout-toggle.active{border-color:rgba(255,165,0,.65);background:rgba(255,165,0,.1);color:#ffa500}.pro-on .knockout-toggle{display:inline-flex}.solution-card.knockout-active{border-left:3px solid rgba(255,165,0,.5);padding-left:13px}.rank-ko{opacity:.35}.rank-ko-name{text-decoration:line-through}.rank-ko-reason{font-size:0.7rem;font-weight:400;font-style:italic;color:rgba(255,100,0,.6);margin-top:2px;display:block}.anchor-strip{display:none;gap:6px;margin-bottom:12px;padding:8px 10px;background:rgba(255,255,255,.03);border-radius:8px;flex-wrap:wrap}.pro-on .anchor-strip{display:flex}.anchor-item{display:flex;align-items:center;gap:4px;flex:1;min-width:0}.anchor-label{font-size:0.7rem;font-weight:700;color:rgba(255,255,255,.35);flex-shrink:0;width:12px;text-align:center}.anchor-input{flex:1;min-width:0;font-size:0.72rem;color:rgba(255,255,255,.5);background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,.1);padding:2px 2px;font-family:inherit;outline:none;transition:border-color .15s}.anchor-input:focus{border-bottom-color:rgba(255,255,255,.35);color:rgba(255,255,255,.75)}.anchor-input::placeholder{color:rgba(255,255,255,.13)}.rating-note{display:none;width:100%;font-size:0.72rem;color:rgba(255,255,255,.4);background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,.07);padding:2px 2px 2px 0;font-family:inherit;outline:none;transition:border-color .15s;margin-top:-4px;margin-bottom:4px}.pro-on .rating-note{display:block}.rating-note:focus{border-bottom-color:rgba(255,255,255,.3);color:rgba(255,255,255,.65)}.rating-note::placeholder{color:rgba(255,255,255,.14)}.rating-note.has-note{border-bottom-color:rgba(255,255,255,.15);color:rgba(255,255,255,.45)}.criterion-name{flex:1;font-size:0.9rem;opacity:.75;min-width:80px}.rating-buttons{display:flex;gap:4px;flex-shrink:0}.rating-btn{width:36px;height:36px;border:none;border-radius:8px;background:#1a2332;color:#9dd;cursor:pointer;font-size:0.9rem;font-weight:600;transition:background .15s}.rating-btn:hover{background:#263041}.rating-btn.active{background:var(--accent);color:var(--accent-text)}.ri-sol-header{font-weight:700;font-size:0.9rem;margin:20px 0 10px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.08)}.ri-sol-header:first-child{margin-top:0}.rs-ticks{position:absolute;top:34px;left:0;width:100%}.rs-tick{position:absolute;transform:translateX(-50%);font-size:0.65rem;color:rgba(255,255,255,.4)}#ratingImpactContainer .be-track-wrap{cursor:ew-resize}.be-legend{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:20px}.be-legend-item{display:flex;align-items:center;gap:7px;font-size:0.85rem;opacity:.85}.be-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}.be-row{display:flex;align-items:flex-start;gap:14px;margin-bottom:28px}#sensImpact .be-row{margin-bottom:10px}.be-label{width:130px;font-size:0.9rem;flex-shrink:0;padding-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.be-track-wrap{flex:1;position:relative;cursor:ew-resize;user-select:none}.be-track{height:28px;display:flex;border-radius:6px;overflow:hidden}.be-segment{height:100%;opacity:.82}.be-current{position:absolute;top:0;height:28px;width:3px;background:#fff;border-radius:2px;transform:translateX(-50%);box-shadow:0 0 8px rgba(255,255,255,.55);pointer-events:none}.be-current::before{content:'';position:absolute;top:-5px;left:50%;transform:translateX(-50%);width:9px;height:9px;border-radius:50%;background:#fff;box-shadow:0 0 6px rgba(255,255,255,.7)}.be-bp-row{position:relative;height:20px;margin-top:4px}.be-bp-label{position:absolute;transform:translateX(-50%);font-size:0.72rem;opacity:.55;white-space:nowrap}table{width:100%;border-collapse:collapse;margin-top:8px}th,td{padding:10px;border-bottom:1px solid #2a3344;text-align:left}th{font-weight:bold;opacity:.8}#compareSection,#resultsSection,#fineTuneSection{display:none}#compareSection.active,#resultsSection.active,#fineTuneSection.active{display:block}.fine-tune-row{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05)}.fine-tune-row:last-child{border-bottom:none}.fine-tune-name{flex:1;font-size:0.9rem;color:#cce}.fine-tune-input{width:68px;padding:5px 8px;background:#1a2332;border:1px solid rgba(255,255,255,.12);border-radius:6px;color:rgba(255,255,255,.35);font-size:0.9rem;text-align:right;appearance:textfield;-moz-appearance:textfield}.fine-tune-input.pinned{color:#fff;border-color:rgba(24,200,255,.35)}.fine-tune-input::-webkit-inner-spin-button,.fine-tune-input::-webkit-outer-spin-button{display:none}.fine-tune-input:focus{outline:none;border-color:var(--accent)}.fine-tune-pct{font-size:0.8rem;color:rgba(255,255,255,.3);width:10px}.fine-tune-bar{flex:1.4;height:16px;background:#1a2332;border-radius:8px;overflow:hidden;min-width:80px;cursor:ew-resize;touch-action:none}.fine-tune-bar:hover{background:#202b3d}.fine-tune-bar-fill{height:100%;background:var(--accent);border-radius:8px;pointer-events:none}.fine-tune-reason{flex:2;padding:4px 6px;background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,.08);color:#aac;font-size:0.8rem;font-style:italic;outline:none;font-family:inherit;min-width:60px}.fine-tune-reason::placeholder{color:rgba(255,255,255,.18)}.fine-tune-reason:focus{border-bottom-color:rgba(255,255,255,.3);color:#ddf}.fine-tune-actions{margin-top:16px;display:flex;align-items:center;gap:12px}.optional-label{font-size:0.73rem;color:rgba(255,255,255,.28);font-weight:400;margin-left:6px}.custom-badge{font-size:0.72rem;background:rgba(24,200,255,.12);color:var(--accent);border:1px solid rgba(24,200,255,.25);border-radius:20px;padding:2px 8px;margin-left:8px;display:none}.custom-badge.visible{display:inline}.scenario-save-row{display:flex;gap:.5rem;margin:1rem 0 .5rem}.scenario-save-row input{flex:1;min-width:0}.sc-wrap{overflow-x:auto;margin-top:.5rem}.sc-table{width:100%;border-collapse:collapse;font-size:.87rem;white-space:nowrap}.sc-table thead th{padding:.4rem .8rem;text-align:right;color:rgba(255,255,255,.38);font-weight:500;font-size:.78rem;border-bottom:1px solid rgba(255,255,255,.08)}.sc-table thead th:first-child{text-align:left;color:transparent;min-width:8rem;width:8rem}.sc-del,.sc-load-btn{background:none;border:none;cursor:pointer;padding:0 0 0 .35rem;font-size:.72rem;vertical-align:middle;transition:color .15s;line-height:1}.sc-del{color:rgba(255,255,255,.22)}.sc-del:hover{color:rgba(255,255,255,.7)}.sc-load-btn{color:rgba(255,255,255,.3)}.sc-load-btn:hover{color:rgba(255,255,255,.85)}.sc-w-row td,.sc-s-row td{padding:.28rem .8rem;border-bottom:1px solid rgba(255,255,255,.04)}.sc-label{color:rgba(255,255,255,.5);font-size:.82rem;text-align:left}.sc-sol-name{font-weight:500}.sc-w{text-align:right;color:rgba(255,255,255,.42);font-variant-numeric:tabular-nums}.sc-sep td{padding:0;height:1px;background:rgba(255,255,255,.1)}.sc-cell{text-align:right;font-variant-numeric:tabular-nums;padding:.3rem .8rem;border-left:2px solid transparent}.sc-rank{font-weight:700}.sc-score{font-size:.77rem;color:rgba(255,255,255,.38);margin-left:.25rem}.sc-winner .sc-score{color:rgba(255,255,255,.6)}.sc-ko-cell{color:rgba(255,255,255,.18);text-align:right;padding:.3rem .8rem}.sc-ko .sc-label{opacity:.35}.sc-ko .sc-sol-name{text-decoration:line-through}.sc-cr-row td{padding:.12rem .8rem;border-bottom:none}.sc-cr-label{color:rgba(255,255,255,.3);font-size:.78rem;padding-left:1.2rem !important;white-space:nowrap}.sc-cr-badge{display:inline-block;background:rgba(255,255,255,.07);border-radius:3px;padding:0 .3rem;margin-left:.35rem;font-size:.72rem;color:rgba(255,255,255,.4);font-variant-numeric:tabular-nums}.sc-badge-hi{background:rgba(251,191,36,.18);color:#fbbf24}.sc-contrib{font-size:.77rem;color:rgba(255,255,255,.3);margin-left:.3rem;font-variant-numeric:tabular-nums}.sc-w-hi{color:#fbbf24;font-weight:600}.sc-cell-hi{background:rgba(251,191,36,.07)}.sc-cr-cell{text-align:right;color:rgba(255,255,255,.28);font-size:.78rem;font-variant-numeric:tabular-nums;padding:.12rem .8rem}.sc-s-row td{border-top:1px solid rgba(255,255,255,.07)}@media(max-width:600px){.pair-btn{font-size:0.75rem;padding:8px 4px}.rating-btn{width:30px;height:30px;font-size:0.8rem}.criterion-name{font-size:0.8rem}.be-label{width:80px}}</style>
 </head>
 <body>
 <div class="container">
 <div class="toolbar">
 <div class="app-brand">
 <span class="app-name">DecisionLab</span>
-<span class="app-version">v0.4</span>
+<span class="app-version">v0.5</span>
 </div>
 <div class="toolbar-actions">
 <button id="langToggle" class="btn-toolbar lang-toggle">DE</button>
+<button id="undoBtn" class="btn-toolbar" data-i18n-title="undoTitle" disabled>↶</button>
+<button id="redoBtn" class="btn-toolbar" data-i18n-title="redoTitle" disabled>↷</button>
 <button id="helpBtn" class="btn-toolbar" data-i18n="help"></button>
 <button id="printBtn" class="btn-toolbar" data-i18n="print"></button>
 <button id="newBtn" class="btn-toolbar" data-i18n="newSession"></button>
 <button id="exportHtmlBtn" class="btn-toolbar" data-i18n="exportHtml"></button>
+<button id="exportCsvBtn" class="btn-toolbar" data-i18n="exportCsv"></button>
 <button id="exportBtn" class="btn-toolbar" data-i18n="save"></button>
 <label class="btn-toolbar"><span data-i18n="load"></span><input type="file" id="importInput" accept=".json"></label>
 </div>
@@ -68,6 +71,7 @@
 <div class="section-content">
 <h2 data-i18n="step2"></h2>
 <div id="pairsContainer"></div>
+<div id="consistencyHint"></div>
 </div>
 </div>
 <div class="section" id="resultsSection">
@@ -110,6 +114,7 @@
 <thead><tr><th data-i18n="thSolution"></th><th data-i18n="thScore"></th><th data-i18n="thRating"></th></tr></thead>
 <tbody id="solutionRankingBody"></tbody>
 </table>
+<p id="robustnessHint" class="robustness"></p>
 </div>
 </div>
 </div>
@@ -156,6 +161,8 @@
 <script>const _scriptEl=document.currentScript;const _scriptText=_scriptEl.textContent;const _styleText=document.querySelector('style').textContent;let _bodyHtml='';for(const node of document.body.childNodes){if(node===_scriptEl)break;_bodyHtml+=node.nodeType===3?node.textContent:(node.outerHTML||'');}
 const EN = {
 help: '? Help', print: '⎙ Print', newSession: '✕ New', exportHtml: '↓ Export', save: '↓ Save', load: '↑ Load',
+exportCsv: '↓ CSV', csvRank: 'Rank',
+undoTitle: 'Undo (Ctrl+Z)', redoTitle: 'Redo (Ctrl+Shift+Z)',
 tabCriteria: 'Criteria', tabSolutions: 'Solutions', tabSensitivity: 'Sensitivity',
 step1: 'Criteria',
 addCriterion: '+ Add Criterion', criterionPlaceholder: 'Criterion', criterionDefault: 'Criteria',
@@ -177,23 +184,27 @@ hintAddSolutions: 'Add solutions above.',
 hintNeedSolutions: 'Add at least 2 solutions with ratings to see breakeven analysis.',
 moreImportantThan: (a, b) => `<strong>${a}</strong> is more important than ${b}`,
 equallyImportant: (a, b) => `<strong>${a}</strong> and <strong>${b}</strong> are equally important`,
+inconsistentTitle: '⚠ Inconsistent answers.',
+inconsistentText: 'These comparisons form a circle, which makes the weights less reliable:',
+robustnessStable: w => `✓ Robust result — no single criterion weight change would take the lead from <strong>${w}</strong>.`,
+robustnessFlip: (challenger, crit, cur, bp) => `Closest flip: <strong>${challenger}</strong> takes the lead if the weight of ${crit} moves from ${cur}% to ${bp}%.`,
 credit: 'Built by Claude & Milan',
 helpTitle: 'How to use the DecisionLab',
 helpIntro: 'A structured way to compare options when multiple things matter — no gut feel, just weighted evidence.',
 helpCriteriaTitle: '① Criteria',
-helpCriteriaText: 'List what matters to you (e.g. Cost, Speed, Quality). Then compare each pair: which is more important? The tool converts your answers into percentage weights. Criteria are listed by importance throughout the app.',
+helpCriteriaText: 'List what matters to you (e.g. Cost, Speed, Quality). Then compare each pair: which is more important? The tool converts your answers into percentage weights. If your answers form a circle (A › B › C › A), a warning appears. Criteria are listed by importance throughout the app.',
 helpSolutionsTitle: '② Solutions',
-helpSolutionsText: 'Add the options you\'re deciding between. Optionally add a short note beneath each solution name as a reminder. For each criterion, rate every solution from <strong>0</strong> (worst) to <strong>4</strong> (best). The weighted ranking updates instantly.',
+helpSolutionsText: 'Add the options you\'re deciding between. Optionally add a short note beneath each solution name as a reminder. For each criterion, rate every solution from <strong>0</strong> (worst) to <strong>4</strong> (best). The weighted ranking updates instantly, and a robustness line below it tells you how close the result is to flipping.',
 helpDataTitle: '↓ / ↑ Data',
-helpDataText: 'Your session auto-saves in the browser. <strong>↓ HTML</strong> exports a fully self-contained file with your data baked in — open it anywhere, embed it in Confluence, or share it. <strong>↓ JSON</strong> exports just the data for re-importing. <strong>↑ Load</strong> loads a JSON file. <strong>New</strong> clears everything.',
+helpDataText: 'Your session auto-saves in the browser. <strong>↓ HTML</strong> exports a fully self-contained file with your data baked in — open it anywhere, embed it in Confluence, or share it. <strong>↓ JSON</strong> exports just the data for re-importing. <strong>↓ CSV</strong> exports the decision matrix for spreadsheets. <strong>↑ Load</strong> loads a JSON file. <strong>New</strong> clears everything. <strong>↶ ↷</strong> undo/redo any change (Ctrl+Z / Ctrl+Shift+Z).',
 helpProTitle: '⚡ Pro Mode',
-helpProText: 'Toggle <strong>⚡ Pro</strong> in the tab bar to unlock advanced features:<br><br><strong>Fine-tune Weights</strong> — manually nudge individual weight percentages after the pairwise comparison. The others adjust proportionally. A <em>Custom</em> badge appears when overridden; <em>↺ Reset to pairwise</em> reverts them.<br><br><strong>Score Definitions</strong> — define what each score (0–4) means per criterion. Hover a rating button to see the definition as a tooltip.<br><br><strong>Rating Rationale</strong> — add a short reason below each rating to document why you gave that score. Appears in the print view.<br><br><strong>Must-have Criteria</strong> — mark any criterion as must-have. Solutions scoring 0 on it are eliminated from the ranking and shown at the bottom with the reason.<br><br><strong>Sensitivity Analysis</strong> — drag the white marker on any criterion bar to explore <em>"What if this mattered more or less?"</em> Colored segments show which solution leads at each weight level, and labels mark where the winner switches.<br><br><strong>Scenario Comparison</strong> — save named snapshots of your current exploration (weights <em>and</em> ratings) and compare them side by side against the baseline. Values that differ from the baseline are highlighted; click a column header (Baseline or scenario) to load its values back into the sensitivity bars.',
+helpProText: 'Toggle <strong>⚡ Pro</strong> in the tab bar to unlock advanced features:<br><br><strong>Fine-tune Weights</strong> — drag a weight bar or type a percentage after the pairwise comparison. Values you set stay pinned (shown bright); the not-yet-edited criteria (dimmed) absorb the change. A <em>Custom</em> badge appears when overridden; <em>↺ Reset to pairwise</em> reverts them.<br><br><strong>Score Definitions</strong> — define what each score (0–4) means per criterion. Hover a rating button to see the definition as a tooltip.<br><br><strong>Rating Rationale</strong> — add a short reason below each rating to document why you gave that score. Appears in the print view.<br><br><strong>Must-have Criteria</strong> — mark any criterion as must-have. Solutions scoring 0 on it are eliminated from the ranking and shown at the bottom with the reason.<br><br><strong>Sensitivity Analysis</strong> — drag the white marker on any criterion bar to explore <em>"What if this mattered more or less?"</em> Colored segments show which solution leads at each weight level, and labels mark where the winner switches. Solutions failing a must-have stay visible for the what-if view, but their segments are hatched and the legend marks them with ⊗.<br><br><strong>Scenario Comparison</strong> — save named snapshots of your current exploration (weights <em>and</em> ratings) and compare them side by side against the baseline. Values that differ from the baseline are highlighted; click a column header (Baseline or scenario) to load its values back into the sensitivity bars.',
 printGenerated: date => `Generated ${date}`,
 printCriteriaComparisons: 'Criteria Comparisons', printCriteriaWeights: 'Criteria Weights',
 printWeightAdjustments: 'Weight Adjustments', printSolutionRanking: 'Solution Ranking',
 printThCriterion: 'Criterion', printThWeight: 'Weight', printThPairwise: 'Pairwise',
 printThAdjusted: 'Adjusted', printThReason: 'Reason', printThSolution: 'Solution', printThScore: 'Score',
-solutionNotePlaceholder: 'Short description or note…',
+solutionNotePlaceholder: 'Description of solution…',
 ratingNotePlaceholder: 'Reason for this rating…',
 anchorDefaults: ['Not suitable', 'Poor', 'Acceptable', 'Good', 'Excellent'],
 mustHave: 'Must-have', knockedOut: '⊗ fails',
@@ -213,6 +224,8 @@ scenarioLoadHint: 'Click to load into sensitivity bars',
 };
 const DE = {
 help: '? Hilfe', print: '⎙ Drucken', newSession: '✕ Neu', exportHtml: '↓ Exportieren', save: '↓ Speichern', load: '↑ Laden',
+exportCsv: '↓ CSV', csvRank: 'Rang',
+undoTitle: 'Rückgängig (Strg+Z)', redoTitle: 'Wiederholen (Strg+Umschalt+Z)',
 tabCriteria: 'Kriterien', tabSolutions: 'Lösungen', tabSensitivity: 'Sensitivität',
 step1: 'Kriterien',
 addCriterion: '+ Kriterium', criterionPlaceholder: 'Kriterium', criterionDefault: 'Kriterium',
@@ -234,23 +247,27 @@ hintAddSolutions: 'Lösungen oben hinzufügen.',
 hintNeedSolutions: 'Mindestens 2 Lösungen mit Bewertungen hinzufügen, um die Analyse zu sehen.',
 moreImportantThan: (a, b) => `<strong>${a}</strong> ist wichtiger als ${b}`,
 equallyImportant: (a, b) => `<strong>${a}</strong> und <strong>${b}</strong> sind gleich wichtig`,
+inconsistentTitle: '⚠ Widersprüchliche Antworten.',
+inconsistentText: 'Diese Vergleiche bilden einen Kreis, was die Gewichte weniger verlässlich macht:',
+robustnessStable: w => `✓ Robustes Ergebnis — keine einzelne Gewichtsänderung nimmt <strong>${w}</strong> die Führung.`,
+robustnessFlip: (challenger, crit, cur, bp) => `Knappster Wechsel: <strong>${challenger}</strong> übernimmt die Führung, wenn das Gewicht von ${crit} von ${cur}% auf ${bp}% wechselt.`,
 credit: 'Entwickelt von Claude & Milan',
 helpTitle: 'So nutzt du DecisionLab',
 helpIntro: 'Ein strukturierter Weg, Optionen zu vergleichen, wenn mehrere Faktoren wichtig sind — kein Bauchgefühl, nur gewichtete Belege.',
 helpCriteriaTitle: '① Kriterien',
-helpCriteriaText: 'Liste auf, was dir wichtig ist (z.B. Kosten, Geschwindigkeit, Qualität). Vergleiche dann jedes Paar: Was ist wichtiger? Das Tool rechnet deine Antworten in Prozentwerte um. Kriterien werden überall nach Wichtigkeit sortiert angezeigt.',
+helpCriteriaText: 'Liste auf, was dir wichtig ist (z.B. Kosten, Geschwindigkeit, Qualität). Vergleiche dann jedes Paar: Was ist wichtiger? Das Tool rechnet deine Antworten in Prozentwerte um. Bilden deine Antworten einen Kreis (A › B › C › A), erscheint eine Warnung. Kriterien werden überall nach Wichtigkeit sortiert angezeigt.',
 helpSolutionsTitle: '② Lösungen',
-helpSolutionsText: 'Füge die Optionen hinzu, zwischen denen du entscheidest. Optional kannst du eine kurze Notiz unter den Lösungsnamen setzen. Bewerte für jedes Kriterium jede Lösung von <strong>0</strong> (schlechteste) bis <strong>4</strong> (beste). Das gewichtete Ranking aktualisiert sich sofort.',
+helpSolutionsText: 'Füge die Optionen hinzu, zwischen denen du entscheidest. Optional kannst du eine kurze Notiz unter den Lösungsnamen setzen. Bewerte für jedes Kriterium jede Lösung von <strong>0</strong> (schlechteste) bis <strong>4</strong> (beste). Das gewichtete Ranking aktualisiert sich sofort — eine Robustheitszeile darunter zeigt, wie knapp das Ergebnis ist.',
 helpDataTitle: '↓ / ↑ Daten',
-helpDataText: 'Deine Sitzung wird automatisch im Browser gespeichert. <strong>↓ HTML</strong> exportiert eine vollständig eigenständige Datei — öffne sie überall, binde sie in Confluence ein oder teile sie. <strong>↓ JSON</strong> exportiert nur die Daten. <strong>↑ Laden</strong> lädt eine JSON-Datei. <strong>Neu</strong> löscht alles.',
+helpDataText: 'Deine Sitzung wird automatisch im Browser gespeichert. <strong>↓ HTML</strong> exportiert eine vollständig eigenständige Datei — öffne sie überall, binde sie in Confluence ein oder teile sie. <strong>↓ JSON</strong> exportiert nur die Daten. <strong>↓ CSV</strong> exportiert die Entscheidungsmatrix für Tabellenkalkulationen. <strong>↑ Laden</strong> lädt eine JSON-Datei. <strong>Neu</strong> löscht alles. <strong>↶ ↷</strong> macht jede Änderung rückgängig bzw. wieder her (Strg+Z / Strg+Umschalt+Z).',
 helpProTitle: '⚡ Pro-Modus',
-helpProText: '<strong>⚡ Pro</strong> in der Tab-Leiste aktivieren, um erweiterte Funktionen freizuschalten:<br><br><strong>Gewichte anpassen</strong> — nach dem paarweisen Vergleich können einzelne Prozentwerte manuell geändert werden. Die anderen passen sich proportional an. Ein <em>Angepasst</em>-Badge erscheint bei Überschreibung; <em>↺ Paarweise zurücksetzen</em> macht dies rückgängig.<br><br><strong>Bewertungsdefinitionen</strong> — definiere, was jede Punktzahl (0–4) für ein Kriterium bedeutet. Beim Hover über einen Bewertungs-Button erscheint die Definition als Tooltip.<br><br><strong>Bewertungsbegründung</strong> — füge eine kurze Begründung unter jede Bewertung ein, um nachvollziehbar zu machen, warum du diese Punktzahl vergeben hast. Erscheint in der Druckansicht.<br><br><strong>Muss-Kriterien</strong> — markiere ein Kriterium als Muss. Lösungen, die dort 0 Punkte erzielen, werden aus dem Ranking ausgeschlossen und am Ende mit Begründung angezeigt.<br><br><strong>Sensitivitätsanalyse</strong> — den weißen Marker auf einem Kriteriumsbalken ziehen, um zu erkunden: <em>„Was wenn das mehr oder weniger wichtig wäre?"</em> Farbige Segmente zeigen, welche Lösung bei jedem Gewicht führt, und Labels markieren den Wechselpunkt.<br><br><strong>Szenariovergleich</strong> — benannte Momentaufnahmen der aktuellen Exploration (Gewichte <em>und</em> Bewertungen) speichern und nebeneinander mit der Basis vergleichen. Abweichungen von der Basis werden hervorgehoben; ein Klick auf einen Spaltenkopf (Basis oder Szenario) lädt dessen Werte zurück in die Sensitivitätsbalken.',
+helpProText: '<strong>⚡ Pro</strong> in der Tab-Leiste aktivieren, um erweiterte Funktionen freizuschalten:<br><br><strong>Gewichte anpassen</strong> — nach dem paarweisen Vergleich einen Gewichtsbalken ziehen oder einen Prozentwert eintippen. Selbst gesetzte Werte bleiben fixiert (hell dargestellt); die noch nicht bearbeiteten Kriterien (gedimmt) nehmen die Änderung auf. Ein <em>Angepasst</em>-Badge erscheint bei Überschreibung; <em>↺ Paarweise zurücksetzen</em> macht dies rückgängig.<br><br><strong>Bewertungsdefinitionen</strong> — definiere, was jede Punktzahl (0–4) für ein Kriterium bedeutet. Beim Hover über einen Bewertungs-Button erscheint die Definition als Tooltip.<br><br><strong>Bewertungsbegründung</strong> — füge eine kurze Begründung unter jede Bewertung ein, um nachvollziehbar zu machen, warum du diese Punktzahl vergeben hast. Erscheint in der Druckansicht.<br><br><strong>Muss-Kriterien</strong> — markiere ein Kriterium als Muss. Lösungen, die dort 0 Punkte erzielen, werden aus dem Ranking ausgeschlossen und am Ende mit Begründung angezeigt.<br><br><strong>Sensitivitätsanalyse</strong> — den weißen Marker auf einem Kriteriumsbalken ziehen, um zu erkunden: <em>„Was wenn das mehr oder weniger wichtig wäre?"</em> Farbige Segmente zeigen, welche Lösung bei jedem Gewicht führt, und Labels markieren den Wechselpunkt. Lösungen, die ein Muss-Kriterium nicht erfüllen, bleiben für die Was-wäre-wenn-Sicht sichtbar — ihre Segmente sind schraffiert und in der Legende mit ⊗ markiert.<br><br><strong>Szenariovergleich</strong> — benannte Momentaufnahmen der aktuellen Exploration (Gewichte <em>und</em> Bewertungen) speichern und nebeneinander mit der Basis vergleichen. Abweichungen von der Basis werden hervorgehoben; ein Klick auf einen Spaltenkopf (Basis oder Szenario) lädt dessen Werte zurück in die Sensitivitätsbalken.',
 printGenerated: date => `Erstellt am ${date}`,
 printCriteriaComparisons: 'Kriterienvergleich', printCriteriaWeights: 'Kriteriengewichte',
 printWeightAdjustments: 'Gewichtsanpassungen', printSolutionRanking: 'Lösungsranking',
 printThCriterion: 'Kriterium', printThWeight: 'Gewicht', printThPairwise: 'Paarweise',
 printThAdjusted: 'Angepasst', printThReason: 'Begründung', printThSolution: 'Lösung', printThScore: 'Wertung',
-solutionNotePlaceholder: 'Kurzbeschreibung oder Notiz…',
+solutionNotePlaceholder: 'Beschreibung der Lösung…',
 ratingNotePlaceholder: 'Begründung für diese Bewertung…',
 anchorDefaults: ['Ungeeignet', 'Schlecht', 'Akzeptabel', 'Gut', 'Hervorragend'],
 mustHave: 'Muss-Kriterium', knockedOut: '⊗ erfüllt nicht',
@@ -270,6 +287,9 @@ scenarioLoadHint: 'Klicken, um in Sensitivitätsbars zu laden',
 };
 let lang = 'en';
 const STRINGS = { en: EN, de: DE };
+function esc(s) {
+return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
 function t(key) {
 const s = STRINGS[lang];
 const v = (s && s[key] !== undefined) ? s[key] : STRINGS.en[key];
@@ -288,9 +308,14 @@ document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
 const v = t(el.dataset.i18nPlaceholder);
 if (typeof v === 'string') el.placeholder = v;
 });
+document.querySelectorAll('[data-i18n-title]').forEach(el => {
+const v = t(el.dataset.i18nTitle);
+if (typeof v === 'string') el.title = v;
+});
 document.getElementById('langToggle').textContent = lang === 'en' ? 'DE' : 'EN';
 document.querySelectorAll('#criteriaList input').forEach((i, idx) => i.placeholder = `${t('criterionDefault')} ${idx + 1}`);
-document.querySelectorAll('#solutionList input').forEach(i => i.placeholder = t('solutionPlaceholder'));
+document.querySelectorAll('#solutionList input:not(.sol-note)').forEach(i => i.placeholder = t('solutionPlaceholder'));
+document.querySelectorAll('#solutionList input.sol-note').forEach(i => i.placeholder = t('solutionNotePlaceholder'));
 if (comparisonStarted) renderPairs();
 renderFineTune();
 renderSolutionMatrix();
@@ -302,15 +327,16 @@ applyLang();
 saveState();
 };
 const STORAGE_KEY = 'tradeoff_v1';
-function saveState() {
-try {
-localStorage.setItem(STORAGE_KEY, JSON.stringify({
-version: 1,
+const STATE_VERSION = 2;
+function buildState() {
+return {
+version: STATE_VERSION,
 decisionName, bearbeiter,
 criteria: getCriteria(),
 pairStates,
 customWeights,
 customWeightReasons,
+customWeightPinned,
 proMode,
 lang,
 solutions: getSolutions(),
@@ -322,13 +348,86 @@ solutionNotes,
 scenarios,
 sensWeights,
 explorationRatings,
-}));
-} catch (e) {}
+};
+}
+function saveState() {
+const json = JSON.stringify(buildState());
+try { localStorage.setItem(STORAGE_KEY, json); } catch (e) {}
+recordHistory(json);
+}
+let undoStack = [], redoStack = [];
+let lastHistoryTime = 0;
+let lastHistorySig = null;
+let historyLock = false;
+const HISTORY_LIMIT = 100;
+const HISTORY_BURST_MS = 700;
+function historySig(aJson, bJson) {
+const a = JSON.parse(aJson), b = JSON.parse(bJson);
+const parts = [];
+new Set([...Object.keys(a), ...Object.keys(b)]).forEach(k => {
+const av = a[k], bv = b[k];
+if (JSON.stringify(av) === JSON.stringify(bv)) return;
+if (av && bv && typeof av === 'object' && !Array.isArray(av) && typeof bv === 'object' && !Array.isArray(bv)) {
+new Set([...Object.keys(av), ...Object.keys(bv)]).forEach(sk => {
+if (JSON.stringify(av[sk]) !== JSON.stringify(bv[sk])) parts.push(k + ':' + sk);
+});
+} else {
+parts.push(k);
+}
+});
+return parts.sort().join(',');
+}
+function recordHistory(json) {
+if (historyLock) return;
+const top = undoStack[undoStack.length - 1];
+if (top === json) return;
+const now = Date.now();
+const sig = top ? historySig(top, json) : '';
+if (undoStack.length > 1 && now - lastHistoryTime < HISTORY_BURST_MS && sig === lastHistorySig) {
+undoStack[undoStack.length - 1] = json;
+} else {
+undoStack.push(json);
+if (undoStack.length > HISTORY_LIMIT) undoStack.shift();
+}
+lastHistoryTime = now;
+lastHistorySig = sig;
+redoStack = [];
+updateHistoryButtons();
+}
+function restoreFromHistory(json) {
+historyLock = true;
+const activeTab = (document.querySelector('.tab-btn.active') || {}).dataset?.tab;
+try { applyState(JSON.parse(json)); } finally { historyLock = false; }
+try { localStorage.setItem(STORAGE_KEY, json); } catch (e) {}
+lastHistoryTime = 0;
+lastHistorySig = null;
+if (activeTab && activeTab !== 'criteria') {
+const btn = document.querySelector(`.tab-btn[data-tab="${activeTab}"]`);
+if (btn && !btn.classList.contains('disabled') && btn.onclick) btn.onclick();
+}
+updateHistoryButtons();
+}
+function undoState() {
+if (undoStack.length < 2) return;
+redoStack.push(undoStack.pop());
+restoreFromHistory(undoStack[undoStack.length - 1]);
+}
+function redoState() {
+if (!redoStack.length) return;
+const json = redoStack.pop();
+undoStack.push(json);
+restoreFromHistory(json);
+}
+function updateHistoryButtons() {
+const u = document.getElementById('undoBtn'), r = document.getElementById('redoBtn');
+if (u) u.disabled = undoStack.length < 2;
+if (r) r.disabled = redoStack.length === 0;
 }
 function applyState(state) {
-if (!state || state.version !== 1) return;
+if (!state || state.version !== STATE_VERSION) return false;
 list.innerHTML = '';
-(state.criteria || []).forEach(c => addCriterionInput(c));
+(state.criteria || []).forEach(c => addCriterionInput(c.name, c.id));
+for (let i = (state.criteria || []).length; i < 3; i++) addCriterionInput();
 clearTimeout(inputDebounce);
 decisionName = state.decisionName || '';
 bearbeiter = state.bearbeiter || '';
@@ -341,22 +440,24 @@ document.getElementById('bearbeiterInput').value = bearbeiter;
 pairStates = state.pairStates || {};
 customWeights = state.customWeights || null;
 customWeightReasons = state.customWeightReasons || {};
+customWeightPinned = state.customWeightPinned || {};
 scenarios = state.scenarios || [];
 proMode = state.proMode || false;
 lang = state.lang || 'en';
 if ((state.criteria || []).length >= 2) startComparison(true, true);
 applyProMode();
 solutionList.innerHTML = '';
-(state.solutions || []).forEach(s => addSolutionInput(s, (state.solutionNotes || {})[s] || ''));
+(state.solutions || []).forEach(s => addSolutionInput(s.name, (state.solutionNotes || {})[s.id] || '', s.id));
+for (let i = (state.solutions || []).length; i < 3; i++) addSolutionInput();
 clearTimeout(solutionDebounce);
 ratings = state.ratings || {};
 renderSolutionMatrix();
 updateSolutionRanking();
 initSensWeights();
 if (state.sensWeights) {
-criteria.forEach(c => { if (state.sensWeights[c] !== undefined) sensWeights[c] = state.sensWeights[c]; });
-const t = Object.values(sensWeights).reduce((s, v) => s + v, 0);
-if (t > 0) criteria.forEach(c => sensWeights[c] /= t);
+criteria.forEach(c => { if (state.sensWeights[c.id] !== undefined) sensWeights[c.id] = state.sensWeights[c.id]; });
+const total = criteria.reduce((s, c) => s + (sensWeights[c.id] ?? 0), 0);
+if (total > 0) criteria.forEach(c => sensWeights[c.id] /= total);
 }
 initExplorationRatings();
 if (state.explorationRatings) explorationRatings = { ...state.explorationRatings };
@@ -367,6 +468,7 @@ document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('activ
 document.querySelector('[data-tab="criteria"]').classList.add('active');
 document.getElementById('tab-criteria').classList.add('active');
 applyLang();
+return true;
 }
 const list = document.getElementById('criteriaList');
 const addBtn = document.getElementById('addBtn');
@@ -377,19 +479,26 @@ const customBadge = document.getElementById('customBadge');
 const sensitivityTab = document.getElementById('sensitivityTab');
 const proToggle = document.getElementById('proToggle');
 let decisionName = '', bearbeiter = '';
-let criteria = [], pairs = [], pairStates = {};
+let criteria = [];
+let pairs = [];
+let pairStates = {};
 let comparisonStarted = false;
 let inputDebounce = null;
 let customWeights = null;
 let customWeightReasons = {};
+let customWeightPinned = {};
 let proMode = false;
-function addCriterionInput(value = '') {
+function newId(prefix) {
+return prefix + Date.now().toString(36).slice(-4) + Math.random().toString(36).slice(2, 6);
+}
+function addCriterionInput(value = '', id = null) {
 const item = document.createElement('div');
 item.className = 'criteria-item';
 const input = document.createElement('input');
 input.type = 'text';
 input.placeholder = `${t('criterionDefault')} ${list.querySelectorAll('input').length + 1}`;
 input.value = value;
+input.dataset.id = id || newId('c');
 input.addEventListener('input', () => {
 clearTimeout(inputDebounce);
 inputDebounce = setTimeout(checkAndStartComparison, 350);
@@ -403,14 +512,20 @@ item.appendChild(btn);
 list.appendChild(item);
 }
 function getCriteria() {
-return [...list.querySelectorAll('input')].map(i => i.value.trim()).filter(Boolean);
+return [...list.querySelectorAll('input')]
+.map(i => ({ id: i.dataset.id, name: i.value.trim() }))
+.filter(c => c.name);
+}
+function critName(id) {
+const c = criteria.find(x => x.id === id);
+return c ? c.name : '';
 }
 function criteriaKey(c) {
-return [...c].sort().join('|');
+return c.map(x => x.id).sort().join('|');
 }
 function computeScores() {
 const scores = {};
-criteria.forEach(c => scores[c] = 0);
+criteria.forEach(c => scores[c.id] = 0);
 pairs.forEach(([a, b]) => {
 const state = pairStates[`${a}|${b}`] ?? 0;
 if (state === -1) scores[a] += 1;
@@ -421,22 +536,51 @@ return scores;
 }
 function computeWeights() {
 if (customWeights) {
-const total = Object.values(customWeights).reduce((s, v) => s + v, 0);
+const total = criteria.reduce((s, c) => s + (customWeights[c.id] ?? 0), 0);
 const w = {};
-criteria.forEach(c => w[c] = total > 0 ? (customWeights[c] ?? 0) / total : 1 / criteria.length);
+criteria.forEach(c => w[c.id] = total > 0 ? (customWeights[c.id] ?? 0) / total : 1 / criteria.length);
 return w;
 }
 const scores = computeScores();
 const total = Object.values(scores).reduce((s, v) => s + v, 0);
 const weights = {};
-criteria.forEach(c => weights[c] = total > 0 ? scores[c] / total : 1 / criteria.length);
+criteria.forEach(c => weights[c.id] = total > 0 ? scores[c.id] / total : 1 / criteria.length);
 return weights;
 }
 function criteriaByWeight() {
 const w = computeWeights();
-return [...criteria].sort((a, b) => (w[b] ?? 0) - (w[a] ?? 0));
+return [...criteria].sort((a, b) => (w[b.id] ?? 0) - (w[a.id] ?? 0));
+}
+function findInconsistencies() {
+const beats = (x, y) => {
+if (pairStates[`${x}|${y}`] !== undefined) return pairStates[`${x}|${y}`] < 0;
+if (pairStates[`${y}|${x}`] !== undefined) return pairStates[`${y}|${x}`] > 0;
+return false;
+};
+const cycles = [];
+const ids = criteria.map(c => c.id);
+for (let i = 0; i < ids.length; i++)
+for (let j = i + 1; j < ids.length; j++)
+for (let k = j + 1; k < ids.length; k++) {
+const [a, b, c] = [ids[i], ids[j], ids[k]];
+if (beats(a, b) && beats(b, c) && beats(c, a)) cycles.push([a, b, c]);
+else if (beats(b, a) && beats(a, c) && beats(c, b)) cycles.push([b, a, c]);
+}
+return cycles;
+}
+function renderConsistency() {
+const el = document.getElementById('consistencyHint');
+if (!el) return;
+const cycles = comparisonStarted ? findInconsistencies() : [];
+if (!cycles.length) { el.innerHTML = ''; el.classList.remove('visible'); return; }
+const shown = cycles.slice(0, 3).map(cycle =>
+`<span class="consistency-cycle">${cycle.map(id => esc(critName(id))).join(' › ')} › ${esc(critName(cycle[0]))}</span>`
+).join('');
+el.innerHTML = `<strong>${t('inconsistentTitle')}</strong> ${t('inconsistentText')} ${shown}`;
+el.classList.add('visible');
 }
 function pairLabel(a, b, state) {
+a = esc(a); b = esc(b);
 if (state === -1) return t('moreImportantThan')(a, b);
 if (state === 1) return t('moreImportantThan')(b, a);
 return t('equallyImportant')(a, b);
@@ -476,12 +620,16 @@ tr._anim = tr.animate([
 function updateResults() {
 const scores = computeScores();
 const total = Object.values(scores).reduce((s, v) => s + v, 0);
-const entries = Object.entries(scores).sort((a, b) => b[1] - a[1]).map(([c, p]) => {
+const entries = [...criteria]
+.sort((a, b) => scores[b.id] - scores[a.id])
+.map(c => {
+const p = scores[c.id];
 const pct = total > 0 ? 100 * p / total : 0;
 const label = total > 0 ? `${pct.toFixed(1)}%` : '—';
-return { key: c, html: `<td>${c}</td><td>${p.toFixed(1)}</td><td><div class="weight-cell"><span>${label}</span><div class="weight-bar-wrap"><div class="weight-bar" style="width:${pct}%"></div></div></div></td>` };
+return { key: c.id, html: `<td>${esc(c.name)}</td><td>${p.toFixed(1)}</td><td><div class="weight-cell"><span>${label}</span><div class="weight-bar-wrap"><div class="weight-bar" style="width:${pct}%"></div></div></div></td>` };
 });
 animateRows(document.getElementById('tbody'), entries);
+renderConsistency();
 renderFineTune();
 updateSolutionRanking();
 updateSensRanking();
@@ -496,13 +644,18 @@ const current = getCriteria();
 if (current.length >= 2) {
 if (criteriaKey(current) !== criteriaKey(criteria) || !comparisonStarted) {
 startComparison();
+} else {
+criteria = current;
+renderPairs();
+updateResults();
+renderSolutionMatrix();
 }
 } else if (comparisonStarted) {
 compareSection.classList.remove('active');
 resultsSection.classList.remove('active');
 fineTuneSection.classList.remove('active');
 comparisonStarted = false;
-criteria = []; pairs = []; pairStates = {}; customWeights = null; customWeightReasons = {}; scenarios = [];
+criteria = []; pairs = []; pairStates = {}; customWeights = null; customWeightReasons = {}; customWeightPinned = {}; scenarios = [];
 sensWeights = {}; explorationRatings = {};
 applyProMode();
 updateTabState();
@@ -514,12 +667,12 @@ updateSensImpact(); updateRatingImpact();
 function startComparison(preserveWeights = false, suppressScroll = false) {
 const incoming = getCriteria();
 const wasStarted = comparisonStarted;
-if (!preserveWeights && criteriaKey(incoming) !== criteriaKey(criteria)) { customWeights = null; customWeightReasons = {}; scenarios = []; }
+if (!preserveWeights && criteriaKey(incoming) !== criteriaKey(criteria)) { customWeights = null; customWeightReasons = {}; customWeightPinned = {}; scenarios = []; }
 criteria = incoming;
 pairs = [];
 for (let i = 0; i < criteria.length; i++)
 for (let j = i + 1; j < criteria.length; j++)
-pairs.push([criteria[i], criteria[j]]);
+pairs.push([criteria[i].id, criteria[j].id]);
 const newStates = {};
 pairs.forEach(([a, b]) => {
 const key = `${a}|${b}`;
@@ -530,7 +683,7 @@ comparisonStarted = true;
 compareSection.classList.add('active');
 resultsSection.classList.add('active');
 if (proMode) fineTuneSection.classList.add('active');
-initSensWeights(); initExplorationRatings();
+ensureSensState();
 renderPairs();
 updateResults();
 updateTabState();
@@ -543,21 +696,22 @@ container.innerHTML = '';
 pairs.forEach(([a, b]) => {
 const key = `${a}|${b}`;
 const state = pairStates[key] ?? 0;
+const nameA = critName(a), nameB = critName(b);
 const row = document.createElement('div');
 row.className = 'pair-row';
 const label = document.createElement('div');
 label.className = 'pair-label';
-label.innerHTML = pairLabel(a, b, state);
+label.innerHTML = pairLabel(nameA, nameB, state);
 const btns = document.createElement('div');
 btns.className = 'pair-buttons';
-[[-1, a], [0, t('equalBtn')], [1, b]].forEach(([v, text]) => {
+[[-1, nameA], [0, t('equalBtn')], [1, nameB]].forEach(([v, text]) => {
 const btn = document.createElement('button');
 btn.className = 'pair-btn' + (state === v ? ' active' : '');
 btn.textContent = text;
 btn.title = text;
 btn.onclick = () => {
 pairStates[key] = v;
-label.innerHTML = pairLabel(a, b, v);
+label.innerHTML = pairLabel(nameA, nameB, v);
 [...btns.children].forEach((el, i) => el.classList.toggle('active', [-1, 0, 1][i] === v));
 updateResults();
 };
@@ -568,43 +722,64 @@ row.appendChild(btns);
 container.appendChild(row);
 });
 }
+function setCustomWeight(cid, newPct) {
+newPct = Math.max(0, Math.min(100, newPct));
+const w = computeWeights();
+customWeightPinned[cid] = true;
+const others = criteria.filter(c => c.id !== cid);
+const free = others.filter(c => !customWeightPinned[c.id]);
+const pinned = others.filter(c => customWeightPinned[c.id]);
+const pinnedSum = pinned.reduce((s, c) => s + w[c.id] * 100, 0);
+const remaining = 100 - newPct - pinnedSum;
+const next = { [cid]: newPct };
+if (free.length && remaining >= 0) {
+const freeSum = free.reduce((s, c) => s + w[c.id] * 100, 0);
+free.forEach(c => next[c.id] = freeSum > 0 ? (w[c.id] * 100 / freeSum) * remaining : remaining / free.length);
+pinned.forEach(c => next[c.id] = w[c.id] * 100);
+} else {
+free.forEach(c => next[c.id] = 0);
+const target = 100 - newPct;
+pinned.forEach(c => next[c.id] = pinnedSum > 0 ? (w[c.id] * 100 / pinnedSum) * target : target / (pinned.length || 1));
+}
+customWeights = {};
+criteria.forEach(c => customWeights[c.id] = (next[c.id] ?? 0) / 100);
+}
+function refreshFineTuneRows() {
+const w = computeWeights();
+document.querySelectorAll('#fineTuneList .fine-tune-row').forEach(row => {
+const cid = row.dataset.criterion;
+const pct = (w[cid] ?? 0) * 100;
+const input = row.querySelector('.fine-tune-input');
+if (input) {
+input.value = pct.toFixed(1);
+input.classList.toggle('pinned', !!customWeightPinned[cid]);
+}
+const fill = row.querySelector('.fine-tune-bar-fill');
+if (fill) fill.style.width = pct + '%';
+});
+customBadge.classList.toggle('visible', customWeights !== null);
+}
 function renderFineTune() {
 const container = document.getElementById('fineTuneList');
 const w = computeWeights();
 container.innerHTML = '';
 criteriaByWeight().forEach(c => {
-const pct = w[c] * 100;
+const pct = w[c.id] * 100;
 const row = document.createElement('div');
 row.className = 'fine-tune-row';
+row.dataset.criterion = c.id;
 row.innerHTML = `
-<span class="fine-tune-name">${c}</span>
-<input type="number" class="fine-tune-input" value="${pct.toFixed(1)}" min="0" max="100" step="0.1" data-criterion="${c}">
+<span class="fine-tune-name">${esc(c.name)}</span>
+<input type="number" class="fine-tune-input${customWeightPinned[c.id] ? ' pinned' : ''}" value="${pct.toFixed(1)}" min="0" max="100" step="0.1" data-criterion="${c.id}">
 <span class="fine-tune-pct">%</span>
 <div class="fine-tune-bar"><div class="fine-tune-bar-fill" style="width:${pct}%"></div></div>
-<input type="text" class="fine-tune-reason" placeholder="${t('reasonPlaceholder')}" value="${customWeightReasons[c] || ''}" data-criterion="${c}">`;
+<input type="text" class="fine-tune-reason" placeholder="${t('reasonPlaceholder')}" value="${esc(customWeightReasons[c.id] || '')}" data-criterion="${c.id}">`;
 container.appendChild(row);
 });
 container.querySelectorAll('.fine-tune-input').forEach(input => {
 input.addEventListener('change', () => {
-const newPct = Math.max(0, Math.min(100, parseFloat(input.value) || 0));
-const c = input.dataset.criterion;
-const w = computeWeights();
-const oldPct = w[c] * 100;
-const remaining = 100 - newPct;
-const otherTotal = 100 - oldPct;
-customWeights = {};
-criteria.forEach(cc => {
-if (cc === c) {
-customWeights[cc] = newPct / 100;
-} else {
-const share = w[cc] * 100;
-customWeights[cc] = otherTotal > 0 ? (share / otherTotal) * remaining / 100 : remaining / (criteria.length - 1) / 100;
-}
-});
+setCustomWeight(input.dataset.criterion, parseFloat(input.value) || 0);
 updateResults();
-updateSolutionRanking();
-updateSensRanking();
-updateSensImpact(); updateRatingImpact();
 });
 });
 container.querySelectorAll('.fine-tune-reason').forEach(input => {
@@ -615,9 +790,44 @@ saveState();
 });
 customBadge.classList.toggle('visible', customWeights !== null);
 }
+(function setupFineTuneDrag() {
+const container = document.getElementById('fineTuneList');
+let drag = null;
+function pctFrom(e, rect) {
+const x = e.touches ? e.touches[0].clientX : e.clientX;
+return Math.max(0, Math.min(100, ((x - rect.left) / rect.width) * 100));
+}
+function onDown(e) {
+const bar = e.target.closest('.fine-tune-bar');
+const row = e.target.closest('.fine-tune-row');
+if (!bar || !row) return;
+e.preventDefault();
+drag = { cid: row.dataset.criterion, rect: bar.getBoundingClientRect() };
+setCustomWeight(drag.cid, pctFrom(e, drag.rect));
+refreshFineTuneRows();
+}
+function onMove(e) {
+if (!drag) return;
+e.preventDefault();
+setCustomWeight(drag.cid, pctFrom(e, drag.rect));
+refreshFineTuneRows();
+}
+function onUp() {
+if (!drag) return;
+drag = null;
+updateResults();
+}
+container.addEventListener('mousedown', onDown);
+document.addEventListener('mousemove', onMove);
+document.addEventListener('mouseup', onUp);
+container.addEventListener('touchstart', onDown, { passive: false });
+document.addEventListener('touchmove', onMove, { passive: false });
+document.addEventListener('touchend', onUp);
+}());
 document.getElementById('resetFineBtn').onclick = () => {
 customWeights = null;
 customWeightReasons = {};
+customWeightPinned = {};
 updateResults();
 updateSolutionRanking();
 updateSensRanking();
@@ -633,13 +843,14 @@ let criteriaAnchors = {};
 let knockoutCriteria = {};
 let solutionNotes = {};
 let solutionDebounce = null;
-function addSolutionInput(value = '', note = '') {
+function addSolutionInput(value = '', note = '', id = null) {
 const item = document.createElement('div');
 item.className = 'criteria-item';
 const input = document.createElement('input');
 input.type = 'text';
 input.placeholder = t('solutionPlaceholder');
 input.value = value;
+input.dataset.id = id || newId('s');
 input.addEventListener('input', () => {
 clearTimeout(solutionDebounce);
 solutionDebounce = setTimeout(() => { renderSolutionMatrix(); updateSensRanking(); updateSensImpact(); updateRatingImpact(); }, 350);
@@ -654,8 +865,8 @@ noteInput.className = 'sol-note';
 noteInput.placeholder = t('solutionNotePlaceholder');
 noteInput.value = note;
 noteInput.addEventListener('input', () => {
-const sol = input.value.trim();
-if (sol) { solutionNotes[sol] = noteInput.value; saveState(); }
+solutionNotes[input.dataset.id] = noteInput.value;
+saveState();
 });
 item.appendChild(input);
 item.appendChild(btn);
@@ -663,7 +874,9 @@ item.appendChild(noteInput);
 solutionList.appendChild(item);
 }
 function getSolutions() {
-return [...solutionList.querySelectorAll('input:not(.sol-note)')].map(i => i.value.trim()).filter(Boolean);
+return [...solutionList.querySelectorAll('input:not(.sol-note)')]
+.map(i => ({ id: i.dataset.id, name: i.value.trim() }))
+.filter(s => s.name);
 }
 function renderSolutionMatrix() {
 const container = document.getElementById('solutionMatrix');
@@ -685,21 +898,21 @@ const card = document.createElement('div');
 card.className = 'solution-card';
 const header = document.createElement('div');
 header.className = 'criterion-header';
-const isKO = !!knockoutCriteria[c];
+const isKO = !!knockoutCriteria[c.id];
 if (isKO) card.classList.add('knockout-active');
 const nameSpanH = document.createElement('span');
 nameSpanH.className = 'solution-name';
-nameSpanH.textContent = c;
+nameSpanH.textContent = c.name;
 const weightSpan = document.createElement('span');
 weightSpan.className = 'criterion-weight';
-weightSpan.textContent = `${(weights[c] * 100).toFixed(1)}%`;
+weightSpan.textContent = `${(weights[c.id] * 100).toFixed(1)}%`;
 const koBtn = document.createElement('button');
 koBtn.className = 'knockout-toggle' + (isKO ? ' active' : '');
 koBtn.textContent = t('mustHave');
 koBtn.onclick = () => {
-knockoutCriteria[c] = !knockoutCriteria[c];
-koBtn.classList.toggle('active', !!knockoutCriteria[c]);
-card.classList.toggle('knockout-active', !!knockoutCriteria[c]);
+knockoutCriteria[c.id] = !knockoutCriteria[c.id];
+koBtn.classList.toggle('active', !!knockoutCriteria[c.id]);
+card.classList.toggle('knockout-active', !!knockoutCriteria[c.id]);
 updateSolutionRanking(); updateSensRanking();
 saveState();
 };
@@ -711,7 +924,7 @@ const anchorDefaults = t('anchorDefaults');
 const anchorStrip = document.createElement('div');
 anchorStrip.className = 'anchor-strip';
 for (let v = 0; v <= 4; v++) {
-const aKey = `${c}|${v}`;
+const aKey = `${c.id}|${v}`;
 const item = document.createElement('div');
 item.className = 'anchor-item';
 const lbl = document.createElement('span');
@@ -736,20 +949,20 @@ anchorStrip.appendChild(item);
 }
 card.appendChild(anchorStrip);
 sols.forEach(sol => {
-const key = `${sol}|${c}`;
+const key = `${sol.id}|${c.id}`;
 const cur = ratings[key] ?? 0;
 const row = document.createElement('div');
 row.className = 'criterion-row';
 const nameSpan = document.createElement('span');
 nameSpan.className = 'criterion-name';
-nameSpan.textContent = sol;
+nameSpan.textContent = sol.name;
 const btnsEl = document.createElement('div');
 btnsEl.className = 'rating-buttons';
 for (let v = 0; v <= 4; v++) {
 const btn = document.createElement('button');
 btn.className = 'rating-btn' + (cur === v ? ' active' : '');
 btn.classList.add(`rating-btn-${v}`);
-btn.title = criteriaAnchors[`${c}|${v}`] || anchorDefaults[v];
+btn.title = criteriaAnchors[`${c.id}|${v}`] || anchorDefaults[v];
 btn.textContent = v;
 btn.onclick = () => {
 ratings[key] = v;
@@ -781,19 +994,18 @@ container.appendChild(card);
 updateSolutionRanking();
 }
 function getKnockedOut(ratingsObj = ratings) {
-const koList = Object.keys(knockoutCriteria).filter(c => knockoutCriteria[c]);
-if (!koList.length) return {};
+const koIds = criteria.filter(c => knockoutCriteria[c.id]).map(c => c.id);
+if (!koIds.length) return {};
 const result = {};
 getSolutions().forEach(sol => {
-const failed = koList.filter(c => (ratingsObj[`${sol}|${c}`] ?? 0) === 0);
-if (failed.length) result[sol] = failed;
+const failed = koIds.filter(cid => (ratingsObj[`${sol.id}|${cid}`] ?? 0) === 0);
+if (failed.length) result[sol.id] = failed;
 });
 return result;
 }
 function scoreSolutions(weights, ratingsObj = ratings) {
-const sols = getSolutions();
-return sols.map(sol => {
-const score = criteria.reduce((sum, c) => sum + (ratingsObj[`${sol}|${c}`] ?? 0) * (weights[c] ?? 0), 0);
+return getSolutions().map(sol => {
+const score = criteria.reduce((sum, c) => sum + (ratingsObj[`${sol.id}|${c.id}`] ?? 0) * (weights[c.id] ?? 0), 0);
 return { sol, score };
 }).sort((a, b) => b.score - a.score);
 }
@@ -802,21 +1014,62 @@ const sols = getSolutions();
 const tbody = document.getElementById('solutionRankingBody');
 if (!comparisonStarted || criteria.length === 0 || sols.length === 0) { tbody.innerHTML = ''; return; }
 const ko = getKnockedOut();
-const ranked = scoreSolutions(computeWeights()).filter(({ sol }) => !ko[sol]);
+const ranked = scoreSolutions(computeWeights()).filter(({ sol }) => !ko[sol.id]);
 const entries = [
 ...ranked.map(({ sol, score }) => {
 const pct = (score / 4) * 100;
-const note = solutionNotes[sol] ? `<div class="rank-note">${solutionNotes[sol]}</div>` : '';
-return { key: sol, html: `<td><div>${sol}</div>${note}</td><td>${score.toFixed(2)}</td><td><div class="weight-cell"><span>${pct.toFixed(1)}%</span><div class="weight-bar-wrap"><div class="weight-bar" style="width:${pct}%"></div></div></div></td>` };
+const note = solutionNotes[sol.id] ? `<div class="rank-note">${esc(solutionNotes[sol.id])}</div>` : '';
+return { key: sol.id, html: `<td><div>${esc(sol.name)}</div>${note}</td><td>${score.toFixed(2)}</td><td><div class="weight-cell"><span>${pct.toFixed(1)}%</span><div class="weight-bar-wrap"><div class="weight-bar" style="width:${pct}%"></div></div></div></td>` };
 }),
-...Object.entries(ko).map(([sol, failed]) => {
-const note = solutionNotes[sol] ? `<div class="rank-note">${solutionNotes[sol]}</div>` : '';
-return { key: sol, html: `<td class="rank-ko"><div class="rank-ko-name">${sol}</div>${note}<span class="rank-ko-reason">${t('knockedOut')}: ${failed.join(', ')}</span></td><td class="rank-ko">—</td><td class="rank-ko">—</td>` };
+...Object.entries(ko).map(([solId, failedIds]) => {
+const sol = sols.find(s => s.id === solId);
+const note = solutionNotes[solId] ? `<div class="rank-note">${esc(solutionNotes[solId])}</div>` : '';
+const failedNames = failedIds.map(critName).join(', ');
+return { key: solId, html: `<td class="rank-ko"><div class="rank-ko-name">${esc(sol ? sol.name : '')}</div>${note}<span class="rank-ko-reason">${t('knockedOut')}: ${esc(failedNames)}</span></td><td class="rank-ko">—</td><td class="rank-ko">—</td>` };
 }),
 ];
 animateRows(tbody, entries);
+renderRobustness();
 renderScenarios();
 saveState();
+}
+function computeRobustness() {
+if (!comparisonStarted || criteria.length === 0) return null;
+const ko = getKnockedOut();
+const alive = getSolutions().filter(s => !ko[s.id]);
+if (alive.length < 2) return null;
+const weights = computeWeights();
+const winner = scoreSolutions(weights).filter(({ sol }) => !ko[sol.id])[0].sol;
+let best = null;
+criteria.forEach(c => {
+const segs = computeBreakevens(c.id, alive, weights, ratings);
+const cur = weights[c.id] ?? 0;
+for (let i = 1; i < segs.length; i++) {
+const bp = segs[i].from;
+const farSeg = cur < bp ? segs[i] : segs[i - 1];
+const farWinners = Array.isArray(farSeg.sol) ? farSeg.sol : [farSeg.sol];
+if (farWinners.length === 1 && farWinners[0].id === winner.id) continue;
+const challenger = farWinners.filter(s => s.id !== winner.id).map(s => s.name).join(' & ');
+if (!challenger) continue;
+const delta = Math.abs(cur - bp);
+if (!best || delta < best.delta) best = { crit: c, cur, bp, challenger, delta };
+}
+});
+return best ? { stable: false, winner, ...best } : { stable: true, winner };
+}
+function renderRobustness() {
+const el = document.getElementById('robustnessHint');
+if (!el) return;
+const r = computeRobustness();
+if (!r) { el.innerHTML = ''; el.className = 'robustness'; return; }
+if (r.stable) {
+el.innerHTML = t('robustnessStable')(esc(r.winner.name));
+el.className = 'robustness robust';
+} else {
+const cur = Math.round(r.cur * 100), bp = Math.round(r.bp * 100);
+el.innerHTML = t('robustnessFlip')(esc(r.challenger), esc(r.crit.name), cur, bp);
+el.className = 'robustness' + (r.delta < 0.05 ? ' fragile' : '');
+}
 }
 addSolutionBtn.onclick = () => addSolutionInput();
 for (let i = 0; i < 3; i++) addSolutionInput();
@@ -826,72 +1079,96 @@ let explorationRatings = {};
 function initSensWeights() {
 const w = computeWeights();
 sensWeights = {};
-criteria.forEach(c => sensWeights[c] = w[c]);
+criteria.forEach(c => sensWeights[c.id] = w[c.id]);
 }
 function ensureSensState() {
 if (criteria.length === 0) return;
-const total = criteria.reduce((s, c) => s + (typeof sensWeights[c] === 'number' ? sensWeights[c] : NaN), 0);
+const total = criteria.reduce((s, c) => s + (typeof sensWeights[c.id] === 'number' ? sensWeights[c.id] : NaN), 0);
 if (!isFinite(total) || Math.abs(total - 1) > 0.01) initSensWeights();
 getSolutions().forEach(sol => criteria.forEach(c => {
-const k = `${sol}|${c}`;
+const k = `${sol.id}|${c.id}`;
 if (explorationRatings[k] === undefined && ratings[k] !== undefined) explorationRatings[k] = ratings[k];
 }));
 }
-function adjustSensWeight(changedC, newVal) {
+function adjustSensWeight(changedId, newVal) {
 ensureSensState();
-const others = criteria.filter(c => c !== changedC);
-const otherTotal = others.reduce((s, c) => s + (sensWeights[c] ?? 0), 0);
+const others = criteria.filter(c => c.id !== changedId);
+const otherTotal = others.reduce((s, c) => s + (sensWeights[c.id] ?? 0), 0);
 const remaining = 1 - newVal;
 if (otherTotal < 0.0001) {
-others.forEach(c => sensWeights[c] = remaining / others.length);
+others.forEach(c => sensWeights[c.id] = remaining / others.length);
 } else {
-others.forEach(c => sensWeights[c] = (sensWeights[c] ?? 0) * remaining / otherTotal);
+others.forEach(c => sensWeights[c.id] = (sensWeights[c.id] ?? 0) * remaining / otherTotal);
 }
-sensWeights[changedC] = newVal;
-const total = criteria.reduce((s, c) => s + sensWeights[c], 0);
-if (total > 0) criteria.forEach(c => sensWeights[c] /= total);
+sensWeights[changedId] = newVal;
+const total = criteria.reduce((s, c) => s + sensWeights[c.id], 0);
+if (total > 0) criteria.forEach(c => sensWeights[c.id] /= total);
 updateSensRanking();
 updateSensImpact(); updateRatingImpact();
 }
-function segmentBg(winner, sols) {
+function koHatch(color) {
+return `repeating-linear-gradient(-45deg,${color} 0px,${color} 3px,${color}22 3px,${color}22 7px)`;
+}
+function segmentBg(winner, sols, ko = null) {
 const ws = Array.isArray(winner) ? winner : [winner];
-const colors = ws.map(s => SOL_COLORS[sols.indexOf(s) % SOL_COLORS.length]);
-if (colors.length === 1) return `background:${colors[0]};opacity:.85`;
+const colors = ws.map(s => SOL_COLORS[sols.findIndex(x => x.id === s.id) % SOL_COLORS.length]);
+if (ws.length === 1) {
+if (ko && ko[ws[0].id]) return `background:${koHatch(colors[0])};opacity:.85`;
+return `background:${colors[0]};opacity:.85`;
+}
 const sz = 5;
-const stops = colors.flatMap((c, i) => [`${c} ${i * sz}px`, `${c} ${(i + 1) * sz}px`]).join(',');
+const stops = colors.flatMap((c, i) => {
+const cc = ko && ko[ws[i].id] ? c + '44' : c;
+return [`${cc} ${i * sz}px`, `${cc} ${(i + 1) * sz}px`];
+}).join(',');
 return `background:repeating-linear-gradient(-45deg,${stops});opacity:.9`;
 }
-function computeBreakevens(C, sols) {
-const wC = sensWeights[C] ?? 0;
+function winnerLabel(winner) {
+return (Array.isArray(winner) ? winner : [winner]).map(s => s.name).join(' & ');
+}
+function sensLegendHtml(sols) {
+const ko = getKnockedOut(explorationRatings);
+let html = '<div class="be-legend">';
+sols.forEach((sol, i) => {
+const failed = ko[sol.id];
+const color = SOL_COLORS[i % SOL_COLORS.length];
+const dotBg = failed ? koHatch(color) : color;
+const mark = failed ? `<span class="be-ko-mark" title="${esc(t('knockedOut'))}: ${esc(failed.map(critName).join(', '))}">⊗</span>` : '';
+html += `<span class="be-legend-item${failed ? ' be-legend-ko' : ''}"><span class="be-dot" style="background:${dotBg}"></span><span class="${failed ? 'be-ko-name' : ''}">${esc(sol.name)}</span>${mark}</span>`;
+});
+return html + '</div>';
+}
+function computeBreakevens(cId, sols, w = sensWeights, r = explorationRatings) {
+const wC = w[cId] ?? 0;
 const otherSum = 1 - wC;
-const others = criteria.filter(x => x !== C);
+const others = criteria.filter(x => x.id !== cId);
 function beta(sol) {
 if (otherSum < 1e-10) {
 return others.length > 0
-? others.reduce((s, x) => s + (explorationRatings[`${sol}|${x}`] ?? 0), 0) / others.length
+? others.reduce((s, x) => s + (r[`${sol.id}|${x.id}`] ?? 0), 0) / others.length
 : 0;
 }
-return others.reduce((s, x) => s + (explorationRatings[`${sol}|${x}`] ?? 0) * (sensWeights[x] ?? 0) / otherSum, 0);
+return others.reduce((s, x) => s + (r[`${sol.id}|${x.id}`] ?? 0) * (w[x.id] ?? 0) / otherSum, 0);
 }
-function scoreAt(sol, t) {
+function scoreAt(sol, tVal) {
 const b = beta(sol);
-return b + t * ((explorationRatings[`${sol}|${C}`] ?? 0) - b);
+return b + tVal * ((r[`${sol.id}|${cId}`] ?? 0) - b);
 }
 const bps = new Set([0, 1]);
 for (let i = 0; i < sols.length; i++) {
 for (let j = i + 1; j < sols.length; j++) {
 const A = sols[i], B = sols[j];
-const aA = explorationRatings[`${A}|${C}`] ?? 0, aB = explorationRatings[`${B}|${C}`] ?? 0;
+const aA = r[`${A.id}|${cId}`] ?? 0, aB = r[`${B.id}|${cId}`] ?? 0;
 const bA = beta(A), bB = beta(B);
 const denom = (aA - bA) - (aB - bB);
 if (Math.abs(denom) > 1e-10) {
-const t = (bB - bA) / denom;
-if (t > 1e-6 && t < 1 - 1e-6) bps.add(t);
+const tVal = (bB - bA) / denom;
+if (tVal > 1e-6 && tVal < 1 - 1e-6) bps.add(tVal);
 }
 }
 }
 const sorted = [...bps].sort((a, b) => a - b);
-const solKey = w => Array.isArray(w) ? [...w].sort().join('\0') : w;
+const solKey = w => (Array.isArray(w) ? w : [w]).map(x => x.id).sort().join('\0');
 const segments = sorted.slice(0, -1).map((from, i) => {
 const to = sorted[i + 1];
 const mid = (from + to) / 2;
@@ -919,17 +1196,19 @@ const tbody = document.getElementById('sensRankingBody');
 if (!comparisonStarted || criteria.length === 0 || sols.length === 0) { tbody.innerHTML = ''; return; }
 ensureSensState();
 const ko = getKnockedOut(explorationRatings);
-const ranked = scoreSolutions(sensWeights, explorationRatings).filter(({ sol }) => !ko[sol]);
+const ranked = scoreSolutions(sensWeights, explorationRatings).filter(({ sol }) => !ko[sol.id]);
 const entries = [
 ...ranked.map(({ sol, score }) => {
 const pct = (score / 4) * 100;
-const color = SOL_COLORS[sols.indexOf(sol) % SOL_COLORS.length];
-const note = solutionNotes[sol] ? `<div class="rank-note">${solutionNotes[sol]}</div>` : '';
-return { key: sol, html: `<td style="color:${color};font-weight:600"><div>${sol}</div>${note}</td><td>${score.toFixed(2)}</td><td><div class="weight-cell"><span>${pct.toFixed(1)}%</span><div class="weight-bar-wrap"><div class="weight-bar" style="width:${pct}%;background:${color}"></div></div></div></td>` };
+const color = SOL_COLORS[sols.findIndex(s => s.id === sol.id) % SOL_COLORS.length];
+const note = solutionNotes[sol.id] ? `<div class="rank-note">${esc(solutionNotes[sol.id])}</div>` : '';
+return { key: sol.id, html: `<td style="color:${color};font-weight:600"><div>${esc(sol.name)}</div>${note}</td><td>${score.toFixed(2)}</td><td><div class="weight-cell"><span>${pct.toFixed(1)}%</span><div class="weight-bar-wrap"><div class="weight-bar" style="width:${pct}%;background:${color}"></div></div></div></td>` };
 }),
-...Object.entries(ko).map(([sol, failed]) => {
-const note = solutionNotes[sol] ? `<div class="rank-note">${solutionNotes[sol]}</div>` : '';
-return { key: sol, html: `<td class="rank-ko"><div class="rank-ko-name">${sol}</div>${note}<span class="rank-ko-reason">${t('knockedOut')}: ${failed.join(', ')}</span></td><td class="rank-ko">—</td><td class="rank-ko">—</td>` };
+...Object.entries(ko).map(([solId, failedIds]) => {
+const sol = sols.find(s => s.id === solId);
+const note = solutionNotes[solId] ? `<div class="rank-note">${esc(solutionNotes[solId])}</div>` : '';
+const failedNames = failedIds.map(critName).join(', ');
+return { key: solId, html: `<td class="rank-ko"><div class="rank-ko-name">${esc(sol ? sol.name : '')}</div>${note}<span class="rank-ko-reason">${t('knockedOut')}: ${esc(failedNames)}</span></td><td class="rank-ko">—</td><td class="rank-ko">—</td>` };
 }),
 ];
 animateRows(tbody, entries);
@@ -942,19 +1221,15 @@ container.innerHTML = `<p class="hint">${t('hintNeedSolutions')}</p>`;
 return;
 }
 ensureSensState();
-let html = '<div class="be-legend">';
-sols.forEach((sol, i) => {
-html += `<span class="be-legend-item"><span class="be-dot" style="background:${SOL_COLORS[i % SOL_COLORS.length]}"></span>${sol}</span>`;
-});
-html += '</div>';
-criteriaByWeight().forEach(C => {
-const segments = computeBreakevens(C, sols);
-const currentPct = (sensWeights[C] ?? 0) * 100;
-html += `<div class="be-row"><span class="be-label" title="${C}">${C}</span><div class="be-track-wrap" data-criterion="${C}"><div class="be-track">`;
+const koNow = getKnockedOut(explorationRatings);
+let html = sensLegendHtml(sols);
+criteriaByWeight().forEach(c => {
+const segments = computeBreakevens(c.id, sols);
+const currentPct = (sensWeights[c.id] ?? 0) * 100;
+html += `<div class="be-row"><span class="be-label" title="${esc(c.name)}">${esc(c.name)}</span><div class="be-track-wrap" data-criterion="${c.id}"><div class="be-track">`;
 segments.forEach(seg => {
 const w = (seg.to - seg.from) * 100;
-const label = Array.isArray(seg.sol) ? seg.sol.join(' & ') : seg.sol;
-html += `<div class="be-segment" style="width:${w}%;${segmentBg(seg.sol, sols)}" title="${label}: ${Math.round(seg.from * 100)}%–${Math.round(seg.to * 100)}%"></div>`;
+html += `<div class="be-segment" style="width:${w}%;${segmentBg(seg.sol, sols, koNow)}" title="${esc(winnerLabel(seg.sol))}: ${Math.round(seg.from * 100)}%–${Math.round(seg.to * 100)}%"></div>`;
 });
 html += `</div><div class="be-current" style="left:${currentPct.toFixed(2)}%"></div>`;
 const innerBps = segments.slice(1).map(s => s.from * 100);
@@ -975,6 +1250,7 @@ document.getElementById('resetWeightsBtn').onclick = () => {
 initSensWeights();
 updateSensRanking();
 updateSensImpact(); updateRatingImpact();
+saveState();
 };
 let sensImpactDrag = null;
 (function setupSensImpactDrag() {
@@ -986,9 +1262,10 @@ return Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
 function onMove(e) {
 if (!sensImpactDrag) return;
 e.preventDefault();
-adjustSensWeight(sensImpactDrag.C, getT(e, sensImpactDrag.rect));
+adjustSensWeight(sensImpactDrag.cId, getT(e, sensImpactDrag.rect));
 }
 function onUp() {
+if (sensImpactDrag) saveState();
 sensImpactDrag = null;
 document.removeEventListener('mousemove', onMove);
 document.removeEventListener('mouseup', onUp);
@@ -999,16 +1276,16 @@ container.addEventListener('mousedown', e => {
 const wrap = e.target.closest('.be-track-wrap');
 if (!wrap) return;
 e.preventDefault();
-sensImpactDrag = { C: wrap.dataset.criterion, rect: wrap.getBoundingClientRect() };
-adjustSensWeight(sensImpactDrag.C, getT(e, sensImpactDrag.rect));
+sensImpactDrag = { cId: wrap.dataset.criterion, rect: wrap.getBoundingClientRect() };
+adjustSensWeight(sensImpactDrag.cId, getT(e, sensImpactDrag.rect));
 document.addEventListener('mousemove', onMove);
 document.addEventListener('mouseup', onUp);
 });
 container.addEventListener('touchstart', e => {
 const wrap = e.target.closest('.be-track-wrap');
 if (!wrap) return;
-sensImpactDrag = { C: wrap.dataset.criterion, rect: wrap.getBoundingClientRect() };
-adjustSensWeight(sensImpactDrag.C, getT(e, sensImpactDrag.rect));
+sensImpactDrag = { cId: wrap.dataset.criterion, rect: wrap.getBoundingClientRect() };
+adjustSensWeight(sensImpactDrag.cId, getT(e, sensImpactDrag.rect));
 document.addEventListener('touchmove', onMove, { passive: false });
 document.addEventListener('touchend', onUp);
 }, { passive: true });
@@ -1016,27 +1293,27 @@ document.addEventListener('touchend', onUp);
 function initExplorationRatings() {
 explorationRatings = { ...ratings };
 }
-function computeRatingBreakevens(sol, C, sols, weights, rObj) {
+function computeRatingBreakevens(sol, cId, sols, weights, rObj) {
 const r = rObj || explorationRatings;
-const wC = weights[C] ?? 0;
-const baseScore = criteria.reduce((s, c) => c === C ? s : s + (r[`${sol}|${c}`] ?? 0) * (weights[c] ?? 0), 0);
-const otherScores = {};
-sols.filter(s => s !== sol).forEach(s => {
-otherScores[s] = criteria.reduce((sum, c) => sum + (r[`${s}|${c}`] ?? 0) * (weights[c] ?? 0), 0);
-});
+const wC = weights[cId] ?? 0;
+const baseScore = criteria.reduce((s, c) => c.id === cId ? s : s + (r[`${sol.id}|${c.id}`] ?? 0) * (weights[c.id] ?? 0), 0);
+const others = sols.filter(s => s.id !== sol.id).map(s => ({
+sol: s,
+score: criteria.reduce((sum, c) => sum + (r[`${s.id}|${c.id}`] ?? 0) * (weights[c.id] ?? 0), 0),
+}));
 const bps = wC > 0
-? Object.values(otherScores).map(os => (os - baseScore) / wC).filter(v => v > 0 && v < 4)
+? others.map(o => (o.score - baseScore) / wC).filter(v => v > 0 && v < 4)
 : [];
 const points = [0, ...bps.sort((a, b) => a - b), 4];
-const winKey = w => Array.isArray(w) ? [...w].sort().join('\0') : w;
+const winKey = w => (Array.isArray(w) ? w : [w]).map(x => x.id).sort().join('\0');
 const segments = [];
 for (let i = 0; i < points.length - 1; i++) {
 const mid = (points[i] + points[i + 1]) / 2;
 const solMid = baseScore + mid * wC;
 let topScore = solMid, topSols = [sol];
-Object.entries(otherScores).forEach(([s, sc]) => {
-if (Math.abs(sc - topScore) < 1e-9) topSols.push(s);
-else if (sc > topScore) { topScore = sc; topSols = [s]; }
+others.forEach(o => {
+if (Math.abs(o.score - topScore) < 1e-9) topSols.push(o.sol);
+else if (o.score > topScore) { topScore = o.score; topSols = [o.sol]; }
 });
 const winner = topSols.length === 1 ? topSols[0] : topSols;
 segments.push({ from: points[i] / 4, to: points[i + 1] / 4, winner });
@@ -1057,21 +1334,20 @@ return;
 }
 ensureSensState();
 const weights = sensWeights;
-let html = '<div class="be-legend">';
-sols.forEach((s, i) => { html += `<span class="be-legend-item"><span class="be-dot" style="background:${SOL_COLORS[i % SOL_COLORS.length]}"></span>${s}</span>`; });
-html += '</div>';
+const koNow = getKnockedOut(explorationRatings);
+let html = sensLegendHtml(sols);
 sols.forEach((sol, si) => {
 const solColor = SOL_COLORS[si % SOL_COLORS.length];
-html += `<div class="ri-sol-header" style="color:${solColor}">${sol}</div>`;
-criteriaByWeight().forEach(C => {
-const segs = computeRatingBreakevens(sol, C, sols, weights);
-const cur = ((explorationRatings[`${sol}|${C}`] ?? 0) / 4 * 100).toFixed(2);
-html += `<div class="be-row"><span class="be-label" title="${C}">${C}</span>`;
-html += `<div class="be-track-wrap" data-sol="${sol}" data-crit="${C}">`;
+const koMark = koNow[sol.id] ? ` <span class="be-ko-mark" title="${esc(t('knockedOut'))}: ${esc(koNow[sol.id].map(critName).join(', '))}">⊗</span>` : '';
+html += `<div class="ri-sol-header" style="color:${solColor}">${esc(sol.name)}${koMark}</div>`;
+criteriaByWeight().forEach(c => {
+const segs = computeRatingBreakevens(sol, c.id, sols, weights);
+const cur = ((explorationRatings[`${sol.id}|${c.id}`] ?? 0) / 4 * 100).toFixed(2);
+html += `<div class="be-row"><span class="be-label" title="${esc(c.name)}">${esc(c.name)}</span>`;
+html += `<div class="be-track-wrap" data-sol="${sol.id}" data-crit="${c.id}">`;
 html += `<div class="be-track">`;
 segs.forEach(seg => {
-const label = Array.isArray(seg.winner) ? seg.winner.join(' & ') : seg.winner;
-html += `<div class="be-segment" style="width:${((seg.to - seg.from) * 100).toFixed(3)}%;${segmentBg(seg.winner, sols)}" title="${label}"></div>`;
+html += `<div class="be-segment" style="width:${((seg.to - seg.from) * 100).toFixed(3)}%;${segmentBg(seg.winner, sols, koNow)}" title="${esc(winnerLabel(seg.winner))}"></div>`;
 });
 html += `</div><div class="be-current" style="left:${cur}%"></div>`;
 html += `<div class="rs-ticks">`;
@@ -1086,6 +1362,7 @@ initExplorationRatings();
 updateRatingImpact();
 updateSensImpact();
 updateSensRanking();
+saveState();
 };
 (function setupRatingImpactDrag() {
 const container = document.getElementById('ratingImpactContainer');
@@ -1097,18 +1374,21 @@ return Math.round(Math.max(0, Math.min(4, ((x - rect.left) / rect.width) * 4)));
 function onDown(e) {
 const wrap = e.target.closest('[data-sol][data-crit]');
 if (!wrap || !container.contains(wrap)) return;
-active = { sol: wrap.dataset.sol, crit: wrap.dataset.crit, rect: wrap.getBoundingClientRect() };
+active = { solId: wrap.dataset.sol, critId: wrap.dataset.crit, rect: wrap.getBoundingClientRect() };
 onMove(e);
 }
 function onMove(e) {
 if (!active) return;
 e.preventDefault();
-explorationRatings[`${active.sol}|${active.crit}`] = getVal(e, active.rect);
+explorationRatings[`${active.solId}|${active.critId}`] = getVal(e, active.rect);
 updateRatingImpact();
 updateSensImpact();
 updateSensRanking();
 }
-function onUp() { active = null; }
+function onUp() {
+if (active) saveState();
+active = null;
+}
 container.addEventListener('mousedown', onDown);
 document.addEventListener('mousemove', onMove);
 document.addEventListener('mouseup', onUp);
@@ -1120,7 +1400,7 @@ let scenarios = [];
 function saveCurrentScenario() {
 const input = document.getElementById('scenarioNameInput');
 const name = (input.value || '').trim() || `${t('scenarios')} ${scenarios.length + 1}`;
-scenarios.push({ id: Date.now().toString(), name, weights: { ...sensWeights }, ratings: { ...explorationRatings } });
+scenarios.push({ id: newId('sc'), name, weights: { ...sensWeights }, ratings: { ...explorationRatings } });
 input.value = '';
 renderScenarios();
 saveState();
@@ -1151,32 +1431,32 @@ const colRatings = col => col.isBaseline ? ratings : (col.ratings || exploration
 const colData = cols.map(col => {
 const rObj = colRatings(col);
 const ko = getKnockedOut(rObj);
-const ranked = scoreSolutions(col.weights, rObj).filter(({ sol }) => !ko[sol]);
+const ranked = scoreSolutions(col.weights, rObj).filter(({ sol }) => !ko[sol.id]);
 const map = {};
-ranked.forEach(({ sol, score }, i) => { map[sol] = { rank: i + 1, score }; });
+ranked.forEach(({ sol, score }, i) => { map[sol.id] = { rank: i + 1, score }; });
 return { rankings: map, ko };
 });
 const sortedSols = [...sols].sort((a, b) => {
-if (colData[0].ko[a] && !colData[0].ko[b]) return 1;
-if (!colData[0].ko[a] && colData[0].ko[b]) return -1;
-return (colData[0].rankings[a]?.rank ?? 99) - (colData[0].rankings[b]?.rank ?? 99);
+if (colData[0].ko[a.id] && !colData[0].ko[b.id]) return 1;
+if (!colData[0].ko[a.id] && colData[0].ko[b.id]) return -1;
+return (colData[0].rankings[a.id]?.rank ?? 99) - (colData[0].rankings[b.id]?.rank ?? 99);
 });
 let html = '<div class="sc-wrap"><table class="sc-table"><thead><tr><th></th>';
 cols.forEach(col => {
 if (col.isBaseline) {
-html += `<th>${col.name} <button class="sc-load-btn" onclick="loadScenario('__base__')" title="${t('scenarioLoadHint')}">↙</button></th>`;
+html += `<th>${esc(col.name)} <button class="sc-load-btn" onclick="loadScenario('__base__')" title="${t('scenarioLoadHint')}">↙</button></th>`;
 } else {
-html += `<th>${col.name} <button class="sc-load-btn" onclick="loadScenario('${col.id}')" title="${t('scenarioLoadHint')}">↙</button><button class="sc-del" onclick="deleteScenario('${col.id}')" title="Remove">✕</button></th>`;
+html += `<th>${esc(col.name)} <button class="sc-load-btn" onclick="loadScenario('${col.id}')" title="${t('scenarioLoadHint')}">↙</button><button class="sc-del" onclick="deleteScenario('${col.id}')" title="Remove">✕</button></th>`;
 }
 });
 html += '</tr></thead><tbody>';
 const orderedCriteria = criteriaByWeight();
 orderedCriteria.forEach(c => {
-const baseW = baseWeights[c] ?? 0;
+const baseW = baseWeights[c.id] ?? 0;
 html += '<tr class="sc-w-row">';
-html += `<td class="sc-label">${c}</td>`;
+html += `<td class="sc-label">${esc(c.name)}</td>`;
 cols.forEach(col => {
-const w = col.weights[c] ?? 0;
+const w = col.weights[c.id] ?? 0;
 const pct = (w * 100).toFixed(1) + '%';
 const changed = !col.isBaseline && Math.abs(w - baseW) > 1e-4;
 html += `<td class="sc-w${changed ? ' sc-w-hi' : ''}">${pct}</td>`;
@@ -1185,14 +1465,14 @@ html += '</tr>';
 });
 html += `<tr class="sc-sep"><td colspan="${cols.length + 1}"></td></tr>`;
 sortedSols.forEach(sol => {
-const color = SOL_COLORS[sols.indexOf(sol) % SOL_COLORS.length];
-const isKO = !!colData[0].ko[sol];
+const color = SOL_COLORS[sols.findIndex(s => s.id === sol.id) % SOL_COLORS.length];
+const isKO = !!colData[0].ko[sol.id];
 html += `<tr class="sc-s-row${isKO ? ' sc-ko' : ''}">`;
-html += `<td class="sc-label sc-sol-name" style="color:${color}">${sol}</td>`;
+html += `<td class="sc-label sc-sol-name" style="color:${color}">${esc(sol.name)}</td>`;
 cols.forEach((col, ci) => {
 const d = colData[ci];
-const r = d.rankings[sol];
-if (!!d.ko[sol] || !r) {
+const r = d.rankings[sol.id];
+if (!!d.ko[sol.id] || !r) {
 html += '<td class="sc-ko-cell">—</td>';
 } else {
 const isWinner = r.rank === 1;
@@ -1204,14 +1484,15 @@ html += '</td>';
 });
 html += '</tr>';
 orderedCriteria.forEach(c => {
-const baseR = ratings[`${sol}|${c}`] ?? 0;
-const baseW = baseWeights[c] ?? 0;
+const key = `${sol.id}|${c.id}`;
+const baseR = ratings[key] ?? 0;
+const baseW = baseWeights[c.id] ?? 0;
 html += '<tr class="sc-cr-row">';
-html += `<td class="sc-cr-label">${c}</td>`;
+html += `<td class="sc-cr-label">${esc(c.name)}</td>`;
 cols.forEach(col => {
 if (isKO) { html += '<td class="sc-cr-cell">—</td>'; return; }
-const r = colRatings(col)[`${sol}|${c}`] ?? 0;
-const w = col.weights[c] ?? 0;
+const r = colRatings(col)[key] ?? 0;
+const w = col.weights[c.id] ?? 0;
 const contrib = (r * w).toFixed(2);
 const rChanged = !col.isBaseline && r !== baseR;
 const wChanged = !col.isBaseline && Math.abs(w - baseW) > 1e-4;
@@ -1235,14 +1516,15 @@ const isBase = id === '__base__';
 const scenario = isBase ? null : scenarios.find(s => s.id === id);
 const weights = isBase ? computeWeights() : (scenario || {}).weights;
 if (!weights) return;
-criteria.forEach(c => { if (weights[c] !== undefined) sensWeights[c] = weights[c]; });
-const total = Object.values(sensWeights).reduce((s, v) => s + v, 0);
-if (total > 0) criteria.forEach(c => sensWeights[c] /= total);
+criteria.forEach(c => { if (weights[c.id] !== undefined) sensWeights[c.id] = weights[c.id]; });
+const total = criteria.reduce((s, c) => s + (sensWeights[c.id] ?? 0), 0);
+if (total > 0) criteria.forEach(c => sensWeights[c.id] /= total);
 if (isBase) explorationRatings = { ...ratings };
 else if (scenario && scenario.ratings) explorationRatings = { ...scenario.ratings };
 updateSensImpact();
 updateSensRanking();
 updateRatingImpact();
+saveState();
 }
 function generatePrintView(tradeName = '', exporter = '') {
 const criteria = getCriteria();
@@ -1255,67 +1537,71 @@ const ranked = scoreSolutions(weights);
 const rankedOrdered = [...ranked.filter(r => !koSols[r.sol]), ...ranked.filter(r => koSols[r.sol])];
 const CYAN = '#18c8ff';
 const pairwiseWeights = {};
-criteria.forEach(c => pairwiseWeights[c] = totalPts > 0 ? scores[c] / totalPts : 1 / criteria.length);
-const criteriaRows = Object.entries(scores)
-.sort((a, b) => b[1] - a[1])
-.map(([c, p]) => {
-const pct = totalPts > 0 ? (100 * p / totalPts).toFixed(1) : '0.0';
-return `<tr><td>${c}</td><td>${pct}%</td><td><div class="bar-wrap"><div class="bar" style="width:${pct}%;background:${CYAN}"></div></div></td></tr>`;
+criteria.forEach(c => pairwiseWeights[c.id] = totalPts > 0 ? scores[c.id] / totalPts : 1 / criteria.length);
+const criteriaRows = [...criteria]
+.sort((a, b) => scores[b.id] - scores[a.id])
+.map(c => {
+const pct = totalPts > 0 ? (100 * scores[c.id] / totalPts).toFixed(1) : '0.0';
+return `<tr><td>${esc(c.name)}</td><td>${pct}%</td><td><div class="bar-wrap"><div class="bar" style="width:${pct}%;background:${CYAN}"></div></div></td></tr>`;
 }).join('');
 const orderedCriteria = criteriaByWeight();
 const fineTuneRows = customWeights ? orderedCriteria.map(c => {
-const custom = (weights[c] * 100).toFixed(1);
-const pairwise = (pairwiseWeights[c] * 100).toFixed(1);
-const reason = customWeightReasons[c] || '';
+const custom = (weights[c.id] * 100).toFixed(1);
+const pairwise = (pairwiseWeights[c.id] * 100).toFixed(1);
+const reason = customWeightReasons[c.id] || '';
 const changed = Math.abs(parseFloat(custom) - parseFloat(pairwise)) > 0.05;
 return `<tr>
-<td>${c}</td>
+<td>${esc(c.name)}</td>
 <td style="color:#888">${pairwise}%</td>
 <td style="font-weight:${changed ? '600' : '400'}">${custom}%</td>
-<td style="color:#666;font-style:italic">${reason}</td>
+<td style="color:#666;font-style:italic">${esc(reason)}</td>
 </tr>`;
 }).join('') : '';
 const rankRatingColors = ['#f1f5f9', '#fde68a', '#86efac', '#4ade80', '#16a34a'];
-const solRankThds = orderedCriteria.map(c => `<th title="${c}">${c}</th>`).join('');
+const solRankThds = orderedCriteria.map(c => `<th title="${esc(c.name)}">${esc(c.name)}</th>`).join('');
 const solRows = rankedOrdered.map(({ sol, score }) => {
-const isKO = !!koSols[sol];
+const isKO = !!koSols[sol.id];
 const pct = Math.min(100, (score / 4) * 100).toFixed(1);
-const color = SOL_COLORS[sols.indexOf(sol) % SOL_COLORS.length];
+const color = SOL_COLORS[sols.findIndex(s => s.id === sol.id) % SOL_COLORS.length];
 const ratingCells = orderedCriteria.map(c => {
-const v = ratings[`${sol}|${c}`] ?? 0;
-const rn = ratingNotes[`${sol}|${c}`];
-const noteHtml = rn ? `<div style="font-size:0.65rem;color:#666;font-style:italic;margin-top:2px;line-height:1.2">${rn}</div>` : '';
+const v = ratings[`${sol.id}|${c.id}`] ?? 0;
+const rn = ratingNotes[`${sol.id}|${c.id}`];
+const noteHtml = rn ? `<div style="font-size:0.65rem;color:#666;font-style:italic;margin-top:2px;line-height:1.2">${esc(rn)}</div>` : '';
 return `<td style="text-align:center;background:${rankRatingColors[v]};color:#1a1a2e;font-size:0.8rem;vertical-align:top"><div>${v}</div>${noteHtml}</td>`;
 }).join('');
-const note = solutionNotes[sol] ? `<div style="font-size:0.72rem;color:#888;font-style:italic;font-weight:400;margin-top:2px">${solutionNotes[sol]}</div>` : '';
-const koReason = isKO ? `<div style="font-size:0.65rem;color:#c00;font-style:italic;margin-top:2px">${t('knockedOut')}: ${koSols[sol].join(', ')}</div>` : '';
+const note = solutionNotes[sol.id] ? `<div style="font-size:0.72rem;color:#888;font-style:italic;font-weight:400;margin-top:2px">${esc(solutionNotes[sol.id])}</div>` : '';
+const koReason = isKO ? `<div style="font-size:0.65rem;color:#c00;font-style:italic;margin-top:2px">${t('knockedOut')}: ${esc(koSols[sol.id].map(critName).join(', '))}</div>` : '';
 const strike = isKO ? 'text-decoration:line-through;' : '';
 const rowStyle = isKO ? ' style="opacity:.55"' : '';
-return `<tr${rowStyle}><td style="color:${color};font-weight:600"><div style="${strike}">${sol}</div>${note}${koReason}</td><td style="${strike}">${score.toFixed(2)}</td><td><div class="bar-inline"><div class="bar-wrap"><div class="bar" style="width:${pct}%;background:${color}"></div></div><span class="bar-pct">${pct}%</span></div></td>${ratingCells}</tr>`;
+return `<tr${rowStyle}><td style="color:${color};font-weight:600"><div style="${strike}">${esc(sol.name)}</div>${note}${koReason}</td><td style="${strike}">${score.toFixed(2)}</td><td><div class="bar-inline"><div class="bar-wrap"><div class="bar" style="width:${pct}%;background:${color}"></div></div><span class="bar-pct">${pct}%</span></div></td>${ratingCells}</tr>`;
 }).join('');
-const pairListRows = pairs.map(([a, b]) => {
-const state = pairStates[`${a}|${b}`] ?? 0;
-let left, mid, right;
-if (state === -1)     { left = `<strong>${a}</strong>`; mid = '›'; right = b; }
-else if (state === 1) { left = a; mid = '‹'; right = `<strong>${b}</strong>`; }
-else                  { left = a; mid = '='; right = b; }
+const pairListRows = pairs.map(([idA, idB]) => {
+const state = pairStates[`${idA}|${idB}`] ?? 0;
+const a = esc(critName(idA)), b = esc(critName(idB));
+let left = a, mid = '=', right = b;
+if (state === -1)      { left = `<strong>${a}</strong>`; mid = '›'; }
+else if (state === 1)  { right = `<strong>${b}</strong>`; mid = '‹'; }
 return `<tr><td>${left}</td><td style="text-align:center;color:#aaa;font-weight:700;padding:7px 6px">${mid}</td><td>${right}</td></tr>`;
 }).join('');
 function printLegend(solList) {
-return '<div class="legend">' + solList.map((sol, i) =>
-`<span class="legend-item"><span class="legend-dot" style="background:${SOL_COLORS[i % SOL_COLORS.length]}"></span>${sol}</span>`
-).join('') + '</div>';
+const koNow = getKnockedOut(explorationRatings);
+return '<div class="legend">' + solList.map((sol, i) => {
+const failed = koNow[sol.id];
+const name = failed ? `<span style="text-decoration:line-through;opacity:.6">${esc(sol.name)}</span> <span style="color:#c00;font-size:.75rem">⊗ ${esc(failed.map(critName).join(', '))}</span>` : esc(sol.name);
+return `<span class="legend-item"><span class="legend-dot" style="background:${SOL_COLORS[i % SOL_COLORS.length]}"></span>${name}</span>`;
+}).join('') + '</div>';
 }
+const koExp = getKnockedOut(explorationRatings);
 let sensHtml = '';
 if (proMode && sols.length >= 2) {
 sensHtml += printLegend(sols);
-orderedCriteria.forEach(C => {
-const segs = computeBreakevens(C, sols);
-const curPct = ((sensWeights[C] ?? 0) * 100).toFixed(2);
-sensHtml += `<div class="be-row"><span class="be-label" title="${C}">${C}</span><div class="be-track-wrap"><div class="be-track">`;
+orderedCriteria.forEach(c => {
+const segs = computeBreakevens(c.id, sols);
+const curPct = ((sensWeights[c.id] ?? 0) * 100).toFixed(2);
+sensHtml += `<div class="be-row"><span class="be-label" title="${esc(c.name)}">${esc(c.name)}</span><div class="be-track-wrap"><div class="be-track">`;
 segs.forEach(seg => {
 const w = ((seg.to - seg.from) * 100).toFixed(3);
-sensHtml += `<div class="be-segment" style="width:${w}%;${segmentBg(seg.sol, sols)}"></div>`;
+sensHtml += `<div class="be-segment" style="width:${w}%;${segmentBg(seg.sol, sols, koExp)}"></div>`;
 });
 sensHtml += `</div>`;
 sensHtml += `<div class="be-current" style="left:${curPct}%"></div>`;
@@ -1332,14 +1618,14 @@ if (proMode && sols.length >= 2) {
 ratingHtml += printLegend(sols);
 sols.forEach((sol, si) => {
 const solColor = SOL_COLORS[si % SOL_COLORS.length];
-ratingHtml += `<div class="ri-sol-header" style="color:${solColor}">${sol}</div>`;
-orderedCriteria.forEach(C => {
-const segs = computeRatingBreakevens(sol, C, sols, sensWeights);
-const cur = ((explorationRatings[`${sol}|${C}`] ?? 0) / 4 * 100).toFixed(2);
-ratingHtml += `<div class="be-row"><span class="be-label" title="${C}">${C}</span><div class="be-track-wrap"><div class="be-track">`;
+ratingHtml += `<div class="ri-sol-header" style="color:${solColor}">${esc(sol.name)}</div>`;
+orderedCriteria.forEach(c => {
+const segs = computeRatingBreakevens(sol, c.id, sols, sensWeights);
+const cur = ((explorationRatings[`${sol.id}|${c.id}`] ?? 0) / 4 * 100).toFixed(2);
+ratingHtml += `<div class="be-row"><span class="be-label" title="${esc(c.name)}">${esc(c.name)}</span><div class="be-track-wrap"><div class="be-track">`;
 segs.forEach(seg => {
 const w = ((seg.to - seg.from) * 100).toFixed(3);
-ratingHtml += `<div class="be-segment" style="width:${w}%;${segmentBg(seg.winner, sols)}"></div>`;
+ratingHtml += `<div class="be-segment" style="width:${w}%;${segmentBg(seg.winner, sols, koExp)}"></div>`;
 });
 ratingHtml += `</div><div class="be-current" style="left:${cur}%"></div>`;
 for (let i = 0; i <= 4; i++) ratingHtml += `<div class="be-tick" style="left:${i * 25}%">${i}</div>`;
@@ -1347,13 +1633,15 @@ ratingHtml += `</div></div>`;
 });
 });
 }
-const koActive = orderedCriteria.filter(c => knockoutCriteria[c]);
+const koActive = orderedCriteria.filter(c => knockoutCriteria[c.id]);
 let knockoutHtml = '';
 if (koActive.length > 0) {
 knockoutHtml = `<h2>${t('printKnockoutCriteria')}</h2><table><thead><tr><th>${t('printThCriterion')}</th><th>${t('printThSolution')}</th></tr></thead><tbody>`;
 koActive.forEach(c => {
-const eliminated = Object.entries(koSols).filter(([, fc]) => fc.includes(c)).map(([s]) => s);
-knockoutHtml += `<tr><td style="font-weight:600">${c}</td><td style="color:#c00">${eliminated.length ? eliminated.join(', ') : '—'}</td></tr>`;
+const eliminated = Object.entries(koSols)
+.filter(([, failedIds]) => failedIds.includes(c.id))
+.map(([solId]) => (sols.find(s => s.id === solId) || {}).name || '');
+knockoutHtml += `<tr><td style="font-weight:600">${esc(c.name)}</td><td style="color:#c00">${eliminated.length ? esc(eliminated.join(', ')) : '—'}</td></tr>`;
 });
 knockoutHtml += '</tbody></table>';
 }
@@ -1361,17 +1649,17 @@ const printAnchorDefaults = t('anchorDefaults');
 const scaleLegend = `<div class="rating-scale">${[0, 1, 2, 3, 4].map(v =>
 `<span class="rs-item"><strong style="background:${rankRatingColors[v]}">${v}</strong> ${printAnchorDefaults[v]}</span>`
 ).join('')}</div>`;
-const hasCustomAnchors = criteria.some(c => [0, 1, 2, 3, 4].some(v => criteriaAnchors[`${c}|${v}`]));
+const hasCustomAnchors = criteria.some(c => [0, 1, 2, 3, 4].some(v => criteriaAnchors[`${c.id}|${v}`]));
 let anchorsHtml = `<h2>${t('printScoreDefinitions')}</h2>`;
 if (hasCustomAnchors) {
 anchorsHtml += '<table><thead><tr><th style="width:20%">' + t('printThCriterion') + '</th>';
 for (let v = 0; v <= 4; v++) anchorsHtml += `<th style="text-align:center"><span class="rs-num" style="background:${rankRatingColors[v]}">${v}</span></th>`;
 anchorsHtml += '</tr></thead><tbody>';
 orderedCriteria.forEach(c => {
-anchorsHtml += `<tr><td style="font-weight:600">${c}</td>`;
+anchorsHtml += `<tr><td style="font-weight:600">${esc(c.name)}</td>`;
 for (let v = 0; v <= 4; v++) {
-const custom = criteriaAnchors[`${c}|${v}`];
-const label = custom ? `<span style="color:#333;font-weight:500">${custom}</span>` : `<span style="color:#bbb">${printAnchorDefaults[v]}</span>`;
+const custom = criteriaAnchors[`${c.id}|${v}`];
+const label = custom ? `<span style="color:#333;font-weight:500">${esc(custom)}</span>` : `<span style="color:#bbb">${printAnchorDefaults[v]}</span>`;
 anchorsHtml += `<td style="font-size:0.78rem;text-align:center">${label}</td>`;
 }
 anchorsHtml += '</tr>';
@@ -1419,8 +1707,8 @@ th{font-weight:600;color:#aaa;font-size:0.73rem;text-transform:uppercase;letter-
 </head>
 <body>
 <div style="display:flex;justify-content:space-between;align-items:baseline;border-bottom:2px solid #1a1a2e;padding-bottom:10px;margin-bottom:6px">
-<div><h1>${tradeName ? `${tradeName} <span style="font-size:.8rem;font-weight:400;color:#888">· DecisionLab v0.4</span>` : 'DecisionLab <span style="font-size:.8rem;font-weight:400;color:#888">v0.4</span>'}</h1></div>
-<div style="text-align:right;font-size:0.75rem;color:#888">${exporter ? `<div><strong>${t('exportedBy')}:</strong> ${exporter}</div>` : ''}<div>${t('printGenerated')(date)}</div></div>
+<div><h1>${tradeName ? `${esc(tradeName)} <span style="font-size:.8rem;font-weight:400;color:#888">· DecisionLab v0.5</span>` : 'DecisionLab <span style="font-size:.8rem;font-weight:400;color:#888">v0.5</span>'}</h1></div>
+<div style="text-align:right;font-size:0.75rem;color:#888">${exporter ? `<div><strong>${t('exportedBy')}:</strong> ${esc(exporter)}</div>` : ''}<div>${t('printGenerated')(date)}</div></div>
 </div>
 ${pairs.length ? `<h2>${t('printCriteriaComparisons')}</h2><table><tbody>${pairListRows}</tbody></table>` : ''}
 <h2>${t('printCriteriaWeights')}</h2>
@@ -1429,6 +1717,7 @@ ${customWeights ? `<h2>${t('printWeightAdjustments')}</h2><table><thead><tr><th>
 ${knockoutHtml}${anchorsHtml}
 <h2>${t('printSolutionRanking')}</h2>
 <table><thead><tr><th>${t('printThSolution')}</th><th>${t('printThScore')}</th><th></th>${solRankThds}</tr></thead><tbody>${solRows}</tbody></table>
+${(() => { const r = computeRobustness(); if (!r) return ''; const txt = r.stable ? t('robustnessStable')(esc(r.winner.name)) : t('robustnessFlip')(esc(r.challenger), esc(r.crit.name), Math.round(r.cur * 100), Math.round(r.bp * 100)); return `<p style="font-size:0.78rem;color:#777;margin:6px 0 0">${txt}</p>`; })()}
 ${proMode && sols.length >= 2 ? `<h2>${t('criterionImpact')}</h2>${sensHtml}<h2>${t('ratingImpact')}</h2>${ratingHtml}` : ''}
 </body>
 </html>`;
@@ -1444,9 +1733,7 @@ document.getElementById('exportHtmlBtn').onclick = () => {
 const tradeName = decisionName;
 const exporter = bearbeiter || t('promptAnonymous');
 const exportedAt = new Date().toLocaleString(lang === 'de' ? 'de-DE' : 'en-GB', { dateStyle: 'medium', timeStyle: 'short' });
-const state = JSON.stringify({
-version: 1, decisionName, bearbeiter, criteria: getCriteria(), pairStates, customWeights, customWeightReasons, proMode, lang, solutions: getSolutions(), ratings, ratingNotes, criteriaAnchors, knockoutCriteria, solutionNotes, scenarios, sensWeights, explorationRatings,
-});
+const state = JSON.stringify(buildState());
 const S = '// Auto-load saved session';
 const E = '// END Auto-load';
 const si = _scriptText.lastIndexOf(S);
@@ -1458,21 +1745,22 @@ const readOnlyCss = '\n/* Read-only export */\n' +
 '[data-readonly] .pair-buttons,[data-readonly] #solutionList,[data-readonly] #addSolutionBtn,' +
 '[data-readonly] #proToggle,[data-readonly] .app-brand,[data-readonly] #helpBtn,' +
 '[data-readonly] #printBtn,[data-readonly] #newBtn,[data-readonly] #exportHtmlBtn,' +
+'[data-readonly] #undoBtn,[data-readonly] #redoBtn,[data-readonly] #exportCsvBtn,' +
 '[data-readonly] #exportBtn,[data-readonly] label.btn-toolbar{display:none}\n' +
 '[data-readonly] .toolbar{justify-content:flex-end;margin-bottom:0}\n' +
 '[data-readonly] .rating-btn{pointer-events:none}\n' +
 '[data-readonly] .project-header{display:none}\n' +
 '[data-readonly] .scenario-save-row{display:none}\n' +
 '[data-readonly] #resetFineBtn,[data-readonly] .sc-del,[data-readonly] .knockout-toggle{display:none}\n' +
-'[data-readonly] .fine-tune-input,[data-readonly] .fine-tune-reason,[data-readonly] .anchor-input,[data-readonly] .rating-note{pointer-events:none;opacity:.5}\n' +
+'[data-readonly] .fine-tune-input,[data-readonly] .fine-tune-reason,[data-readonly] .fine-tune-bar,[data-readonly] .anchor-input,[data-readonly] .rating-note{pointer-events:none;opacity:.5}\n' +
 '.export-info{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px;padding:14px 0 18px;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:24px}\n' +
 '.export-info-title{font-size:1.05rem;font-weight:700;color:#fff;letter-spacing:-.01em}\n' +
 '.export-info-title span{font-size:0.72rem;font-weight:400;color:rgba(255,255,255,.4);background:rgba(255,255,255,.08);padding:2px 8px;border-radius:20px;margin-left:8px;vertical-align:middle}\n' +
 '.export-info-meta{font-size:0.72rem;color:rgba(255,255,255,.4);display:flex;gap:16px}\n' +
 '.export-info-meta strong{color:rgba(255,255,255,.6)}\n';
-const tradeLabel = tradeName ? `<span style="color:#fff;font-size:.95rem;font-weight:600">${tradeName}</span> · ` : '';
-const infoBanner = `<div class="export-info"><div class="export-info-title">${tradeLabel}DecisionLab<span>v0.4</span></div><div class="export-info-meta"><span><strong>${t('exportedBy')}:</strong> ${exporter}</span><span><strong>${t('exportedDate')}:</strong> ${exportedAt}</span></div></div>\n`;
-const pageTitle = tradeName ? `${tradeName} – DecisionLab` : 'DecisionLab';
+const tradeLabel = tradeName ? `<span style="color:#fff;font-size:.95rem;font-weight:600">${esc(tradeName)}</span> · ` : '';
+const infoBanner = `<div class="export-info"><div class="export-info-title">${tradeLabel}DecisionLab<span>v0.5</span></div><div class="export-info-meta"><span><strong>${t('exportedBy')}:</strong> ${esc(exporter)}</span><span><strong>${t('exportedDate')}:</strong> ${exportedAt}</span></div></div>\n`;
+const pageTitle = tradeName ? `${esc(tradeName)} – DecisionLab` : 'DecisionLab';
 const out = '<!DOCTYPE html>\n<html data-readonly lang="' + lang + '">\n<head>\n<meta charset="UTF-8">\n' +
 '<meta name="viewport" content="width=device-width,initial-scale=1">\n<title>' + pageTitle + '</title>\n' +
 '<style>\n' + _styleText + readOnlyCss + '</style>\n</head>\n<body>\n' +
@@ -1486,10 +1774,42 @@ a.click();
 URL.revokeObjectURL(a.href);
 };
 document.getElementById('exportBtn').onclick = () => {
-const data = JSON.stringify({ version: 1, decisionName, bearbeiter, criteria: getCriteria(), pairStates, customWeights, customWeightReasons, proMode, lang, solutions: getSolutions(), ratings, ratingNotes, criteriaAnchors, knockoutCriteria, solutionNotes, scenarios, sensWeights, explorationRatings }, null, 2);
+const data = JSON.stringify(buildState(), null, 2);
 const a = Object.assign(document.createElement('a'), {
 href: URL.createObjectURL(new Blob([data], { type: 'application/json' })),
 download: (decisionName ? decisionName.replace(/[^a-z0-9äöüß\-_ ]/gi, '').trim() + ' – ' : '') + 'DecisionLab.json',
+});
+a.click();
+URL.revokeObjectURL(a.href);
+};
+document.getElementById('exportCsvBtn').onclick = () => {
+const sols = getSolutions();
+const ordered = criteriaByWeight();
+const weights = computeWeights();
+const sep = lang === 'de' ? ';' : ',';
+const num = n => lang === 'de' ? n.toFixed(2).replace('.', ',') : n.toFixed(2);
+const q = v => {
+v = String(v);
+return (v.includes(sep) || v.includes('"') || v.includes('\n')) ? '"' + v.replace(/"/g, '""') + '"' : v;
+};
+const rows = [];
+rows.push([t('thCriterion'), t('thWeight'), ...sols.map(s => s.name)]);
+ordered.forEach(c => {
+rows.push([c.name, num((weights[c.id] ?? 0) * 100) + '%', ...sols.map(s => ratings[`${s.id}|${c.id}`] ?? 0)]);
+});
+const ranked = scoreSolutions(weights);
+const ko = getKnockedOut();
+const alive = ranked.filter(r => !ko[r.sol.id]);
+rows.push([]);
+rows.push([t('thScore'), '', ...sols.map(s => num(ranked.find(r => r.sol.id === s.id).score))]);
+rows.push([t('csvRank'), '', ...sols.map(s => {
+const i = alive.findIndex(r => r.sol.id === s.id);
+return i >= 0 ? '#' + (i + 1) : `${t('knockedOut')}: ${ko[s.id].map(critName).join(' + ')}`;
+})]);
+const csv = '\ufeff' + rows.map(r => r.map(q).join(sep)).join('\n');
+const a = Object.assign(document.createElement('a'), {
+href: URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' })),
+download: (decisionName ? decisionName.replace(/[^a-z0-9äöüß\-_ ]/gi, '').trim() + ' – ' : '') + 'DecisionLab.csv',
 });
 a.click();
 URL.revokeObjectURL(a.href);
@@ -1499,7 +1819,9 @@ const file = e.target.files[0];
 if (!file) return;
 const reader = new FileReader();
 reader.onload = ev => {
-try { applyState(JSON.parse(ev.target.result)); }
+try {
+if (!applyState(JSON.parse(ev.target.result))) alert(t('alertInvalidFile'));
+}
 catch { alert(t('alertInvalidFile')); }
 };
 reader.readAsText(file);
@@ -1549,11 +1871,19 @@ if (btn.dataset.tab === 'sensitivity') { updateSensRanking(); updateSensImpact()
 };
 });
 updateTabState();
+document.getElementById('undoBtn').onclick = () => undoState();
+document.getElementById('redoBtn').onclick = () => redoState();
+document.addEventListener('keydown', e => {
+const tag = ((e.target && e.target.tagName) || '').toLowerCase();
+if (tag === 'input' || tag === 'textarea') return;
+if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && !e.shiftKey) { e.preventDefault(); undoState(); }
+else if ((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === 'y' || (e.shiftKey && e.key.toLowerCase() === 'z'))) { e.preventDefault(); redoState(); }
+});
 // Auto-load saved session
+historyLock = true;
 try {
 const saved = localStorage.getItem(STORAGE_KEY);
-if (saved) applyState(JSON.parse(saved));
-else {
+if (!saved || !applyState(JSON.parse(saved))) {
 decisionName = ''; bearbeiter = '';
 document.getElementById('decisionNameInput').value = '';
 document.getElementById('bearbeiterInput').value = '';
@@ -1561,6 +1891,8 @@ applyProMode();
 applyLang();
 }
 } catch (e) { applyProMode(); applyLang(); }
+historyLock = false;
+saveState();
 // END Auto-load</script>
 </body>
 </html>

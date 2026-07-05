@@ -12,14 +12,17 @@
   <div class="toolbar">
     <div class="app-brand">
       <span class="app-name">DecisionLab</span>
-      <span class="app-version">v0.4</span>
+      <span class="app-version">v0.5</span>
     </div>
     <div class="toolbar-actions">
       <button id="langToggle" class="btn-toolbar lang-toggle">DE</button>
+      <button id="undoBtn" class="btn-toolbar" data-i18n-title="undoTitle" disabled>↶</button>
+      <button id="redoBtn" class="btn-toolbar" data-i18n-title="redoTitle" disabled>↷</button>
       <button id="helpBtn" class="btn-toolbar" data-i18n="help"></button>
       <button id="printBtn" class="btn-toolbar" data-i18n="print"></button>
       <button id="newBtn" class="btn-toolbar" data-i18n="newSession"></button>
       <button id="exportHtmlBtn" class="btn-toolbar" data-i18n="exportHtml"></button>
+      <button id="exportCsvBtn" class="btn-toolbar" data-i18n="exportCsv"></button>
       <button id="exportBtn" class="btn-toolbar" data-i18n="save"></button>
       <label class="btn-toolbar"><span data-i18n="load"></span><input type="file" id="importInput" accept=".json"></label>
     </div>
@@ -78,6 +81,7 @@
       <div class="section-content">
         <h2 data-i18n="step2"></h2>
         <div id="pairsContainer"></div>
+        <div id="consistencyHint"></div>
       </div>
     </div>
     <div class="section" id="resultsSection">
@@ -122,6 +126,7 @@
           <thead><tr><th data-i18n="thSolution"></th><th data-i18n="thScore"></th><th data-i18n="thRating"></th></tr></thead>
           <tbody id="solutionRankingBody"></tbody>
         </table>
+        <p id="robustnessHint" class="robustness"></p>
       </div>
     </div>
   </div>

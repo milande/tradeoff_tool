@@ -1,8 +1,9 @@
 {
   "name": "decisionlab",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "private": true,
   "scripts": {
-    "build": "node build.js"
+    "build": "node build.js",
+    "test": "node tests/run.js"
   }
 }

@@ -2,7 +2,7 @@
 
 A single-file structured decision tool. Compare options across multiple weighted criteria — no gut feel, just weighted evidence.
 
-**No server, no install.** Open `index.html` in any browser.
+**No server, no install.** Open `dist/index.html` in any browser.
 
 ---
 
@@ -23,11 +23,15 @@ DecisionLab uses a three-step process:
 | Feature | Description |
 |---|---|
 | Pairwise comparison | Rank criteria against each other to derive weights objectively |
+| Consistency check | Circular answers (A › B › C › A) are flagged with a warning |
 | Solution rating matrix | Rate every option 0–4 per criterion |
 | Live ranking | Weighted scores update as you type or click |
+| Robustness verdict | One line under the ranking says how close the runner-up is to taking the lead |
 | Solution notes | Optional short description beneath each solution name |
 | Auto-save | Session persists automatically in `localStorage` |
+| Undo / Redo | ↶ ↷ toolbar buttons or Ctrl/Cmd+Z / Ctrl+Shift+Z — up to 100 steps |
 | Save / Load | Export and re-import state as JSON |
+| CSV export | Decision matrix (weights, ratings, scores, ranks) for spreadsheets |
 | HTML export | Self-contained, shareable HTML with all data baked in — opens in read-only mode; Pro features are included when Pro mode was active at export |
 | Print view | Printable summary including ranking, weights, and all notes |
 | EN / DE | Full English and German UI, including dialogs and exports |
@@ -38,11 +42,11 @@ Activate the **⚡ Pro** toggle in the tab bar to unlock:
 
 | Feature | Description |
 |---|---|
-| Fine-tune Weights | Manually adjust individual weight percentages; others scale proportionally to keep total at 100%. A *Custom* badge marks overrides; reset restores pairwise values |
+| Fine-tune Weights | Drag a weight bar or type a percentage. Manually set values stay pinned (shown bright); not-yet-edited criteria (dimmed) absorb the change. A *Custom* badge marks overrides; reset restores pairwise values |
 | Score Definitions | Define what each score (0–4) means per criterion — appears as a tooltip on rating buttons |
 | Rating Rationale | Add a written reason for each rating score — shown in the print view |
 | Must-have Criteria | Mark criteria as must-have; solutions scoring 0 on any are eliminated from the ranking and flagged at the bottom |
-| Sensitivity Analysis | Drag markers to explore *"what if this criterion mattered more or less?"* — live breakeven points show exactly where the winner switches |
+| Sensitivity Analysis | Drag markers to explore *"what if this criterion mattered more or less?"* — live breakeven points show exactly where the winner switches. Solutions failing a must-have stay visible but hatched, with ⊗ in the legend |
 | Scenario Comparison | Save named snapshots (weights + exploration ratings) and compare them side by side against the baseline, with changed values highlighted. Click a column header to load that scenario back into the sensitivity bars |
 
 ---
@@ -68,6 +72,8 @@ src/
 build.js                  ← assembles and minifies src/ → dist/index.html
 dist/
   index.html              ← built output (the portable single file)
+tests/
+  run.js                  ← headless test suite (npm test)
 CHANGELOG.md
 README.md
 ```
@@ -75,6 +81,10 @@ README.md
 ## Development
 
 Open `src/index.html` directly in any browser — no server needed. All features work except HTML export (which requires the inlined script text only available in the built file).
+
+```bash
+npm test    # headless test suite over the real source files (no dependencies)
+```
 
 ## Build
 
@@ -94,6 +104,7 @@ Produces `dist/index.html` — the single portable file for sharing.
 |---|---|
 | `↓ HTML` | Shareable read-only snapshot; embeddable in Confluence, wikis, email |
 | `↓ JSON` | Re-importable data file for ongoing editing |
+| `↓ CSV` | Decision matrix for Excel & Co. (locale-aware separator) |
 | `⎙ Print` | Formatted print view with all data, notes, and sensitivity bars |
 
 Exported HTML and JSON filenames include the decision name and author (e.g. `Serverauswahl – DecisionLab.html`).
@@ -102,10 +113,19 @@ Exported HTML and JSON filenames include the decision name and author (e.g. `Ser
 
 ## Versions
 
+- **v0.5** — consistency check, robustness verdict, undo/redo, CSV export, draggable fine-tune bars with pinned values, must-have marking in sensitivity bars; stable IDs (renames keep all data; save format v2, old files incompatible); HTML-escaped user input everywhere; in-repo test suite (`npm test`)
 - **v0.4** — Scenario Comparison (Pro) with full snapshots and click-to-load; sensitivity fixes + persistence; criteria ordered by importance everywhere; print/export polish; multi-file source with `build.js` assembling minified `dist/index.html`
 - **v0.3** — Solution notes, rating rationale, score definitions, must-have criteria (all Pro features toggleable)
 - **v0.2** — Pro mode, fine-tune weights, sensitivity analysis, EN/DE language support, HTML export, decision name & author
 - **v0.1** — Pairwise comparison, rating matrix, weighted ranking, auto-save, JSON save/load
+
+---
+
+## Roadmap (v0.6 candidates)
+
+- **VDI 2225 mode** — tag criteria as technical vs. economic, compute *technische* and *wirtschaftliche Wertigkeit* separately, and render the s-diagram (Wt vs. We) in the app and print view
+- Multiple decisions in parallel (decision list with open/duplicate/delete)
+- Collaboration: merge independently rated JSON exports with a disagreement view
 
 ---
 

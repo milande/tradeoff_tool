@@ -38,12 +38,23 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
 
 updateTabState();
 
+// Undo / Redo
+document.getElementById('undoBtn').onclick = () => undoState();
+document.getElementById('redoBtn').onclick = () => redoState();
+document.addEventListener('keydown', e => {
+  const tag = ((e.target && e.target.tagName) || '').toLowerCase();
+  if (tag === 'input' || tag === 'textarea') return; // keep native text-field undo
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && !e.shiftKey) { e.preventDefault(); undoState(); }
+  else if ((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === 'y' || (e.shiftKey && e.key.toLowerCase() === 'z'))) { e.preventDefault(); redoState(); }
+});
+
 // Auto-load saved session
+historyLock = true;
 try {
   const saved = localStorage.getItem(STORAGE_KEY);
-  if (saved) applyState(JSON.parse(saved));
-  else {
-    // Fresh session — clear fields the browser may have restored on reload
+  if (!saved || !applyState(JSON.parse(saved))) {
+    // Fresh session (or incompatible old save) — clear fields the browser
+    // may have restored on reload
     decisionName = ''; bearbeiter = '';
     document.getElementById('decisionNameInput').value = '';
     document.getElementById('bearbeiterInput').value = '';
@@ -51,4 +62,6 @@ try {
     applyLang();
   }
 } catch (e) { applyProMode(); applyLang(); }
+historyLock = false;
+saveState(); // baseline snapshot for undo
 // END Auto-load
