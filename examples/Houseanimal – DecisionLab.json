@@ -1,0 +1,179 @@
+{
+  "version": 2,
+  "decisionName": "Houseanimal",
+  "bearbeiter": "Milan",
+  "criteria": [
+    {
+      "id": "cd94crkq3",
+      "name": "Cost"
+    },
+    {
+      "id": "cd94c9n33",
+      "name": "Kids friendlyness"
+    },
+    {
+      "id": "cd94cx8jn",
+      "name": "Cleanliness"
+    },
+    {
+      "id": "ce4xxuedw",
+      "name": "Extrodanority"
+    }
+  ],
+  "pairStates": {
+    "cd94crkq3|cd94c9n33": 1,
+    "cd94crkq3|cd94cx8jn": -1,
+    "cd94crkq3|ce4xxuedw": 0,
+    "cd94c9n33|cd94cx8jn": -1,
+    "cd94c9n33|ce4xxuedw": -1,
+    "cd94cx8jn|ce4xxuedw": -1
+  },
+  "customWeights": {
+    "cd94crkq3": 0.25,
+    "cd94c9n33": 0.5,
+    "cd94cx8jn": 0.15,
+    "ce4xxuedw": 0.1
+  },
+  "customWeightReasons": {
+    "ce4xxuedw": "I want to impress my neighbours",
+    "cd94cx8jn": "ok, I'll by a robot to clean the sh***"
+  },
+  "customWeightPinned": {
+    "cd94c9n33": true,
+    "cd94crkq3": true,
+    "ce4xxuedw": true
+  },
+  "proMode": true,
+  "lang": "en",
+  "solutions": [
+    {
+      "id": "sgkwsfsxe",
+      "name": "Tiger"
+    },
+    {
+      "id": "sm72j5cid",
+      "name": "Dog"
+    },
+    {
+      "id": "sm72j1y3r",
+      "name": "Rabbit"
+    },
+    {
+      "id": "smww4ibe9",
+      "name": "Cat"
+    }
+  ],
+  "ratings": {
+    "sm72j5cid|cd94c9n33": 4,
+    "sm72j1y3r|cd94c9n33": 3,
+    "smww4ibe9|cd94c9n33": 2,
+    "sm72j5cid|cd94crkq3": 2,
+    "sm72j1y3r|cd94crkq3": 4,
+    "smww4ibe9|cd94crkq3": 3,
+    "sgkwsfsxe|cd94cx8jn": 1,
+    "sm72j5cid|cd94cx8jn": 4,
+    "sm72j1y3r|cd94cx8jn": 2,
+    "smww4ibe9|cd94cx8jn": 3,
+    "sgkwsfsxe|ce4xxuedw": 4,
+    "sm72j5cid|ce4xxuedw": 1,
+    "sm72j1y3r|ce4xxuedw": 1,
+    "smww4ibe9|ce4xxuedw": 1
+  },
+  "ratingNotes": {},
+  "criteriaAnchors": {
+    "cd94crkq3|0": ">10k€",
+    "cd94crkq3|1": "5-10k€",
+    "cd94crkq3|2": "1-5K€",
+    "cd94crkq3|3": "100-1000€",
+    "cd94crkq3|4": ">100€"
+  },
+  "knockoutCriteria": {
+    "cd94c9n33": true
+  },
+  "economicCriteria": {
+    "cd94crkq3": true
+  },
+  "solutionNotes": {
+    "sgkwsfsxe": "The wroooor",
+    "sm72j5cid": "The wuffi",
+    "sm72j1y3r": "The one with the eggs",
+    "smww4ibe9": "Shrunken Tiger"
+  },
+  "scenarios": [
+    {
+      "id": "scrtpnwkzm",
+      "name": "But I want a tiger",
+      "weights": {
+        "cd94crkq3": 0.1309171497312366,
+        "cd94c9n33": 0.2618342994624732,
+        "cd94cx8jn": 0.07855028983874206,
+        "ce4xxuedw": 0.5286982609675481
+      },
+      "ratings": {
+        "sm72j5cid|cd94c9n33": 4,
+        "sm72j1y3r|cd94c9n33": 3,
+        "smww4ibe9|cd94c9n33": 2,
+        "sm72j5cid|cd94crkq3": 2,
+        "sm72j1y3r|cd94crkq3": 4,
+        "smww4ibe9|cd94crkq3": 3,
+        "sgkwsfsxe|cd94cx8jn": 1,
+        "sm72j5cid|cd94cx8jn": 4,
+        "sm72j1y3r|cd94cx8jn": 2,
+        "smww4ibe9|cd94cx8jn": 3,
+        "sgkwsfsxe|ce4xxuedw": 4,
+        "sm72j5cid|ce4xxuedw": 1,
+        "sm72j1y3r|ce4xxuedw": 1,
+        "smww4ibe9|ce4xxuedw": 1
+      }
+    },
+    {
+      "id": "scsdi9p5bg",
+      "name": "ok then a cat",
+      "weights": {
+        "cd94crkq3": 0.25,
+        "cd94c9n33": 0.5,
+        "cd94cx8jn": 0.15,
+        "ce4xxuedw": 0.1
+      },
+      "ratings": {
+        "sm72j5cid|cd94c9n33": 4,
+        "sm72j1y3r|cd94c9n33": 3,
+        "smww4ibe9|cd94c9n33": 4,
+        "sm72j5cid|cd94crkq3": 2,
+        "sm72j1y3r|cd94crkq3": 4,
+        "smww4ibe9|cd94crkq3": 3,
+        "sgkwsfsxe|cd94cx8jn": 1,
+        "sm72j5cid|cd94cx8jn": 4,
+        "sm72j1y3r|cd94cx8jn": 2,
+        "smww4ibe9|cd94cx8jn": 3,
+        "sgkwsfsxe|ce4xxuedw": 4,
+        "sm72j5cid|ce4xxuedw": 1,
+        "sm72j1y3r|ce4xxuedw": 1,
+        "smww4ibe9|ce4xxuedw": 1
+      }
+    }
+  ],
+  "raters": [],
+  "sensWeights": {
+    "cd94crkq3": 0.25,
+    "cd94c9n33": 0.5,
+    "cd94cx8jn": 0.15,
+    "ce4xxuedw": 0.1
+  },
+  "explorationRatings": {
+    "sm72j5cid|cd94c9n33": 4,
+    "sm72j1y3r|cd94c9n33": 3,
+    "smww4ibe9|cd94c9n33": 4,
+    "sm72j5cid|cd94crkq3": 2,
+    "sm72j1y3r|cd94crkq3": 4,
+    "smww4ibe9|cd94crkq3": 3,
+    "sgkwsfsxe|cd94cx8jn": 1,
+    "sm72j5cid|cd94cx8jn": 4,
+    "sm72j1y3r|cd94cx8jn": 2,
+    "smww4ibe9|cd94cx8jn": 3,
+    "sgkwsfsxe|ce4xxuedw": 4,
+    "sm72j5cid|ce4xxuedw": 1,
+    "sm72j1y3r|ce4xxuedw": 1,
+    "smww4ibe9|ce4xxuedw": 1
+  }
+}
