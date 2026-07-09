@@ -217,7 +217,7 @@ function checkAndStartComparison() {
     resultsSection.classList.remove('active');
     fineTuneSection.classList.remove('active');
     comparisonStarted = false;
-    criteria = []; pairs = []; pairStates = {}; customWeights = null; customWeightReasons = {}; customWeightPinned = {}; scenarios = [];
+    criteria = []; pairs = []; pairStates = {}; customWeights = null; customWeightReasons = {}; customWeightPinned = {}; scenarios = []; raters = [];
     sensWeights = {}; explorationRatings = {};
     applyProMode();
     updateTabState();
@@ -230,7 +230,7 @@ function checkAndStartComparison() {
 function startComparison(preserveWeights = false, suppressScroll = false) {
   const incoming = getCriteria();
   const wasStarted = comparisonStarted;
-  if (!preserveWeights && criteriaKey(incoming) !== criteriaKey(criteria)) { customWeights = null; customWeightReasons = {}; customWeightPinned = {}; scenarios = []; }
+  if (!preserveWeights && criteriaKey(incoming) !== criteriaKey(criteria)) { customWeights = null; customWeightReasons = {}; customWeightPinned = {}; scenarios = []; raters = []; }
   criteria = incoming;
   pairs = [];
   for (let i = 0; i < criteria.length; i++)
@@ -369,6 +369,7 @@ function renderFineTune() {
     });
   });
   customBadge.classList.toggle('visible', customWeights !== null);
+  document.getElementById('resetFineBtn').disabled = customWeights === null;
 }
 
 // ── Fine-tune bar drag ────────────────────────────────────────

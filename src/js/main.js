@@ -33,10 +33,31 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
     document.getElementById(`tab-${btn.dataset.tab}`).classList.add('active');
     if (btn.dataset.tab === 'solutions') renderSolutionMatrix();
     if (btn.dataset.tab === 'sensitivity') { updateSensRanking(); updateSensImpact(); updateRatingImpact(); }
+    // Always show the freshly opened page from the top
+    if (typeof window.scrollTo === 'function') window.scrollTo(0, 0);
   };
 });
 
 updateTabState();
+
+// File menu
+(function setupFileMenu() {
+  const menu = document.getElementById('fileMenu');
+  document.getElementById('fileMenuBtn').onclick = e => {
+    e.stopPropagation();
+    menu.classList.toggle('hidden');
+  };
+  // any chosen action closes the menu; clicks outside or Escape close it too
+  menu.addEventListener('click', e => {
+    if (e.target.closest('button, label')) menu.classList.add('hidden');
+  });
+  document.addEventListener('click', e => {
+    if (!e.target.closest('#fileMenuWrap')) menu.classList.add('hidden');
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') menu.classList.add('hidden');
+  });
+}());
 
 // Undo / Redo
 document.getElementById('undoBtn').onclick = () => undoState();
@@ -54,10 +75,11 @@ try {
   const saved = localStorage.getItem(STORAGE_KEY);
   if (!saved || !applyState(JSON.parse(saved))) {
     // Fresh session (or incompatible old save) — clear fields the browser
-    // may have restored on reload
+    // may have restored on reload, but keep the language preference
     decisionName = ''; bearbeiter = '';
     document.getElementById('decisionNameInput').value = '';
     document.getElementById('bearbeiterInput').value = '';
+    try { lang = localStorage.getItem('dl_lang') || lang; } catch (e) {}
     applyProMode();
     applyLang();
   }

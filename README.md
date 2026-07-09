@@ -48,6 +48,8 @@ Activate the **⚡ Pro** toggle in the tab bar to unlock:
 | Must-have Criteria | Mark criteria as must-have; solutions scoring 0 on any are eliminated from the ranking and flagged at the bottom |
 | Sensitivity Analysis | Drag markers to explore *"what if this criterion mattered more or less?"* — live breakeven points show exactly where the winner switches. Solutions failing a must-have stay visible but hatched, with ⊗ in the legend |
 | Scenario Comparison | Save named snapshots (weights + exploration ratings) and compare them side by side against the baseline, with changed values highlighted. Click a column header to load that scenario back into the sensitivity bars |
+| VDI 2225 Value Analysis | Tag criteria as technical (T) or economic (€) to get separate Wertigkeiten Wt / We, strength s = √(Wt·We), and the s-diagram with the ideal at 1/1 |
+| Team Ratings | Load teammates' JSON files to compare everyone's ratings side by side — disagreements of 2+ points highlighted, team-average ranking, and one click to explore the average in the sensitivity analysis |
 
 ---
 
@@ -67,6 +69,7 @@ src/
     solutions.js          ← solution matrix, ranking, knockout
     sensitivity.js        ← breakeven analysis, drag handlers
     scenarios.js          ← scenario comparison (save/compare weight configs)
+    team.js               ← team ratings (merge rater files, disagreement view)
     export.js             ← print, HTML export, JSON save/load, help
     main.js               ← applyProMode(), tab switching, auto-load
 build.js                  ← assembles and minifies src/ → dist/index.html
@@ -113,6 +116,7 @@ Exported HTML and JSON filenames include the decision name and author (e.g. `Ser
 
 ## Versions
 
+- **v0.6** — VDI 2225 value analysis (Pro): technical/economic criteria, Wt/We/s, s-diagram in app, print, and CSV; Team Ratings (Pro): merge teammates' JSON exports, disagreement view, team-average ranking
 - **v0.5** — consistency check, robustness verdict, undo/redo, CSV export, draggable fine-tune bars with pinned values, must-have marking in sensitivity bars; stable IDs (renames keep all data; save format v2, old files incompatible); HTML-escaped user input everywhere; in-repo test suite (`npm test`)
 - **v0.4** — Scenario Comparison (Pro) with full snapshots and click-to-load; sensitivity fixes + persistence; criteria ordered by importance everywhere; print/export polish; multi-file source with `build.js` assembling minified `dist/index.html`
 - **v0.3** — Solution notes, rating rationale, score definitions, must-have criteria (all Pro features toggleable)
@@ -121,11 +125,9 @@ Exported HTML and JSON filenames include the decision name and author (e.g. `Ser
 
 ---
 
-## Roadmap (v0.6 candidates)
+## Roadmap
 
-- **VDI 2225 mode** — tag criteria as technical vs. economic, compute *technische* and *wirtschaftliche Wertigkeit* separately, and render the s-diagram (Wt vs. We) in the app and print view
 - Multiple decisions in parallel (decision list with open/duplicate/delete)
-- Collaboration: merge independently rated JSON exports with a disagreement view
 
 ---
 

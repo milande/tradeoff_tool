@@ -79,12 +79,14 @@ function generatePrintView(tradeName = '', exporter = '') {
     orderedCriteria.forEach(c => {
       const segs = computeBreakevens(c.id, sols);
       const curPct = ((sensWeights[c.id] ?? 0) * 100).toFixed(2);
+      const commPct = (weights[c.id] ?? 0) * 100;
       sensHtml += `<div class="be-row"><span class="be-label" title="${esc(c.name)}">${esc(c.name)}</span><div class="be-track-wrap"><div class="be-track">`;
       segs.forEach(seg => {
         const w = ((seg.to - seg.from) * 100).toFixed(3);
         sensHtml += `<div class="be-segment" style="width:${w}%;${segmentBg(seg.sol, sols, koExp)}"></div>`;
       });
       sensHtml += `</div>`;
+      if (Math.abs(commPct - parseFloat(curPct)) > 0.5) sensHtml += `<div class="be-committed" style="left:${commPct.toFixed(2)}%"></div>`;
       sensHtml += `<div class="be-current" style="left:${curPct}%"></div>`;
       sensHtml += `<div class="be-cur-label" style="left:${curPct}%">${Math.round(parseFloat(curPct))}%</div>`;
       segs.slice(1).forEach(seg => {
@@ -102,18 +104,59 @@ function generatePrintView(tradeName = '', exporter = '') {
       const solColor = SOL_COLORS[si % SOL_COLORS.length];
       ratingHtml += `<div class="ri-sol-header" style="color:${solColor}">${esc(sol.name)}</div>`;
       orderedCriteria.forEach(c => {
+        const key = `${sol.id}|${c.id}`;
         const segs = computeRatingBreakevens(sol, c.id, sols, sensWeights);
-        const cur = ((explorationRatings[`${sol.id}|${c.id}`] ?? 0) / 4 * 100).toFixed(2);
+        const curVal = explorationRatings[key] ?? 0;
+        const commVal = ratings[key] ?? 0;
+        const cur = (curVal / 4 * 100).toFixed(2);
         ratingHtml += `<div class="be-row"><span class="be-label" title="${esc(c.name)}">${esc(c.name)}</span><div class="be-track-wrap"><div class="be-track">`;
         segs.forEach(seg => {
           const w = ((seg.to - seg.from) * 100).toFixed(3);
           ratingHtml += `<div class="be-segment" style="width:${w}%;${segmentBg(seg.winner, sols, koExp)}"></div>`;
         });
-        ratingHtml += `</div><div class="be-current" style="left:${cur}%"></div>`;
+        ratingHtml += `</div>`;
+        if (commVal !== curVal) ratingHtml += `<div class="be-committed" style="left:${(commVal / 4 * 100).toFixed(2)}%"></div>`;
+        ratingHtml += `<div class="be-current" style="left:${cur}%"></div>`;
         for (let i = 0; i <= 4; i++) ratingHtml += `<div class="be-tick" style="left:${i * 25}%">${i}</div>`;
         ratingHtml += `</div></div>`;
       });
     });
+  }
+
+  // VDI 2225 section (Pro): Wt/We table + s-diagram in print colors
+  let vdiHtml = '';
+  const vdiData = proMode ? computeVdi() : null;
+  if (vdiData && vdiData.length) {
+    vdiHtml = `<h2>${t('vdiTitle')}</h2><table style="width:auto"><thead><tr><th>${t('printThSolution')}</th><th style="text-align:right">Wt</th><th style="text-align:right">We</th><th style="text-align:right">s</th></tr></thead><tbody>`;
+    [...vdiData].sort((a, b) => b.s - a.s).forEach(({ sol, wt, we, s }) => {
+      const isKO = !!koSols[sol.id];
+      const color = SOL_COLORS[sols.findIndex(x => x.id === sol.id) % SOL_COLORS.length];
+      vdiHtml += `<tr${isKO ? ' style="opacity:.55"' : ''}><td style="color:${color};font-weight:600${isKO ? ';text-decoration:line-through' : ''}">${esc(sol.name)}${isKO ? ' ⊗' : ''}</td><td style="text-align:right">${wt.toFixed(2)}</td><td style="text-align:right">${we.toFixed(2)}</td><td style="text-align:right;font-weight:600">${s.toFixed(2)}</td></tr>`;
+    });
+    vdiHtml += '</tbody></table>' + vdiDiagramSvg(vdiData, koSols, sols, true);
+  }
+
+  // Team ratings section (Pro): per-rater ratings with disagreements highlighted
+  let teamHtml = '';
+  if (proMode && raters.length && sols.length) {
+    const cols = teamColumns();
+    const mean = teamMeanRatings();
+    teamHtml = `<h2>${t('teamTitle')}</h2><table><thead><tr><th>${t('printThSolution')} / ${t('printThCriterion')}</th>` +
+      cols.map(col => `<th style="text-align:center">${esc(col.name)}</th>`).join('') +
+      `<th style="text-align:center">Ø</th></tr></thead><tbody>`;
+    sols.forEach(sol => {
+      const color = SOL_COLORS[sols.findIndex(x => x.id === sol.id) % SOL_COLORS.length];
+      teamHtml += `<tr><td colspan="${cols.length + 2}" style="color:${color};font-weight:600;padding-top:10px">${esc(sol.name)}</td></tr>`;
+      orderedCriteria.forEach(c => {
+        const key = `${sol.id}|${c.id}`;
+        const vals = cols.map(col => col.ratings[key] ?? 0);
+        const warn = Math.max(...vals) - Math.min(...vals) >= 2;
+        teamHtml += `<tr${warn ? ' style="background:#fef3c7"' : ''}><td style="padding-left:18px;color:#666">${esc(c.name)}</td>` +
+          vals.map(v => `<td style="text-align:center${warn ? ';font-weight:600' : ''}">${v}</td>`).join('') +
+          `<td style="text-align:center;font-weight:600">${mean[key].toFixed(1)}</td></tr>`;
+      });
+    });
+    teamHtml += '</tbody></table>';
   }
 
   const koActive = orderedCriteria.filter(c => knockoutCriteria[c.id]);
@@ -166,7 +209,6 @@ function generatePrintView(tradeName = '', exporter = '') {
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Inter,Arial,sans-serif;padding:40px;color:#1a1a2e;background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 h1{font-size:1.4rem;font-weight:700;margin-bottom:4px}
-.meta{color:#888;font-size:0.8rem;margin-bottom:32px}
 h2{font-size:0.78rem;font-weight:600;color:#777;text-transform:uppercase;letter-spacing:.06em;margin:28px 0 12px;padding-bottom:6px;border-bottom:1px solid #eee}
 table{width:100%;border-collapse:collapse;margin-bottom:4px}
 th,td{padding:7px 10px;text-align:left;border-bottom:1px solid #f4f4f4;font-size:0.85rem}
@@ -184,18 +226,20 @@ th{font-weight:600;color:#aaa;font-size:0.73rem;text-transform:uppercase;letter-
 .be-track{height:20px;display:flex;border-radius:4px;overflow:hidden}
 .be-segment{height:100%}
 .be-current{position:absolute;top:0;height:20px;width:2px;background:#333;border-radius:1px;transform:translateX(-50%)}
+.be-committed{position:absolute;top:2px;height:16px;width:2px;background:#bbb;border-radius:1px;transform:translateX(-50%)}
 .be-cur-label{position:absolute;top:-18px;transform:translateX(-50%);font-size:0.7rem;font-weight:700;color:#333;white-space:nowrap;background:#fff;padding:0 2px}
 .be-tick{position:absolute;top:24px;transform:translateX(-50%);font-size:0.68rem;color:#888;white-space:nowrap}
 .ri-sol-header{font-size:0.85rem;font-weight:600;margin:16px 0 4px}
 .rating-scale{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px;font-size:0.75rem;color:#555}
 .rs-item{display:flex;align-items:center;gap:5px}
 .rs-item strong,.rs-num{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:4px;color:#1a1a2e;font-size:0.72rem;flex-shrink:0}
+.vdi-svg{overflow:visible}
 @media print{body{padding:20px}@page{margin:15mm}}
 </style>
 </head>
 <body>
 <div style="display:flex;justify-content:space-between;align-items:baseline;border-bottom:2px solid #1a1a2e;padding-bottom:10px;margin-bottom:6px">
-  <div><h1>${tradeName ? `${esc(tradeName)} <span style="font-size:.8rem;font-weight:400;color:#888">· DecisionLab v0.5</span>` : 'DecisionLab <span style="font-size:.8rem;font-weight:400;color:#888">v0.5</span>'}</h1></div>
+  <div><h1>${tradeName ? `${esc(tradeName)} <span style="font-size:.8rem;font-weight:400;color:#888">· DecisionLab v0.6</span>` : 'DecisionLab <span style="font-size:.8rem;font-weight:400;color:#888">v0.6</span>'}</h1></div>
   <div style="text-align:right;font-size:0.75rem;color:#888">${exporter ? `<div><strong>${t('exportedBy')}:</strong> ${esc(exporter)}</div>` : ''}<div>${t('printGenerated')(date)}</div></div>
 </div>
 ${pairs.length ? `<h2>${t('printCriteriaComparisons')}</h2><table><tbody>${pairListRows}</tbody></table>` : ''}
@@ -205,6 +249,8 @@ ${customWeights ? `<h2>${t('printWeightAdjustments')}</h2><table><thead><tr><th>
 ${knockoutHtml}${anchorsHtml}
 <h2>${t('printSolutionRanking')}</h2>
 <table><thead><tr><th>${t('printThSolution')}</th><th>${t('printThScore')}</th><th></th>${solRankThds}</tr></thead><tbody>${solRows}</tbody></table>
+${vdiHtml}
+${teamHtml}
 ${(() => { const r = computeRobustness(); if (!r) return ''; const txt = r.stable ? t('robustnessStable')(esc(r.winner.name)) : t('robustnessFlip')(esc(r.challenger), esc(r.crit.name), Math.round(r.cur * 100), Math.round(r.bp * 100)); return `<p style="font-size:0.78rem;color:#777;margin:6px 0 0">${txt}</p>`; })()}
 ${proMode && sols.length >= 2 ? `<h2>${t('criterionImpact')}</h2>${sensHtml}<h2>${t('ratingImpact')}</h2>${ratingHtml}` : ''}
 </body>
@@ -241,29 +287,31 @@ document.getElementById('exportHtmlBtn').onclick = () => {
     '[data-readonly] #criteriaInputSection,[data-readonly] .btn-remove,' +
     '[data-readonly] .pair-buttons,[data-readonly] #solutionList,[data-readonly] #addSolutionBtn,' +
     '[data-readonly] #proToggle,[data-readonly] .app-brand,[data-readonly] #helpBtn,' +
-    '[data-readonly] #printBtn,[data-readonly] #newBtn,[data-readonly] #exportHtmlBtn,' +
-    '[data-readonly] #undoBtn,[data-readonly] #redoBtn,[data-readonly] #exportCsvBtn,' +
-    '[data-readonly] #exportBtn,[data-readonly] label.btn-toolbar{display:none}\n' +
-    '[data-readonly] .toolbar{justify-content:flex-end;margin-bottom:0}\n' +
+    '[data-readonly] #printBtn,[data-readonly] #undoBtn,[data-readonly] #redoBtn{display:none}\n' +
+    // banner lives inside the sticky header; the lang toggle (sole remaining
+    // toolbar control) overlays the banner's top-right, merging both rows
+    '[data-readonly] .toolbar{position:absolute;top:10px;right:0;margin:0;padding:0}\n' +
     '[data-readonly] .rating-btn{pointer-events:none}\n' +
-    '[data-readonly] .project-header{display:none}\n' +
+    '[data-readonly] #fileMenuWrap{display:none}\n' +
     '[data-readonly] .scenario-save-row{display:none}\n' +
     '[data-readonly] #resetFineBtn,[data-readonly] .sc-del,[data-readonly] .knockout-toggle{display:none}\n' +
+    '[data-readonly] .eco-toggle{pointer-events:none}\n' +
+    '[data-readonly] .team-load{display:none}\n' +
     '[data-readonly] .fine-tune-input,[data-readonly] .fine-tune-reason,[data-readonly] .fine-tune-bar,[data-readonly] .anchor-input,[data-readonly] .rating-note{pointer-events:none;opacity:.5}\n' +
-    '.export-info{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px;padding:14px 0 18px;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:24px}\n' +
+    '.export-info{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px;padding:2px 80px 12px 0;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:6px}\n' +
     '.export-info-title{font-size:1.05rem;font-weight:700;color:#fff;letter-spacing:-.01em}\n' +
     '.export-info-title span{font-size:0.72rem;font-weight:400;color:rgba(255,255,255,.4);background:rgba(255,255,255,.08);padding:2px 8px;border-radius:20px;margin-left:8px;vertical-align:middle}\n' +
     '.export-info-meta{font-size:0.72rem;color:rgba(255,255,255,.4);display:flex;gap:16px}\n' +
     '.export-info-meta strong{color:rgba(255,255,255,.6)}\n';
 
   const tradeLabel = tradeName ? `<span style="color:#fff;font-size:.95rem;font-weight:600">${esc(tradeName)}</span> · ` : '';
-  const infoBanner = `<div class="export-info"><div class="export-info-title">${tradeLabel}DecisionLab<span>v0.5</span></div><div class="export-info-meta"><span><strong>${t('exportedBy')}:</strong> ${esc(exporter)}</span><span><strong>${t('exportedDate')}:</strong> ${exportedAt}</span></div></div>\n`;
+  const infoBanner = `<div class="export-info"><div class="export-info-title">${tradeLabel}DecisionLab<span>v0.6</span></div><div class="export-info-meta"><span><strong>${t('exportedBy')}:</strong> ${esc(exporter)}</span><span><strong>${t('exportedDate')}:</strong> ${exportedAt}</span></div></div>\n`;
   const pageTitle = tradeName ? `${esc(tradeName)} – DecisionLab` : 'DecisionLab';
 
   const out = '<!DOCTYPE html>\n<html data-readonly lang="' + lang + '">\n<head>\n<meta charset="UTF-8">\n' +
     '<meta name="viewport" content="width=device-width,initial-scale=1">\n<title>' + pageTitle + '</title>\n' +
     '<style>\n' + _styleText + readOnlyCss + '</style>\n</head>\n<body>\n' +
-    _bodyHtml.replace('<div class="container">', '<div class="container">\n' + infoBanner) +
+    _bodyHtml.replace('<div class="app-header">', '<div class="app-header">\n' + infoBanner) +
     '\n<script>\n' + bakedScript + '\n<\/script>\n</body>\n</html>';
 
   const a = Object.assign(document.createElement('a'), {
@@ -313,6 +361,12 @@ document.getElementById('exportCsvBtn').onclick = () => {
     const i = alive.findIndex(r => r.sol.id === s.id);
     return i >= 0 ? '#' + (i + 1) : `${t('knockedOut')}: ${ko[s.id].map(critName).join(' + ')}`;
   })]);
+  const vdi = computeVdi();
+  if (vdi) {
+    rows.push(['Wt', '', ...sols.map(s => num(vdi.find(v => v.sol.id === s.id).wt))]);
+    rows.push(['We', '', ...sols.map(s => num(vdi.find(v => v.sol.id === s.id).we))]);
+    rows.push(['s', '', ...sols.map(s => num(vdi.find(v => v.sol.id === s.id).s))]);
+  }
 
   const csv = '\ufeff' + rows.map(r => r.map(q).join(sep)).join('\n');
   const a = Object.assign(document.createElement('a'), {

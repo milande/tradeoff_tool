@@ -30,7 +30,12 @@ function applyLang() {
     const v = t(el.dataset.i18nTitle);
     if (typeof v === 'string') el.title = v;
   });
-  document.getElementById('langToggle').textContent = lang === 'en' ? 'DE' : 'EN';
+  // The toggle shows the ACTIVE language; the tooltip names the switch target
+  const langBtn = document.getElementById('langToggle');
+  langBtn.textContent = lang.toUpperCase();
+  langBtn.title = lang === 'en' ? 'Auf Deutsch umschalten' : 'Switch to English';
+  // Language is a user preference that survives "New decision"
+  try { localStorage.setItem('dl_lang', lang); } catch (e) {}
   document.querySelectorAll('#criteriaList input').forEach((i, idx) => i.placeholder = `${t('criterionDefault')} ${idx + 1}`);
   document.querySelectorAll('#solutionList input:not(.sol-note)').forEach(i => i.placeholder = t('solutionPlaceholder'));
   document.querySelectorAll('#solutionList input.sol-note').forEach(i => i.placeholder = t('solutionNotePlaceholder'));

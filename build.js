@@ -27,9 +27,10 @@ function minifyJS(js) {
   js = js.split(SENTINEL_A).join(SLOT_A);
   js = js.split(SENTINEL_B).join(SLOT_B);
 
+  // Strip // comments only at line start or after whitespace — never mid-token,
+  // so strings like "http://www.w3.org/2000/svg" survive intact.
   js = js
-    .replace(/\/\/ ──[^\n]*/g, '')             // strip decorative section-header comments
-    .replace(/\/\/[^\n]*/g, '')                 // strip remaining single-line comments
+    .replace(/(^|\s)\/\/[^\n]*/g, '$1')         // strip single-line comments
     .replace(/\n{2,}/g, '\n')                   // collapse blank lines
     .trim();
 

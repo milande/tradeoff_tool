@@ -19,8 +19,10 @@ function buildState() {
     ratingNotes,
     criteriaAnchors,
     knockoutCriteria,
+    economicCriteria,
     solutionNotes,
     scenarios,
+    raters,
     sensWeights,
     explorationRatings,
   };
@@ -132,6 +134,7 @@ function applyState(state) {
   ratingNotes = state.ratingNotes || {};
   criteriaAnchors = state.criteriaAnchors || {};
   knockoutCriteria = state.knockoutCriteria || {};
+  economicCriteria = state.economicCriteria || {};
   solutionNotes = state.solutionNotes || {};
   document.getElementById('decisionNameInput').value = decisionName;
   document.getElementById('bearbeiterInput').value = bearbeiter;
@@ -140,6 +143,7 @@ function applyState(state) {
   customWeightReasons = state.customWeightReasons || {};
   customWeightPinned = state.customWeightPinned || {};
   scenarios = state.scenarios || [];
+  raters = state.raters || [];
   proMode = state.proMode || false;
   lang = state.lang || 'en';
   if ((state.criteria || []).length >= 2) startComparison(true, true);

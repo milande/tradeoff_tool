@@ -1,5 +1,43 @@
 # DecisionLab — Changelog
 
+## v0.6 (2026-07-07)
+
+### Header & Navigation Redesign
+- Toolbar and tab bar stay pinned to the top while scrolling (disabled on narrow screens)
+- The toolbar reads as a breadcrumb: **DecisionLab ▸ decision title · author** — both editable in place with a quiet hover underline
+- The data actions (Save JSON, Load, Export HTML, Export CSV, New decision) moved into a single **File ▾** menu; the toolbar keeps DE, undo/redo, Help, and Print as direct buttons
+- Tabs are folder-shaped and fuse with the page: each tab page is now one bordered panel that the active tab connects to seamlessly, with a colored accent edge
+- Switching tabs always opens the page scrolled to the top
+
+### Team Ratings *(Pro)*
+- New collaboration workflow: share the saved JSON with teammates, everyone rates independently and saves with their own name, then load their files in the **Team Ratings** section (Solutions tab)
+- Files are matched to the decision by the stable criterion/solution IDs — files from a different decision are rejected with a clear message; re-importing a file from the same person replaces their previous ratings
+- Comparison table: one column per team member (you first) plus the team average (Ø); each member's implied ranking and score is shown per solution using the shared weights
+- **Disagreements of 2+ points are highlighted** (amber rows) and counted in a summary line
+- Team-average ranking column shows where the group lands collectively
+- **↧ Explore team average** loads the mean ratings into the sensitivity exploration and jumps to the Sensitivity tab
+- Multiple files can be loaded at once; raters persist in save/load/HTML export and are covered by undo
+- Included in the print view with disagreement highlighting; fully translated (EN / DE)
+
+### Committed-State Ghost Markers
+- When the sensitivity exploration drifts from the committed decision, a dim grey ghost marker (hollow dot) appears on each affected bar showing the committed weight / rating — hover it for the exact value
+- Ghost markers appear in both Criterion Impact and Rating Impact, and in the print view; they vanish when exploration and committed state match (e.g. after the reset buttons)
+- The robustness verdict now carries a tooltip clarifying it is based on the committed weights and ratings, not the exploration
+- All reset buttons (sensitivity weights, exploration ratings, fine-tune) are disabled while there is nothing to reset, and activate only once the state has been modified
+
+### VDI 2225 Value Analysis *(Pro)*
+- Each criterion can be classified as technical (T) or economic (€) via a toggle in the rating matrix — next to the Must-have toggle
+- As soon as both groups exist, a **VDI 2225** section appears below the Solutions ranking:
+  - **Technical value Wt** and **economic value We** per solution — weighted mean rating relative to the ideal (4), computed within each group
+  - **Strength s = √(Wt·We)**, table sorted by s
+  - **s-diagram**: We vs. Wt scatter with the diagonal and the ideal point 1/1 — balanced solutions lie near the diagonal
+- Knocked-out solutions appear struck through in the table and as dashed hollow points in the diagram
+- Included in the print view (light theme) and as Wt/We/s rows in the CSV export
+- Classification persists in save/load/HTML export (additive — v0.5 save files load fine)
+- Fully translated (EN / DE), documented in the help overlay
+
+---
+
 ## v0.5 (2026-07-04)
 
 ### Fine-tune Weights UX

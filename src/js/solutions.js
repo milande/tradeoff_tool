@@ -7,6 +7,7 @@ let ratings = {};
 let ratingNotes = {};
 let criteriaAnchors = {};
 let knockoutCriteria = {};
+let economicCriteria = {};   // {critId: true} — VDI 2225: economic (€) vs technical
 let solutionNotes = {};
 let solutionDebounce = null;
 
@@ -89,8 +90,24 @@ function renderSolutionMatrix() {
       updateSolutionRanking(); updateSensRanking();
       saveState();
     };
+    // VDI 2225: technical (T) vs economic (€) classification
+    const ecoBtn = document.createElement('button');
+    const syncEcoBtn = () => {
+      const isEco = !!economicCriteria[c.id];
+      ecoBtn.className = 'eco-toggle' + (isEco ? ' active' : '');
+      ecoBtn.textContent = isEco ? '€' : 'T';
+      ecoBtn.title = isEco ? t('vdiEconomic') : t('vdiTechnical');
+    };
+    syncEcoBtn();
+    ecoBtn.onclick = () => {
+      if (economicCriteria[c.id]) delete economicCriteria[c.id];
+      else economicCriteria[c.id] = true;
+      syncEcoBtn();
+      updateSolutionRanking();
+    };
     header.appendChild(nameSpanH);
     header.appendChild(weightSpan);
+    header.appendChild(ecoBtn);
     header.appendChild(koBtn);
     card.appendChild(header);
 
@@ -212,8 +229,92 @@ function updateSolutionRanking() {
   ];
   animateRows(tbody, entries);
   renderRobustness();
+  renderVdi();
+  renderTeam();
   renderScenarios();
   saveState();
+}
+
+// ── VDI 2225 value analysis ───────────────────────────────────
+// Wt (technical value) and We (economic value): weighted mean rating
+// relative to the ideal (4), computed per criterion group; strength
+// s = √(Wt·We). Active once at least one criterion of each group exists.
+function computeVdi(ratingsObj = ratings, weightsObj = null) {
+  const tech = criteria.filter(c => !economicCriteria[c.id]);
+  const eco = criteria.filter(c => economicCriteria[c.id]);
+  if (!tech.length || !eco.length) return null;
+  const w = weightsObj || computeWeights();
+  const groupValue = (sol, group) => {
+    const wSum = group.reduce((s, c) => s + (w[c.id] ?? 0), 0);
+    if (wSum <= 0) return 0;
+    return group.reduce((s, c) => s + (ratingsObj[`${sol.id}|${c.id}`] ?? 0) * (w[c.id] ?? 0), 0) / (4 * wSum);
+  };
+  return getSolutions().map(sol => {
+    const wt = groupValue(sol, tech), we = groupValue(sol, eco);
+    return { sol, wt, we, s: Math.sqrt(wt * we) };
+  });
+}
+
+// s-diagram: x = We, y = Wt, ideal at (1,1), balanced solutions on the diagonal.
+function vdiDiagramSvg(data, ko, sols, light = false) {
+  const padL = 40, padR = 72, padT = 30, padB = 40;
+  const plot = 240;
+  const W = padL + plot + padR, H = padT + plot + padB;
+  const axis = light ? '#999' : 'rgba(255,255,255,.3)';
+  const grid = light ? '#e5e5e5' : 'rgba(255,255,255,.08)';
+  const text = light ? '#777' : 'rgba(255,255,255,.45)';
+  const X = v => padL + v * plot;
+  const Y = v => padT + (1 - v) * plot;
+  let svg = `<svg class="vdi-svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg">`;
+  for (let i = 0; i <= 4; i++) {
+    const v = i / 4;
+    svg += `<line x1="${X(0)}" y1="${Y(v)}" x2="${X(1)}" y2="${Y(v)}" stroke="${grid}" stroke-width="1"/>`;
+    svg += `<line x1="${X(v)}" y1="${Y(0)}" x2="${X(v)}" y2="${Y(1)}" stroke="${grid}" stroke-width="1"/>`;
+    if (i % 2 === 0) {
+      svg += `<text x="${X(v)}" y="${Y(0) + 16}" fill="${text}" font-size="10" text-anchor="middle">${v.toFixed(1)}</text>`;
+      svg += `<text x="${X(0) - 8}" y="${Y(v) + 3}" fill="${text}" font-size="10" text-anchor="end">${v.toFixed(1)}</text>`;
+    }
+  }
+  svg += `<line x1="${X(0)}" y1="${Y(0)}" x2="${X(1)}" y2="${Y(1)}" stroke="${axis}" stroke-width="1" stroke-dasharray="4 3"/>`;
+  svg += `<circle cx="${X(1)}" cy="${Y(1)}" r="3" fill="none" stroke="${axis}"/>`;
+  svg += `<text x="${X(1) + 8}" y="${Y(1) + 3}" fill="${text}" font-size="10">1/1</text>`;
+  // axis titles: Wt in the upper-left corner (left-anchored, clear of the tick
+  // numbers which sit to the left of the axis); We at the end of the x-axis (right).
+  svg += `<text x="-6" y="30" fill="${text}" font-size="11" text-anchor="start">Wt ↑</text>`;
+  svg += `<text x="${X(1)}" y="${Y(0) + 34}" fill="${text}" font-size="11" text-anchor="end">We →</text>`;
+  data.forEach(({ sol, wt, we }) => {
+    const color = SOL_COLORS[sols.findIndex(x => x.id === sol.id) % SOL_COLORS.length];
+    const isKO = !!ko[sol.id];
+    svg += `<circle cx="${X(we)}" cy="${Y(wt)}" r="5" fill="${isKO ? 'none' : color}" stroke="${color}" stroke-width="2"${isKO ? ' stroke-dasharray="2 2"' : ''}/>`;
+    const label = `${esc(sol.name)}${isKO ? ' ⊗' : ''}`;
+    // labels flip to the left of the point near the right edge so they never clip
+    if (we > 0.78) svg += `<text x="${X(we) - 9}" y="${Y(wt) + 3}" fill="${color}" font-size="10" text-anchor="end">${label}</text>`;
+    else svg += `<text x="${X(we) + 9}" y="${Y(wt) + 3}" fill="${color}" font-size="10">${label}</text>`;
+  });
+  svg += '</svg>';
+  return `<div class="vdi-diagram">${svg}</div>`;
+}
+
+function renderVdi() {
+  const section = document.getElementById('vdiSection');
+  const container = document.getElementById('vdiContainer');
+  if (!section || !container) return;
+  const sols = getSolutions();
+  const data = comparisonStarted && proMode && sols.length ? computeVdi() : null;
+  if (!data) { section.style.display = 'none'; container.innerHTML = ''; return; }
+  section.style.display = '';
+  const ko = getKnockedOut();
+  let html = `<table class="vdi-table"><thead><tr><th>${t('thSolution')}</th>` +
+    `<th title="${t('vdiWt')}">Wt</th><th title="${t('vdiWe')}">We</th><th title="${t('vdiS')}">s</th></tr></thead><tbody>`;
+  [...data].sort((a, b) => b.s - a.s).forEach(({ sol, wt, we, s }) => {
+    const color = SOL_COLORS[sols.findIndex(x => x.id === sol.id) % SOL_COLORS.length];
+    const isKO = !!ko[sol.id];
+    html += `<tr${isKO ? ' class="vdi-ko"' : ''}><td style="color:${color};font-weight:600">${esc(sol.name)}${isKO ? ' ⊗' : ''}</td>` +
+      `<td>${wt.toFixed(2)}</td><td>${we.toFixed(2)}</td><td><strong>${s.toFixed(2)}</strong></td></tr>`;
+  });
+  html += '</tbody></table>';
+  html += vdiDiagramSvg(data, ko, sols);
+  container.innerHTML = html;
 }
 
 // ── Robustness verdict ────────────────────────────────────────
@@ -250,6 +351,7 @@ function computeRobustness() {
 function renderRobustness() {
   const el = document.getElementById('robustnessHint');
   if (!el) return;
+  el.title = t('robustnessBasis');
   const r = computeRobustness();
   if (!r) { el.innerHTML = ''; el.className = 'robustness'; return; }
   if (r.stable) {

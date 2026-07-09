@@ -4,14 +4,21 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>DecisionLab</title>
-<style>:root{--accent:#18c8ff;--accent-hover:#4dd9ff;--accent-text:#00131b;--glow:rgba(0,255,255,.08)}#tab-solutions{--accent:#f472b6;--accent-hover:#f9a8d4;--accent-text:#1a0020;--glow:rgba(244,114,182,.08)}#tab-sensitivity{--accent:#4ade80;--accent-hover:#86efac;--accent-text:#002010;--glow:rgba(74,222,128,.08)}body{margin:0;font-family:Inter,Arial,sans-serif;background:#0d1117;color:#fff;padding:20px}.container{max-width:900px;margin:0 auto}.help-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px}.help-overlay.hidden{display:none}.help-modal{background:#131c27;border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:36px;max-width:560px;width:100%;position:relative;max-height:90vh;overflow-y:auto}.help-close{position:absolute;top:16px;right:16px;background:transparent;border:none;color:#aac;font-size:1.1rem;cursor:pointer;padding:4px 8px;border-radius:6px}.help-close:hover{background:rgba(255,255,255,.08);color:#fff}.help-title{margin:0 0 8px;font-size:1.3rem}.help-intro{margin:0 0 24px;opacity:.6;font-size:0.9rem;line-height:1.6}.help-section{border-radius:12px;padding:16px 20px;margin-bottom:12px}.help-section h3{margin:0 0 8px;font-size:0.95rem}.help-section p{margin:0;font-size:0.88rem;line-height:1.65;opacity:.8}.help-criteria{background:rgba(24,200,255,.08);border:1px solid rgba(24,200,255,.18)}.help-criteria h3{color:#18c8ff}.help-solutions{background:rgba(244,114,182,.08);border:1px solid rgba(244,114,182,.18)}.help-solutions h3{color:#f472b6}.help-data{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1)}.help-data h3{color:#aac}.help-pro{background:rgba(255,215,0,.06);border:1px solid rgba(255,215,0,.2)}.help-pro h3{color:#ffd700}.toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.project-header{display:flex;gap:12px;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,.07)}.project-input{background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,.15);color:#fff;font-family:inherit;padding:5px 2px;outline:none;transition:border-color .15s}.project-input:focus{border-bottom-color:rgba(255,255,255,.45)}.project-input::placeholder{color:rgba(255,255,255,.2)}.project-input-name{flex:1;font-size:1.05rem;font-weight:600}.project-input-author{flex:0 0 180px;font-size:0.85rem}.toolbar-actions{display:flex;gap:8px;align-items:center}.app-brand{display:flex;align-items:center;gap:8px}.app-name{font-weight:700;font-size:1rem;color:#fff;letter-spacing:-.02em}.app-version{font-size:0.72rem;color:rgba(255,255,255,.4);background:rgba(255,255,255,.08);padding:2px 8px;border-radius:20px}.app-credit{text-align:center;font-size:0.75rem;color:rgba(255,255,255,.2);margin:8px 0 0}.app-credit-link{color:rgba(255,255,255,.2);text-decoration:none;border-bottom:1px solid rgba(255,255,255,.1);transition:color .15s,border-color .15s}.app-credit-link:hover{color:rgba(255,255,255,.5);border-bottom-color:rgba(255,255,255,.3)}.btn-toolbar{padding:7px 16px;border:1px solid rgba(255,255,255,.12);border-radius:8px;background:transparent;color:#aac;cursor:pointer;font-size:0.82rem;transition:background .15s;font-family:inherit}.btn-toolbar:hover{background:rgba(255,255,255,.07);color:#ddf}.btn-toolbar:disabled{opacity:.3;cursor:default;pointer-events:none}.btn-toolbar input[type=file]{display:none}.lang-toggle{font-weight:700;letter-spacing:.04em}.tabs{display:flex;gap:8px;margin-bottom:24px;align-items:center}.pro-toggle{margin-left:auto;padding:6px 14px;border-radius:20px;border:1px solid rgba(255,215,0,.25);background:rgba(255,215,0,.06);color:rgba(255,215,0,.45);cursor:pointer;font-size:0.78rem;font-weight:600;letter-spacing:.04em;transition:all .2s;font-family:inherit}.pro-toggle:hover{border-color:rgba(255,215,0,.45);color:rgba(255,215,0,.7);background:rgba(255,215,0,.1)}.pro-toggle.active{border-color:rgba(255,215,0,.7);background:rgba(255,215,0,.14);color:#ffd700;box-shadow:0 0 10px rgba(255,215,0,.15)}.tab-btn{padding:10px 28px;border:none;border-radius:10px;cursor:pointer;font-size:1rem;font-weight:600;transition:background .15s,color .15s,opacity .15s}.tab-btn[data-tab="criteria"]{background:rgba(24,200,255,.1);color:rgba(24,200,255,.7)}.tab-btn[data-tab="solutions"]{background:rgba(244,114,182,.1);color:rgba(244,114,182,.7)}.tab-btn[data-tab="sensitivity"]{background:rgba(74,222,128,.1);color:rgba(74,222,128,.7)}.tab-btn:not(.disabled):hover{filter:brightness(1.25)}.tab-btn[data-tab="criteria"].active{background:#18c8ff;color:#00131b}.tab-btn[data-tab="solutions"].active{background:#f472b6;color:#1a0020}.tab-btn[data-tab="sensitivity"].active{background:#4ade80;color:#002010}.tab-btn.disabled{opacity:.25;cursor:not-allowed}.tab-content{display:none}.tab-content.active{display:block}.section{background:rgba(255,255,255,.06);backdrop-filter:blur(16px);padding:30px;border-radius:18px;box-shadow:0 0 40px var(--glow);margin-bottom:24px}.section h1{margin-top:0;margin-bottom:30px}.section h2{margin:0 0 20px 0;font-size:1.1rem;opacity:.9}.section-content{padding:10px}.hidden{display:none}.hint{opacity:.5;font-size:0.85rem;margin:0 0 16px}input[type=text]{width:100%;padding:10px;margin:8px 0;border-radius:10px;border:none;background:#1a2332;color:white;box-sizing:border-box}.criteria-item{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}.criteria-item input{margin:0;flex:1;min-width:0}.sol-note{width:100%;font-size:0.78rem;color:rgba(255,255,255,.45);background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,.08);padding:3px 2px;font-family:inherit;outline:none;transition:border-color .15s}.sol-note:focus{border-bottom-color:rgba(255,255,255,.3);color:rgba(255,255,255,.7)}.sol-note::placeholder{color:rgba(255,255,255,.18)}.rank-note{font-size:0.72rem;font-weight:400;color:rgba(255,255,255,.35);margin-top:2px;font-style:italic}.btn-remove{padding:10px 12px;background:#ff4444;color:white;border:none;border-radius:8px;cursor:pointer;font-weight:bold;flex-shrink:0}.btn-remove:hover{background:#ff6666}.btn-add{padding:12px 22px;border:none;border-radius:12px;background:var(--accent);color:var(--accent-text);font-weight:bold;cursor:pointer;margin-top:10px;transition:background .15s}.btn-add:hover{background:var(--accent-hover)}.btn-secondary{padding:10px 20px;border:1px solid rgba(255,255,255,.15);border-radius:10px;background:transparent;color:#aac;cursor:pointer;font-size:0.9rem;margin-top:0;margin-bottom:20px;transition:background .15s}.btn-secondary:hover{background:rgba(255,255,255,.07)}.pair-row{margin-bottom:14px;padding:16px;background:rgba(255,255,255,.04);border-radius:12px}.pair-label{font-size:0.95rem;margin-bottom:12px;line-height:1.5}.pair-label strong{color:var(--accent)}.pair-buttons{display:flex;gap:8px}.pair-btn{flex:1;padding:10px 8px;border:none;border-radius:8px;background:#1a2332;color:#9dd;cursor:pointer;font-size:0.85rem;transition:background .15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pair-btn:hover{background:#263041}.pair-btn.active{background:var(--accent);color:var(--accent-text);font-weight:bold}#consistencyHint{display:none;margin-top:14px;padding:10px 14px;border-radius:8px;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.25);font-size:.83rem;color:rgba(255,255,255,.75);line-height:1.6}#consistencyHint.visible{display:block}#consistencyHint strong{color:#fbbf24}.consistency-cycle{display:inline-block;background:rgba(255,255,255,.06);border-radius:5px;padding:1px 8px;margin:2px 4px 0 0;font-size:.8rem;white-space:nowrap}.be-legend-ko{opacity:.6}.be-ko-name{text-decoration:line-through}.be-ko-mark{color:rgba(255,100,0,.85);font-size:.78rem;margin-left:3px;cursor:help;text-decoration:none;display:inline-block}.robustness{margin-top:10px;font-size:.82rem;color:rgba(255,255,255,.5);line-height:1.5}.robustness.robust{color:rgba(52,211,153,.75)}.robustness.fragile{color:#fbbf24}.robustness strong{color:inherit}.weight-cell{display:flex;flex-direction:column;gap:4px}.weight-bar-wrap{height:6px;background:#1a2332;border-radius:4px;overflow:hidden;min-width:80px}.weight-bar{height:100%;background:var(--accent);border-radius:4px;transition:width .3s}.solution-card{background:rgba(255,255,255,.04);border-radius:12px;padding:16px;margin-bottom:14px}.criterion-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.solution-name{font-weight:bold;font-size:1.05rem;color:var(--accent)}.criterion-weight{font-size:0.8rem;opacity:.7;background:#1a2332;padding:3px 10px;border-radius:20px}.criterion-row{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:10px}.knockout-toggle{display:none;padding:3px 10px;border-radius:20px;border:1px solid rgba(255,165,0,.2);background:transparent;color:rgba(255,165,0,.35);cursor:pointer;font-size:0.68rem;font-weight:600;font-family:inherit;transition:all .15s;flex-shrink:0}.knockout-toggle:hover{border-color:rgba(255,165,0,.5);color:rgba(255,165,0,.65)}.knockout-toggle.active{border-color:rgba(255,165,0,.65);background:rgba(255,165,0,.1);color:#ffa500}.pro-on .knockout-toggle{display:inline-flex}.solution-card.knockout-active{border-left:3px solid rgba(255,165,0,.5);padding-left:13px}.rank-ko{opacity:.35}.rank-ko-name{text-decoration:line-through}.rank-ko-reason{font-size:0.7rem;font-weight:400;font-style:italic;color:rgba(255,100,0,.6);margin-top:2px;display:block}.anchor-strip{display:none;gap:6px;margin-bottom:12px;padding:8px 10px;background:rgba(255,255,255,.03);border-radius:8px;flex-wrap:wrap}.pro-on .anchor-strip{display:flex}.anchor-item{display:flex;align-items:center;gap:4px;flex:1;min-width:0}.anchor-label{font-size:0.7rem;font-weight:700;color:rgba(255,255,255,.35);flex-shrink:0;width:12px;text-align:center}.anchor-input{flex:1;min-width:0;font-size:0.72rem;color:rgba(255,255,255,.5);background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,.1);padding:2px 2px;font-family:inherit;outline:none;transition:border-color .15s}.anchor-input:focus{border-bottom-color:rgba(255,255,255,.35);color:rgba(255,255,255,.75)}.anchor-input::placeholder{color:rgba(255,255,255,.13)}.rating-note{display:none;width:100%;font-size:0.72rem;color:rgba(255,255,255,.4);background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,.07);padding:2px 2px 2px 0;font-family:inherit;outline:none;transition:border-color .15s;margin-top:-4px;margin-bottom:4px}.pro-on .rating-note{display:block}.rating-note:focus{border-bottom-color:rgba(255,255,255,.3);color:rgba(255,255,255,.65)}.rating-note::placeholder{color:rgba(255,255,255,.14)}.rating-note.has-note{border-bottom-color:rgba(255,255,255,.15);color:rgba(255,255,255,.45)}.criterion-name{flex:1;font-size:0.9rem;opacity:.75;min-width:80px}.rating-buttons{display:flex;gap:4px;flex-shrink:0}.rating-btn{width:36px;height:36px;border:none;border-radius:8px;background:#1a2332;color:#9dd;cursor:pointer;font-size:0.9rem;font-weight:600;transition:background .15s}.rating-btn:hover{background:#263041}.rating-btn.active{background:var(--accent);color:var(--accent-text)}.ri-sol-header{font-weight:700;font-size:0.9rem;margin:20px 0 10px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.08)}.ri-sol-header:first-child{margin-top:0}.rs-ticks{position:absolute;top:34px;left:0;width:100%}.rs-tick{position:absolute;transform:translateX(-50%);font-size:0.65rem;color:rgba(255,255,255,.4)}#ratingImpactContainer .be-track-wrap{cursor:ew-resize}.be-legend{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:20px}.be-legend-item{display:flex;align-items:center;gap:7px;font-size:0.85rem;opacity:.85}.be-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}.be-row{display:flex;align-items:flex-start;gap:14px;margin-bottom:28px}#sensImpact .be-row{margin-bottom:10px}.be-label{width:130px;font-size:0.9rem;flex-shrink:0;padding-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.be-track-wrap{flex:1;position:relative;cursor:ew-resize;user-select:none}.be-track{height:28px;display:flex;border-radius:6px;overflow:hidden}.be-segment{height:100%;opacity:.82}.be-current{position:absolute;top:0;height:28px;width:3px;background:#fff;border-radius:2px;transform:translateX(-50%);box-shadow:0 0 8px rgba(255,255,255,.55);pointer-events:none}.be-current::before{content:'';position:absolute;top:-5px;left:50%;transform:translateX(-50%);width:9px;height:9px;border-radius:50%;background:#fff;box-shadow:0 0 6px rgba(255,255,255,.7)}.be-bp-row{position:relative;height:20px;margin-top:4px}.be-bp-label{position:absolute;transform:translateX(-50%);font-size:0.72rem;opacity:.55;white-space:nowrap}table{width:100%;border-collapse:collapse;margin-top:8px}th,td{padding:10px;border-bottom:1px solid #2a3344;text-align:left}th{font-weight:bold;opacity:.8}#compareSection,#resultsSection,#fineTuneSection{display:none}#compareSection.active,#resultsSection.active,#fineTuneSection.active{display:block}.fine-tune-row{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05)}.fine-tune-row:last-child{border-bottom:none}.fine-tune-name{flex:1;font-size:0.9rem;color:#cce}.fine-tune-input{width:68px;padding:5px 8px;background:#1a2332;border:1px solid rgba(255,255,255,.12);border-radius:6px;color:rgba(255,255,255,.35);font-size:0.9rem;text-align:right;appearance:textfield;-moz-appearance:textfield}.fine-tune-input.pinned{color:#fff;border-color:rgba(24,200,255,.35)}.fine-tune-input::-webkit-inner-spin-button,.fine-tune-input::-webkit-outer-spin-button{display:none}.fine-tune-input:focus{outline:none;border-color:var(--accent)}.fine-tune-pct{font-size:0.8rem;color:rgba(255,255,255,.3);width:10px}.fine-tune-bar{flex:1.4;height:16px;background:#1a2332;border-radius:8px;overflow:hidden;min-width:80px;cursor:ew-resize;touch-action:none}.fine-tune-bar:hover{background:#202b3d}.fine-tune-bar-fill{height:100%;background:var(--accent);border-radius:8px;pointer-events:none}.fine-tune-reason{flex:2;padding:4px 6px;background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,.08);color:#aac;font-size:0.8rem;font-style:italic;outline:none;font-family:inherit;min-width:60px}.fine-tune-reason::placeholder{color:rgba(255,255,255,.18)}.fine-tune-reason:focus{border-bottom-color:rgba(255,255,255,.3);color:#ddf}.fine-tune-actions{margin-top:16px;display:flex;align-items:center;gap:12px}.optional-label{font-size:0.73rem;color:rgba(255,255,255,.28);font-weight:400;margin-left:6px}.custom-badge{font-size:0.72rem;background:rgba(24,200,255,.12);color:var(--accent);border:1px solid rgba(24,200,255,.25);border-radius:20px;padding:2px 8px;margin-left:8px;display:none}.custom-badge.visible{display:inline}.scenario-save-row{display:flex;gap:.5rem;margin:1rem 0 .5rem}.scenario-save-row input{flex:1;min-width:0}.sc-wrap{overflow-x:auto;margin-top:.5rem}.sc-table{width:100%;border-collapse:collapse;font-size:.87rem;white-space:nowrap}.sc-table thead th{padding:.4rem .8rem;text-align:right;color:rgba(255,255,255,.38);font-weight:500;font-size:.78rem;border-bottom:1px solid rgba(255,255,255,.08)}.sc-table thead th:first-child{text-align:left;color:transparent;min-width:8rem;width:8rem}.sc-del,.sc-load-btn{background:none;border:none;cursor:pointer;padding:0 0 0 .35rem;font-size:.72rem;vertical-align:middle;transition:color .15s;line-height:1}.sc-del{color:rgba(255,255,255,.22)}.sc-del:hover{color:rgba(255,255,255,.7)}.sc-load-btn{color:rgba(255,255,255,.3)}.sc-load-btn:hover{color:rgba(255,255,255,.85)}.sc-w-row td,.sc-s-row td{padding:.28rem .8rem;border-bottom:1px solid rgba(255,255,255,.04)}.sc-label{color:rgba(255,255,255,.5);font-size:.82rem;text-align:left}.sc-sol-name{font-weight:500}.sc-w{text-align:right;color:rgba(255,255,255,.42);font-variant-numeric:tabular-nums}.sc-sep td{padding:0;height:1px;background:rgba(255,255,255,.1)}.sc-cell{text-align:right;font-variant-numeric:tabular-nums;padding:.3rem .8rem;border-left:2px solid transparent}.sc-rank{font-weight:700}.sc-score{font-size:.77rem;color:rgba(255,255,255,.38);margin-left:.25rem}.sc-winner .sc-score{color:rgba(255,255,255,.6)}.sc-ko-cell{color:rgba(255,255,255,.18);text-align:right;padding:.3rem .8rem}.sc-ko .sc-label{opacity:.35}.sc-ko .sc-sol-name{text-decoration:line-through}.sc-cr-row td{padding:.12rem .8rem;border-bottom:none}.sc-cr-label{color:rgba(255,255,255,.3);font-size:.78rem;padding-left:1.2rem !important;white-space:nowrap}.sc-cr-badge{display:inline-block;background:rgba(255,255,255,.07);border-radius:3px;padding:0 .3rem;margin-left:.35rem;font-size:.72rem;color:rgba(255,255,255,.4);font-variant-numeric:tabular-nums}.sc-badge-hi{background:rgba(251,191,36,.18);color:#fbbf24}.sc-contrib{font-size:.77rem;color:rgba(255,255,255,.3);margin-left:.3rem;font-variant-numeric:tabular-nums}.sc-w-hi{color:#fbbf24;font-weight:600}.sc-cell-hi{background:rgba(251,191,36,.07)}.sc-cr-cell{text-align:right;color:rgba(255,255,255,.28);font-size:.78rem;font-variant-numeric:tabular-nums;padding:.12rem .8rem}.sc-s-row td{border-top:1px solid rgba(255,255,255,.07)}@media(max-width:600px){.pair-btn{font-size:0.75rem;padding:8px 4px}.rating-btn{width:30px;height:30px;font-size:0.8rem}.criterion-name{font-size:0.8rem}.be-label{width:80px}}</style>
+<style>:root{--accent:#18c8ff;--accent-hover:#4dd9ff;--accent-text:#00131b;--accent-dim:rgba(24,200,255,.35);--glow:rgba(0,255,255,.08)}#tab-solutions{--accent:#f472b6;--accent-hover:#f9a8d4;--accent-text:#1a0020;--accent-dim:rgba(244,114,182,.35);--glow:rgba(244,114,182,.08)}#tab-sensitivity{--accent:#4ade80;--accent-hover:#86efac;--accent-text:#002010;--accent-dim:rgba(74,222,128,.35);--glow:rgba(74,222,128,.08)}body{margin:0;font-family:Inter,Arial,sans-serif;background:#0d1117;color:#fff;padding:20px}.container{max-width:900px;margin:0 auto}.help-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px}.help-overlay.hidden{display:none}.help-modal{background:#131c27;border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:36px;max-width:560px;width:100%;position:relative;max-height:90vh;overflow-y:auto}.help-close{position:absolute;top:16px;right:16px;background:transparent;border:none;color:#aac;font-size:1.1rem;cursor:pointer;padding:4px 8px;border-radius:6px}.help-close:hover{background:rgba(255,255,255,.08);color:#fff}.help-title{margin:0 0 8px;font-size:1.3rem}.help-intro{margin:0 0 24px;opacity:.6;font-size:0.9rem;line-height:1.6}.help-section{border-radius:12px;padding:16px 20px;margin-bottom:12px}.help-section h3{margin:0 0 8px;font-size:0.95rem}.help-section p{margin:0;font-size:0.88rem;line-height:1.65;opacity:.8}.help-criteria{background:rgba(24,200,255,.08);border:1px solid rgba(24,200,255,.18)}.help-criteria h3{color:#18c8ff}.help-solutions{background:rgba(244,114,182,.08);border:1px solid rgba(244,114,182,.18)}.help-solutions h3{color:#f472b6}.help-data{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1)}.help-data h3{color:#aac}.help-pro{background:rgba(255,215,0,.06);border:1px solid rgba(255,215,0,.2)}.help-pro h3{color:#ffd700}.app-header{position:sticky;top:0;z-index:60;background:#0d1117;margin:-20px 0 0;padding-top:14px}.toolbar{display:flex;justify-content:space-between;align-items:center;padding:0 0 10px}.crumb-sep{color:rgba(255,255,255,.25);font-size:0.85rem;flex-shrink:0}.toolbar-project{display:flex;gap:2px;align-items:baseline;min-width:0}.proj-sep{color:rgba(255,255,255,.25);font-size:0.85rem;flex-shrink:0;padding:0 4px}.project-input{background:transparent;border:none;border-bottom:1px solid transparent;color:#fff;font-family:inherit;padding:2px;outline:none;transition:border-color .15s;min-width:0}.project-input:hover{border-bottom-color:rgba(255,255,255,.2)}.project-input:focus{border-bottom-color:rgba(255,255,255,.45)}.project-input::placeholder{color:rgba(255,255,255,.22)}.project-input:-webkit-autofill{-webkit-box-shadow:0 0 0 40px #0d1117 inset;-webkit-text-fill-color:#fff}.project-input-name{flex:0 1 200px;font-size:0.95rem;font-weight:600}.project-input-author{flex:0 1 100px;font-size:0.8rem;color:rgba(255,255,255,.55)}.file-menu-wrap{position:relative}.file-menu{position:absolute;top:calc(100%+6px);right:0;background:#161f2b;border:1px solid rgba(255,255,255,.12);border-radius:10px;min-width:190px;padding:6px;box-shadow:0 14px 34px rgba(0,0,0,.55);z-index:70;display:flex;flex-direction:column}.file-menu.hidden{display:none}.file-menu button,.file-menu label{display:block;width:100%;box-sizing:border-box;padding:8px 12px;background:none;border:none;color:#cde;font-size:0.84rem;border-radius:6px;text-align:left;cursor:pointer;font-family:inherit;white-space:nowrap}.file-menu button:hover,.file-menu label:hover{background:rgba(255,255,255,.07)}.file-menu label input{display:none}.file-menu-div{height:1px;background:rgba(255,255,255,.08);margin:5px 4px}.file-menu-danger{color:#f9a8a8 !important}.toolbar-actions{display:flex;gap:8px;align-items:center}.app-brand{display:flex;align-items:baseline;gap:8px;min-width:0;flex:1;padding-right:14px}.app-name{font-weight:700;font-size:1rem;color:#fff;letter-spacing:-.02em}.app-version{font-size:0.72rem;color:rgba(255,255,255,.4);background:rgba(255,255,255,.08);padding:2px 8px;border-radius:20px}.app-credit{text-align:center;font-size:0.75rem;color:rgba(255,255,255,.2);margin:8px 0 0}.app-credit-link{color:rgba(255,255,255,.2);text-decoration:none;border-bottom:1px solid rgba(255,255,255,.1);transition:color .15s,border-color .15s}.app-credit-link:hover{color:rgba(255,255,255,.5);border-bottom-color:rgba(255,255,255,.3)}.btn-toolbar{padding:7px 16px;border:1px solid rgba(255,255,255,.12);border-radius:8px;background:transparent;color:#aac;cursor:pointer;font-size:0.82rem;transition:background .15s;font-family:inherit}.btn-toolbar:hover{background:rgba(255,255,255,.07);color:#ddf}.btn-toolbar:disabled{opacity:.3;cursor:default;pointer-events:none}.btn-toolbar input[type=file]{display:none}.lang-toggle{font-weight:700;letter-spacing:.04em}.tabs{display:flex;gap:6px;align-items:flex-end;margin-bottom:0;padding:6px 0 0}.pro-toggle{margin-left:auto;margin-bottom:9px;padding:6px 14px;border-radius:20px;border:1px solid rgba(255,215,0,.25);background:rgba(255,215,0,.06);color:rgba(255,215,0,.45);cursor:pointer;font-size:0.78rem;font-weight:600;letter-spacing:.04em;transition:all .2s;font-family:inherit}.pro-toggle:hover{border-color:rgba(255,215,0,.45);color:rgba(255,215,0,.7);background:rgba(255,215,0,.1)}.pro-toggle.active{border-color:rgba(255,215,0,.7);background:rgba(255,215,0,.14);color:#ffd700;box-shadow:0 0 10px rgba(255,215,0,.15)}.tab-btn{padding:9px 26px;border:1px solid rgba(255,255,255,.07);border-bottom:none;border-radius:12px 12px 0 0;cursor:pointer;font-size:1rem;font-weight:600;transition:background .15s,color .15s,opacity .15s;position:relative}.tab-btn[data-tab="criteria"]{background:rgba(24,200,255,.07);color:rgba(24,200,255,.6)}.tab-btn[data-tab="solutions"]{background:rgba(244,114,182,.07);color:rgba(244,114,182,.6)}.tab-btn[data-tab="sensitivity"]{background:rgba(74,222,128,.07);color:rgba(74,222,128,.6)}.tab-btn:not(.disabled):hover{filter:brightness(1.25)}.tab-btn.active{background:#131c27;border-color:rgba(255,255,255,.12);margin-bottom:-1px;padding-top:11px;padding-bottom:11px;z-index:1}.tab-btn[data-tab="criteria"].active{background:#131c27;color:#18c8ff;box-shadow:inset 0 3px 0 #18c8ff}.tab-btn[data-tab="solutions"].active{background:#131c27;color:#f472b6;box-shadow:inset 0 3px 0 #f472b6}.tab-btn[data-tab="sensitivity"].active{background:#131c27;color:#4ade80;box-shadow:inset 0 3px 0 #4ade80}.tab-btn.disabled{opacity:.25;cursor:not-allowed}.tab-content{display:none}.tab-content.active{display:block;background:#131c27;border:1px solid rgba(255,255,255,.12);border-radius:0 16px 16px 16px;padding:22px 22px 2px;margin-bottom:24px}.section{background:rgba(255,255,255,.06);backdrop-filter:blur(16px);padding:30px;border-radius:18px;box-shadow:0 0 40px var(--glow);margin-bottom:24px}.section h1{margin-top:0;margin-bottom:30px}.section h2{margin:0 0 20px 0;font-size:1.1rem;opacity:.9}.section-content{padding:10px}.hidden{display:none}.hint{opacity:.5;font-size:0.85rem;margin:0 0 16px}input[type=text]{width:100%;padding:10px;margin:8px 0;border-radius:10px;border:none;background:#1a2332;color:white;box-sizing:border-box}.criteria-item{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}.criteria-item input{margin:0;flex:1;min-width:0}.sol-note{width:100%;font-size:0.78rem;color:rgba(255,255,255,.45);background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,.08);padding:3px 2px;font-family:inherit;outline:none;transition:border-color .15s}.sol-note:focus{border-bottom-color:rgba(255,255,255,.3);color:rgba(255,255,255,.7)}.sol-note::placeholder{color:rgba(255,255,255,.18)}.rank-note{font-size:0.72rem;font-weight:400;color:rgba(255,255,255,.35);margin-top:2px;font-style:italic}.btn-remove{padding:10px 12px;background:#ff4444;color:white;border:none;border-radius:8px;cursor:pointer;font-weight:bold;flex-shrink:0}.btn-remove:hover{background:#ff6666}.btn-add{padding:12px 22px;border:none;border-radius:12px;background:var(--accent);color:var(--accent-text);font-weight:bold;cursor:pointer;margin-top:10px;transition:background .15s}.btn-add:hover{background:var(--accent-hover)}.btn-secondary{padding:10px 20px;border:1px solid var(--accent-dim);border-radius:10px;background:transparent;color:var(--accent);cursor:pointer;font-size:0.9rem;margin-top:0;margin-bottom:20px;transition:background .15s,filter .15s}.btn-secondary:hover{background:var(--glow);filter:brightness(1.15)}.btn-secondary:disabled{opacity:.35;cursor:default;pointer-events:none}.pair-row{margin-bottom:14px;padding:16px;background:rgba(255,255,255,.04);border-radius:12px}.pair-label{font-size:0.95rem;margin-bottom:12px;line-height:1.5}.pair-label strong{color:var(--accent)}.pair-buttons{display:flex;gap:8px}.pair-btn{flex:1;padding:10px 8px;border:none;border-radius:8px;background:#1a2332;color:#9dd;cursor:pointer;font-size:0.85rem;transition:background .15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pair-btn:hover{background:#263041}.pair-btn.active{background:var(--accent);color:var(--accent-text);font-weight:bold}#consistencyHint{display:none;margin-top:14px;padding:10px 14px;border-radius:8px;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.25);font-size:.83rem;color:rgba(255,255,255,.75);line-height:1.6}#consistencyHint.visible{display:block}#consistencyHint strong{color:#fbbf24}.consistency-cycle{display:inline-block;background:rgba(255,255,255,.06);border-radius:5px;padding:1px 8px;margin:2px 4px 0 0;font-size:.8rem;white-space:nowrap}.be-legend-ko{opacity:.6}.be-ko-name{text-decoration:line-through}.be-ko-mark{color:rgba(255,100,0,.85);font-size:.78rem;margin-left:3px;cursor:help;text-decoration:none;display:inline-block}.robustness{margin-top:10px;font-size:.82rem;color:rgba(255,255,255,.5);line-height:1.5}.robustness.robust{color:rgba(52,211,153,.75)}.robustness.fragile{color:#fbbf24}.robustness strong{color:inherit}.weight-cell{display:flex;flex-direction:column;gap:4px}.weight-bar-wrap{height:6px;background:#1a2332;border-radius:4px;overflow:hidden;min-width:80px}.weight-bar{height:100%;background:var(--accent);border-radius:4px;transition:width .3s}.solution-card{background:rgba(255,255,255,.04);border-radius:12px;padding:16px;margin-bottom:14px}.criterion-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.solution-name{font-weight:bold;font-size:1.05rem;color:var(--accent)}.criterion-weight{font-size:0.8rem;opacity:.7;background:#1a2332;padding:3px 10px;border-radius:20px}.criterion-row{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:10px}.knockout-toggle{display:none;padding:3px 10px;border-radius:20px;border:1px solid rgba(255,165,0,.2);background:transparent;color:rgba(255,165,0,.35);cursor:pointer;font-size:0.68rem;font-weight:600;font-family:inherit;transition:all .15s;flex-shrink:0}.knockout-toggle:hover{border-color:rgba(255,165,0,.5);color:rgba(255,165,0,.65)}.knockout-toggle.active{border-color:rgba(255,165,0,.65);background:rgba(255,165,0,.1);color:#ffa500}.pro-on .knockout-toggle{display:inline-flex}.eco-toggle{display:none;padding:3px 10px;border-radius:20px;border:1px solid rgba(52,211,153,.2);background:transparent;color:rgba(52,211,153,.4);cursor:pointer;font-size:0.68rem;font-weight:600;font-family:inherit;transition:all .15s;flex-shrink:0;margin-right:6px}.eco-toggle:hover{border-color:rgba(52,211,153,.5);color:rgba(52,211,153,.7)}.eco-toggle.active{border-color:rgba(52,211,153,.65);background:rgba(52,211,153,.1);color:#34d399}.pro-on .eco-toggle{display:inline-flex}.vdi-table{border-collapse:collapse;margin-bottom:14px}.vdi-table th,.vdi-table td{padding:6px 16px 6px 0;text-align:right;font-size:.87rem;border-bottom:1px solid rgba(255,255,255,.06);font-variant-numeric:tabular-nums}.vdi-table th{color:rgba(255,255,255,.4);font-weight:500;font-size:.76rem;cursor:help}.vdi-table th:first-child,.vdi-table td:first-child{text-align:left;padding-right:28px}.vdi-ko{opacity:.45}.vdi-ko td:first-child{text-decoration:line-through}.vdi-diagram{margin-top:6px}.vdi-svg{overflow:visible}.team-actions{display:flex;gap:10px;margin:10px 0 6px;align-items:center}.team-load{display:inline-flex;cursor:pointer}.team-load input[type=file]{display:none}.tm-summary{margin:8px 0 4px}.tm-summary-warn{color:#fbbf24}.tm-diff .sc-cr-cell{background:rgba(251,191,36,.08);color:#fbbf24}.tm-diff .sc-cr-label{color:rgba(251,191,36,.75)}.tm-mean{font-weight:600;color:rgba(255,255,255,.55) !important}.solution-card.knockout-active{border-left:3px solid rgba(255,165,0,.5);padding-left:13px}.rank-ko{opacity:.35}.rank-ko-name{text-decoration:line-through}.rank-ko-reason{font-size:0.7rem;font-weight:400;font-style:italic;color:rgba(255,100,0,.6);margin-top:2px;display:block}.anchor-strip{display:none;gap:6px;margin-bottom:12px;padding:8px 10px;background:rgba(255,255,255,.03);border-radius:8px;flex-wrap:wrap}.pro-on .anchor-strip{display:flex}.anchor-item{display:flex;align-items:center;gap:4px;flex:1;min-width:0}.anchor-label{font-size:0.7rem;font-weight:700;color:rgba(255,255,255,.35);flex-shrink:0;width:12px;text-align:center}.anchor-input{flex:1;min-width:0;font-size:0.72rem;color:rgba(255,255,255,.5);background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,.1);padding:2px 2px;font-family:inherit;outline:none;transition:border-color .15s}.anchor-input:focus{border-bottom-color:rgba(255,255,255,.35);color:rgba(255,255,255,.75)}.anchor-input::placeholder{color:rgba(255,255,255,.13)}.rating-note{display:none;width:100%;font-size:0.72rem;color:rgba(255,255,255,.4);background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,.07);padding:2px 2px 2px 0;font-family:inherit;outline:none;transition:border-color .15s;margin-top:-4px;margin-bottom:4px}.pro-on .rating-note{display:block}.rating-note:focus{border-bottom-color:rgba(255,255,255,.3);color:rgba(255,255,255,.65)}.rating-note::placeholder{color:rgba(255,255,255,.14)}.rating-note.has-note{border-bottom-color:rgba(255,255,255,.15);color:rgba(255,255,255,.45)}.criterion-name{flex:1;font-size:0.9rem;opacity:.75;min-width:80px}.rating-buttons{display:flex;gap:4px;flex-shrink:0}.rating-btn{width:36px;height:36px;border:none;border-radius:8px;background:#1a2332;color:#9dd;cursor:pointer;font-size:0.9rem;font-weight:600;transition:background .15s}.rating-btn:hover{background:#263041}.rating-btn.active{background:var(--accent);color:var(--accent-text)}.ri-sol-header{font-weight:700;font-size:0.9rem;margin:20px 0 10px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.08)}.ri-sol-header:first-child{margin-top:0}.rs-ticks{position:absolute;top:34px;left:0;width:100%}.rs-tick{position:absolute;transform:translateX(-50%);font-size:0.65rem;color:rgba(255,255,255,.4)}#ratingImpactContainer .be-track-wrap{cursor:ew-resize}.be-legend{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:20px}.be-legend-item{display:flex;align-items:center;gap:7px;font-size:0.85rem;opacity:.85}.be-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}.be-row{display:flex;align-items:flex-start;gap:14px;margin-bottom:28px}#sensImpact .be-row{margin-bottom:10px}.be-label{width:130px;font-size:0.9rem;flex-shrink:0;padding-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.be-track-wrap{flex:1;position:relative;cursor:ew-resize;user-select:none}.be-track{height:28px;display:flex;border-radius:6px;overflow:hidden}.be-segment{height:100%;opacity:.82}.be-current{position:absolute;top:0;height:28px;width:3px;background:#fff;border-radius:2px;transform:translateX(-50%);box-shadow:0 0 8px rgba(255,255,255,.55);pointer-events:none}.be-current::before{content:'';position:absolute;top:-5px;left:50%;transform:translateX(-50%);width:9px;height:9px;border-radius:50%;background:#fff;box-shadow:0 0 6px rgba(255,255,255,.7)}.be-committed{position:absolute;top:2px;height:24px;width:2px;background:rgba(255,255,255,.35);border-radius:1px;transform:translateX(-50%);pointer-events:auto;cursor:help}.be-committed::before{content:'';position:absolute;top:-4px;left:50%;transform:translateX(-50%);width:6px;height:6px;border-radius:50%;border:1.5px solid rgba(255,255,255,.4);background:transparent}.be-bp-row{position:relative;height:20px;margin-top:4px}.be-bp-label{position:absolute;transform:translateX(-50%);font-size:0.72rem;opacity:.55;white-space:nowrap}table{width:100%;border-collapse:collapse;margin-top:8px}th,td{padding:10px;border-bottom:1px solid #2a3344;text-align:left}th{font-weight:bold;opacity:.8}#compareSection,#resultsSection,#fineTuneSection{display:none}#compareSection.active,#resultsSection.active,#fineTuneSection.active{display:block}.fine-tune-row{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05)}.fine-tune-row:last-child{border-bottom:none}.fine-tune-name{flex:1;font-size:0.9rem;color:#cce}.fine-tune-input{width:68px;padding:5px 8px;background:#1a2332;border:1px solid rgba(255,255,255,.12);border-radius:6px;color:rgba(255,255,255,.35);font-size:0.9rem;text-align:right;appearance:textfield;-moz-appearance:textfield}.fine-tune-input.pinned{color:#fff;border-color:rgba(24,200,255,.35)}.fine-tune-input::-webkit-inner-spin-button,.fine-tune-input::-webkit-outer-spin-button{display:none}.fine-tune-input:focus{outline:none;border-color:var(--accent)}.fine-tune-pct{font-size:0.8rem;color:rgba(255,255,255,.3);width:10px}.fine-tune-bar{flex:1.4;height:16px;background:#1a2332;border-radius:8px;overflow:hidden;min-width:80px;cursor:ew-resize;touch-action:none}.fine-tune-bar:hover{background:#202b3d}.fine-tune-bar-fill{height:100%;background:var(--accent);border-radius:8px;pointer-events:none}.fine-tune-reason{flex:2;padding:4px 6px;background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,.08);color:#aac;font-size:0.8rem;font-style:italic;outline:none;font-family:inherit;min-width:60px}.fine-tune-reason::placeholder{color:rgba(255,255,255,.18)}.fine-tune-reason:focus{border-bottom-color:rgba(255,255,255,.3);color:#ddf}.fine-tune-actions{margin-top:16px;display:flex;align-items:center;gap:12px}.optional-label{font-size:0.73rem;color:rgba(255,255,255,.28);font-weight:400;margin-left:6px}.custom-badge{font-size:0.72rem;background:rgba(24,200,255,.12);color:var(--accent);border:1px solid rgba(24,200,255,.25);border-radius:20px;padding:2px 8px;margin-left:8px;display:none}.custom-badge.visible{display:inline}.scenario-save-row{display:flex;gap:.5rem;margin:1rem 0 .5rem}.scenario-save-row input{flex:1;min-width:0}.sc-wrap{overflow-x:auto;margin-top:.5rem}.sc-table{width:100%;border-collapse:collapse;font-size:.87rem;white-space:nowrap}.sc-table thead th{padding:.4rem .8rem;text-align:right;color:rgba(255,255,255,.38);font-weight:500;font-size:.78rem;border-bottom:1px solid rgba(255,255,255,.08)}.sc-table thead th:first-child{text-align:left;color:transparent;min-width:8rem;width:8rem}.sc-del,.sc-load-btn{background:none;border:none;cursor:pointer;padding:0 0 0 .35rem;font-size:.72rem;vertical-align:middle;transition:color .15s;line-height:1}.sc-del{color:rgba(255,255,255,.22)}.sc-del:hover{color:rgba(255,255,255,.7)}.sc-load-btn{color:rgba(255,255,255,.3)}.sc-load-btn:hover{color:rgba(255,255,255,.85)}.sc-w-row td,.sc-s-row td{padding:.28rem .8rem;border-bottom:1px solid rgba(255,255,255,.04)}.sc-label{color:rgba(255,255,255,.5);font-size:.82rem;text-align:left}.sc-sol-name{font-weight:500}.sc-w{text-align:right;color:rgba(255,255,255,.42);font-variant-numeric:tabular-nums}.sc-sep td{padding:0;height:1px;background:rgba(255,255,255,.1)}.sc-cell{text-align:right;font-variant-numeric:tabular-nums;padding:.3rem .8rem;border-left:2px solid transparent}.sc-rank{font-weight:700}.sc-score{font-size:.77rem;color:rgba(255,255,255,.38);margin-left:.25rem}.sc-winner .sc-score{color:rgba(255,255,255,.6)}.sc-ko-cell{color:rgba(255,255,255,.18);text-align:right;padding:.3rem .8rem}.sc-ko .sc-label{opacity:.35}.sc-ko .sc-sol-name{text-decoration:line-through}.sc-cr-row td{padding:.12rem .8rem;border-bottom:none}.sc-cr-label{color:rgba(255,255,255,.3);font-size:.78rem;padding-left:1.2rem !important;white-space:nowrap}.sc-cr-badge{display:inline-block;background:rgba(255,255,255,.07);border-radius:3px;padding:0 .3rem;margin-left:.35rem;font-size:.72rem;color:rgba(255,255,255,.4);font-variant-numeric:tabular-nums}.sc-badge-hi{background:rgba(251,191,36,.18);color:#fbbf24}.sc-contrib{font-size:.77rem;color:rgba(255,255,255,.3);margin-left:.3rem;font-variant-numeric:tabular-nums}.sc-w-hi{color:#fbbf24;font-weight:600}.sc-cell-hi{background:rgba(251,191,36,.07)}.sc-cr-cell{text-align:right;color:rgba(255,255,255,.28);font-size:.78rem;font-variant-numeric:tabular-nums;padding:.12rem .8rem}.sc-s-row td{border-top:1px solid rgba(255,255,255,.07)}@media(max-width:700px){.app-header{position:static;margin-top:0}.tabs{flex-wrap:wrap}.toolbar{flex-wrap:wrap;gap:8px}.app-brand{flex-basis:100%}.project-input-name{flex:1}}@media(max-width:600px){.pair-btn{font-size:0.75rem;padding:8px 4px}.rating-btn{width:30px;height:30px;font-size:0.8rem}.criterion-name{font-size:0.8rem}.be-label{width:80px}}</style>
 </head>
 <body>
 <div class="container">
+<div class="app-header">
 <div class="toolbar">
 <div class="app-brand">
 <span class="app-name">DecisionLab</span>
-<span class="app-version">v0.5</span>
+<span class="app-version">v0.6</span>
+<span class="crumb-sep">▸</span>
+<div class="toolbar-project">
+<input id="decisionNameInput" class="project-input project-input-name" type="text" data-i18n-placeholder="decisionNamePlaceholder" placeholder="">
+<span class="proj-sep">·</span>
+<input id="bearbeiterInput" class="project-input project-input-author" type="text" data-i18n-placeholder="bearbeiterPlaceholder" placeholder="">
+</div>
 </div>
 <div class="toolbar-actions">
 <button id="langToggle" class="btn-toolbar lang-toggle">DE</button>
@@ -19,11 +26,17 @@
 <button id="redoBtn" class="btn-toolbar" data-i18n-title="redoTitle" disabled>↷</button>
 <button id="helpBtn" class="btn-toolbar" data-i18n="help"></button>
 <button id="printBtn" class="btn-toolbar" data-i18n="print"></button>
-<button id="newBtn" class="btn-toolbar" data-i18n="newSession"></button>
-<button id="exportHtmlBtn" class="btn-toolbar" data-i18n="exportHtml"></button>
-<button id="exportCsvBtn" class="btn-toolbar" data-i18n="exportCsv"></button>
-<button id="exportBtn" class="btn-toolbar" data-i18n="save"></button>
-<label class="btn-toolbar"><span data-i18n="load"></span><input type="file" id="importInput" accept=".json"></label>
+<div class="file-menu-wrap" id="fileMenuWrap">
+<button id="fileMenuBtn" class="btn-toolbar" data-i18n="fileMenu"></button>
+<div id="fileMenu" class="file-menu hidden">
+<button id="exportBtn" data-i18n="save"></button>
+<label><span data-i18n="load"></span><input type="file" id="importInput" accept=".json"></label>
+<button id="exportHtmlBtn" data-i18n="exportHtml"></button>
+<button id="exportCsvBtn" data-i18n="exportCsv"></button>
+<div class="file-menu-div"></div>
+<button id="newBtn" class="file-menu-danger" data-i18n="newSession"></button>
+</div>
+</div>
 </div>
 </div>
 <div id="helpOverlay" class="help-overlay hidden">
@@ -49,15 +62,12 @@
 </div>
 </div>
 </div>
-<div class="project-header">
-<input id="decisionNameInput" class="project-input project-input-name" type="text" data-i18n-placeholder="decisionNamePlaceholder" placeholder="">
-<input id="bearbeiterInput" class="project-input project-input-author" type="text" data-i18n-placeholder="bearbeiterPlaceholder" placeholder="">
-</div>
 <div class="tabs">
 <button class="tab-btn active" data-tab="criteria" data-i18n="tabCriteria"></button>
 <button class="tab-btn" data-tab="solutions" data-i18n="tabSolutions"></button>
 <button class="tab-btn" data-tab="sensitivity" id="sensitivityTab" data-i18n="tabSensitivity"></button>
 <button id="proToggle" class="pro-toggle">⚡ Pro</button>
+</div>
 </div>
 <div id="tab-criteria" class="tab-content active">
 <div class="section" id="criteriaInputSection">
@@ -117,6 +127,24 @@
 <p id="robustnessHint" class="robustness"></p>
 </div>
 </div>
+<div class="section" id="vdiSection" style="display:none">
+<div class="section-content">
+<h2 data-i18n="vdiTitle"></h2>
+<p class="hint" data-i18n="vdiHint"></p>
+<div id="vdiContainer"></div>
+</div>
+</div>
+<div class="section" id="teamSection" style="display:none">
+<div class="section-content">
+<h2 data-i18n="teamTitle"></h2>
+<p class="hint" data-i18n="teamHint"></p>
+<div class="team-actions">
+<label class="btn-secondary team-load"><span data-i18n="teamAddRater"></span><input type="file" id="raterInput" accept=".json" multiple></label>
+<button id="teamExploreBtn" class="btn-secondary" data-i18n="teamExplore" style="display:none"></button>
+</div>
+<div id="teamContainer"></div>
+</div>
+</div>
 </div>
 <div id="tab-sensitivity" class="tab-content">
 <div class="section">
@@ -160,8 +188,8 @@
 <p class="app-credit"><span data-i18n="credit"></span> · <a class="app-credit-link" href="https://github.com/milande/tradeoff_tool/" target="_blank" rel="noopener">Source &amp; build on GitHub</a></p>
 <script>const _scriptEl=document.currentScript;const _scriptText=_scriptEl.textContent;const _styleText=document.querySelector('style').textContent;let _bodyHtml='';for(const node of document.body.childNodes){if(node===_scriptEl)break;_bodyHtml+=node.nodeType===3?node.textContent:(node.outerHTML||'');}
 const EN = {
-help: '? Help', print: '⎙ Print', newSession: '✕ New', exportHtml: '↓ Export', save: '↓ Save', load: '↑ Load',
-exportCsv: '↓ CSV', csvRank: 'Rank',
+help: '? Help', print: '⎙ Print', newSession: '✕ New decision', exportHtml: '↓ Export HTML', save: '↓ Save (JSON)', load: '↑ Load',
+exportCsv: '↓ Export CSV', csvRank: 'Rank', fileMenu: 'File ▾',
 undoTitle: 'Undo (Ctrl+Z)', redoTitle: 'Redo (Ctrl+Shift+Z)',
 tabCriteria: 'Criteria', tabSolutions: 'Solutions', tabSensitivity: 'Sensitivity',
 step1: 'Criteria',
@@ -198,7 +226,7 @@ helpSolutionsText: 'Add the options you\'re deciding between. Optionally add a s
 helpDataTitle: '↓ / ↑ Data',
 helpDataText: 'Your session auto-saves in the browser. <strong>↓ HTML</strong> exports a fully self-contained file with your data baked in — open it anywhere, embed it in Confluence, or share it. <strong>↓ JSON</strong> exports just the data for re-importing. <strong>↓ CSV</strong> exports the decision matrix for spreadsheets. <strong>↑ Load</strong> loads a JSON file. <strong>New</strong> clears everything. <strong>↶ ↷</strong> undo/redo any change (Ctrl+Z / Ctrl+Shift+Z).',
 helpProTitle: '⚡ Pro Mode',
-helpProText: 'Toggle <strong>⚡ Pro</strong> in the tab bar to unlock advanced features:<br><br><strong>Fine-tune Weights</strong> — drag a weight bar or type a percentage after the pairwise comparison. Values you set stay pinned (shown bright); the not-yet-edited criteria (dimmed) absorb the change. A <em>Custom</em> badge appears when overridden; <em>↺ Reset to pairwise</em> reverts them.<br><br><strong>Score Definitions</strong> — define what each score (0–4) means per criterion. Hover a rating button to see the definition as a tooltip.<br><br><strong>Rating Rationale</strong> — add a short reason below each rating to document why you gave that score. Appears in the print view.<br><br><strong>Must-have Criteria</strong> — mark any criterion as must-have. Solutions scoring 0 on it are eliminated from the ranking and shown at the bottom with the reason.<br><br><strong>Sensitivity Analysis</strong> — drag the white marker on any criterion bar to explore <em>"What if this mattered more or less?"</em> Colored segments show which solution leads at each weight level, and labels mark where the winner switches. Solutions failing a must-have stay visible for the what-if view, but their segments are hatched and the legend marks them with ⊗.<br><br><strong>Scenario Comparison</strong> — save named snapshots of your current exploration (weights <em>and</em> ratings) and compare them side by side against the baseline. Values that differ from the baseline are highlighted; click a column header (Baseline or scenario) to load its values back into the sensitivity bars.',
+helpProText: 'Toggle <strong>⚡ Pro</strong> in the tab bar to unlock advanced features:<br><br><strong>Fine-tune Weights</strong> — drag a weight bar or type a percentage after the pairwise comparison. Values you set stay pinned (shown bright); the not-yet-edited criteria (dimmed) absorb the change. A <em>Custom</em> badge appears when overridden; <em>↺ Reset to pairwise</em> reverts them.<br><br><strong>Score Definitions</strong> — define what each score (0–4) means per criterion. Hover a rating button to see the definition as a tooltip.<br><br><strong>Rating Rationale</strong> — add a short reason below each rating to document why you gave that score. Appears in the print view.<br><br><strong>Must-have Criteria</strong> — mark any criterion as must-have. Solutions scoring 0 on it are eliminated from the ranking and shown at the bottom with the reason.<br><br><strong>Sensitivity Analysis</strong> — drag the white marker on any criterion bar to explore <em>"What if this mattered more or less?"</em> Colored segments show which solution leads at each weight level, and labels mark where the winner switches. Solutions failing a must-have stay visible for the what-if view, but their segments are hatched and the legend marks them with ⊗.<br><br><strong>Scenario Comparison</strong> — save named snapshots of your current exploration (weights <em>and</em> ratings) and compare them side by side against the baseline. Values that differ from the baseline are highlighted; click a column header (Baseline or scenario) to load its values back into the sensitivity bars.<br><br><strong>VDI 2225 Value Analysis</strong> — mark criteria as economic (€) in the rating matrix to compute technical value Wt and economic value We separately, with the s-diagram (ideal at 1/1) shown below the ranking and in the print view.<br><br><strong>Team Ratings</strong> — share the JSON with teammates, let everyone rate independently, then load their files to compare all ratings side by side. Disagreements of 2+ points are highlighted, a team-average ranking is computed, and the average can be loaded into the sensitivity exploration.',
 printGenerated: date => `Generated ${date}`,
 printCriteriaComparisons: 'Criteria Comparisons', printCriteriaWeights: 'Criteria Weights',
 printWeightAdjustments: 'Weight Adjustments', printSolutionRanking: 'Solution Ranking',
@@ -214,6 +242,27 @@ alertInvalidFile: 'Could not read file — invalid format.',
 confirmNewSession: 'Clear everything and start over?',
 exportedBy: 'Exported by', exportedDate: 'Date',
 decisionNamePlaceholder: 'Decision name…', bearbeiterPlaceholder: 'Author…',
+committedMarker: 'Committed value (Solutions tab)',
+robustnessBasis: 'Based on the committed weights and ratings from the Criteria/Solutions tabs — not on the sensitivity exploration.',
+teamTitle: 'Team Ratings',
+teamHint: 'Share the saved JSON with your teammates — everyone rates independently and saves with their own name. Load their files here to compare the ratings.',
+teamAddRater: '↑ Load rater file(s)',
+teamExplore: '↧ Explore team average',
+teamYou: 'You',
+teamRater: 'Rater',
+teamMeanTitle: 'Team average (all raters incl. you)',
+teamNoData: 'Load at least one teammate’s file to see the comparison.',
+teamMismatch: 'This file belongs to a different decision (criteria or solutions don’t match).',
+teamDisagree: n => n === 0
+? 'No major disagreements — all ratings within 1 point.'
+: `${n} rating${n === 1 ? '' : 's'} differ by 2 or more points (highlighted below).`,
+vdiTitle: 'VDI 2225 — Value Analysis',
+vdiHint: 'Mark criteria as economic (€) in the rating matrix to separate technical value Wt from economic value We. Balanced solutions lie near the diagonal of the s-diagram; the ideal is 1/1.',
+vdiTechnical: 'Technical criterion — click to mark as economic (€)',
+vdiEconomic: 'Economic criterion (€) — click to mark as technical',
+vdiWt: 'Technical value Wt (weighted rating relative to ideal)',
+vdiWe: 'Economic value We (weighted rating relative to ideal)',
+vdiS: 'Strength s = √(Wt·We)',
 scenarios: 'Scenarios',
 scenarioBaseline: 'Baseline',
 scenarioSave: 'Save current weights',
@@ -223,8 +272,8 @@ scenarioNoData: 'Save at least one scenario to see the comparison.',
 scenarioLoadHint: 'Click to load into sensitivity bars',
 };
 const DE = {
-help: '? Hilfe', print: '⎙ Drucken', newSession: '✕ Neu', exportHtml: '↓ Exportieren', save: '↓ Speichern', load: '↑ Laden',
-exportCsv: '↓ CSV', csvRank: 'Rang',
+help: '? Hilfe', print: '⎙ Drucken', newSession: '✕ Neue Entscheidung', exportHtml: '↓ HTML exportieren', save: '↓ Speichern (JSON)', load: '↑ Laden',
+exportCsv: '↓ CSV exportieren', csvRank: 'Rang', fileMenu: 'Datei ▾',
 undoTitle: 'Rückgängig (Strg+Z)', redoTitle: 'Wiederholen (Strg+Umschalt+Z)',
 tabCriteria: 'Kriterien', tabSolutions: 'Lösungen', tabSensitivity: 'Sensitivität',
 step1: 'Kriterien',
@@ -261,7 +310,7 @@ helpSolutionsText: 'Füge die Optionen hinzu, zwischen denen du entscheidest. Op
 helpDataTitle: '↓ / ↑ Daten',
 helpDataText: 'Deine Sitzung wird automatisch im Browser gespeichert. <strong>↓ HTML</strong> exportiert eine vollständig eigenständige Datei — öffne sie überall, binde sie in Confluence ein oder teile sie. <strong>↓ JSON</strong> exportiert nur die Daten. <strong>↓ CSV</strong> exportiert die Entscheidungsmatrix für Tabellenkalkulationen. <strong>↑ Laden</strong> lädt eine JSON-Datei. <strong>Neu</strong> löscht alles. <strong>↶ ↷</strong> macht jede Änderung rückgängig bzw. wieder her (Strg+Z / Strg+Umschalt+Z).',
 helpProTitle: '⚡ Pro-Modus',
-helpProText: '<strong>⚡ Pro</strong> in der Tab-Leiste aktivieren, um erweiterte Funktionen freizuschalten:<br><br><strong>Gewichte anpassen</strong> — nach dem paarweisen Vergleich einen Gewichtsbalken ziehen oder einen Prozentwert eintippen. Selbst gesetzte Werte bleiben fixiert (hell dargestellt); die noch nicht bearbeiteten Kriterien (gedimmt) nehmen die Änderung auf. Ein <em>Angepasst</em>-Badge erscheint bei Überschreibung; <em>↺ Paarweise zurücksetzen</em> macht dies rückgängig.<br><br><strong>Bewertungsdefinitionen</strong> — definiere, was jede Punktzahl (0–4) für ein Kriterium bedeutet. Beim Hover über einen Bewertungs-Button erscheint die Definition als Tooltip.<br><br><strong>Bewertungsbegründung</strong> — füge eine kurze Begründung unter jede Bewertung ein, um nachvollziehbar zu machen, warum du diese Punktzahl vergeben hast. Erscheint in der Druckansicht.<br><br><strong>Muss-Kriterien</strong> — markiere ein Kriterium als Muss. Lösungen, die dort 0 Punkte erzielen, werden aus dem Ranking ausgeschlossen und am Ende mit Begründung angezeigt.<br><br><strong>Sensitivitätsanalyse</strong> — den weißen Marker auf einem Kriteriumsbalken ziehen, um zu erkunden: <em>„Was wenn das mehr oder weniger wichtig wäre?"</em> Farbige Segmente zeigen, welche Lösung bei jedem Gewicht führt, und Labels markieren den Wechselpunkt. Lösungen, die ein Muss-Kriterium nicht erfüllen, bleiben für die Was-wäre-wenn-Sicht sichtbar — ihre Segmente sind schraffiert und in der Legende mit ⊗ markiert.<br><br><strong>Szenariovergleich</strong> — benannte Momentaufnahmen der aktuellen Exploration (Gewichte <em>und</em> Bewertungen) speichern und nebeneinander mit der Basis vergleichen. Abweichungen von der Basis werden hervorgehoben; ein Klick auf einen Spaltenkopf (Basis oder Szenario) lädt dessen Werte zurück in die Sensitivitätsbalken.',
+helpProText: '<strong>⚡ Pro</strong> in der Tab-Leiste aktivieren, um erweiterte Funktionen freizuschalten:<br><br><strong>Gewichte anpassen</strong> — nach dem paarweisen Vergleich einen Gewichtsbalken ziehen oder einen Prozentwert eintippen. Selbst gesetzte Werte bleiben fixiert (hell dargestellt); die noch nicht bearbeiteten Kriterien (gedimmt) nehmen die Änderung auf. Ein <em>Angepasst</em>-Badge erscheint bei Überschreibung; <em>↺ Paarweise zurücksetzen</em> macht dies rückgängig.<br><br><strong>Bewertungsdefinitionen</strong> — definiere, was jede Punktzahl (0–4) für ein Kriterium bedeutet. Beim Hover über einen Bewertungs-Button erscheint die Definition als Tooltip.<br><br><strong>Bewertungsbegründung</strong> — füge eine kurze Begründung unter jede Bewertung ein, um nachvollziehbar zu machen, warum du diese Punktzahl vergeben hast. Erscheint in der Druckansicht.<br><br><strong>Muss-Kriterien</strong> — markiere ein Kriterium als Muss. Lösungen, die dort 0 Punkte erzielen, werden aus dem Ranking ausgeschlossen und am Ende mit Begründung angezeigt.<br><br><strong>Sensitivitätsanalyse</strong> — den weißen Marker auf einem Kriteriumsbalken ziehen, um zu erkunden: <em>„Was wenn das mehr oder weniger wichtig wäre?"</em> Farbige Segmente zeigen, welche Lösung bei jedem Gewicht führt, und Labels markieren den Wechselpunkt. Lösungen, die ein Muss-Kriterium nicht erfüllen, bleiben für die Was-wäre-wenn-Sicht sichtbar — ihre Segmente sind schraffiert und in der Legende mit ⊗ markiert.<br><br><strong>Szenariovergleich</strong> — benannte Momentaufnahmen der aktuellen Exploration (Gewichte <em>und</em> Bewertungen) speichern und nebeneinander mit der Basis vergleichen. Abweichungen von der Basis werden hervorgehoben; ein Klick auf einen Spaltenkopf (Basis oder Szenario) lädt dessen Werte zurück in die Sensitivitätsbalken.<br><br><strong>VDI 2225 Wertanalyse</strong> — Kriterien in der Bewertungsmatrix als wirtschaftlich (€) markieren, um technische Wertigkeit Wt und wirtschaftliche Wertigkeit We getrennt zu berechnen — mit s-Diagramm (Ideal bei 1/1) unter dem Ranking und in der Druckansicht.<br><br><strong>Team-Bewertungen</strong> — die JSON-Datei mit dem Team teilen, alle bewerten unabhängig, dann ihre Dateien laden und alle Bewertungen nebeneinander vergleichen. Abweichungen von 2+ Punkten werden hervorgehoben, ein Team-Durchschnitts-Ranking wird berechnet, und der Durchschnitt lässt sich in die Sensitivitätsanalyse laden.',
 printGenerated: date => `Erstellt am ${date}`,
 printCriteriaComparisons: 'Kriterienvergleich', printCriteriaWeights: 'Kriteriengewichte',
 printWeightAdjustments: 'Gewichtsanpassungen', printSolutionRanking: 'Lösungsranking',
@@ -277,6 +326,27 @@ alertInvalidFile: 'Datei konnte nicht gelesen werden — ungültiges Format.',
 confirmNewSession: 'Alles löschen und neu beginnen?',
 exportedBy: 'Exportiert von', exportedDate: 'Datum',
 decisionNamePlaceholder: 'Entscheidungsname…', bearbeiterPlaceholder: 'Bearbeiter…',
+committedMarker: 'Festgelegter Wert (Lösungen-Tab)',
+robustnessBasis: 'Basierend auf den festgelegten Gewichten und Bewertungen aus den Tabs Kriterien/Lösungen — nicht auf der Sensitivitäts-Exploration.',
+teamTitle: 'Team-Bewertungen',
+teamHint: 'Die gespeicherte JSON-Datei mit dem Team teilen — alle bewerten unabhängig und speichern mit eigenem Namen. Die Dateien hier laden, um die Bewertungen zu vergleichen.',
+teamAddRater: '↑ Bewerter-Datei(en) laden',
+teamExplore: '↧ Team-Durchschnitt erkunden',
+teamYou: 'Du',
+teamRater: 'Bewerter',
+teamMeanTitle: 'Team-Durchschnitt (alle Bewerter inkl. dir)',
+teamNoData: 'Mindestens eine Datei eines Teammitglieds laden, um den Vergleich zu sehen.',
+teamMismatch: 'Diese Datei gehört zu einer anderen Entscheidung (Kriterien oder Lösungen stimmen nicht überein).',
+teamDisagree: n => n === 0
+? 'Keine größeren Abweichungen — alle Bewertungen innerhalb von 1 Punkt.'
+: `${n} Bewertung${n === 1 ? ' weicht' : 'en weichen'} um 2 oder mehr Punkte ab (unten hervorgehoben).`,
+vdiTitle: 'VDI 2225 — Wertanalyse',
+vdiHint: 'Kriterien in der Bewertungsmatrix als wirtschaftlich (€) markieren, um technische Wertigkeit Wt und wirtschaftliche Wertigkeit We zu trennen. Ausgewogene Lösungen liegen nahe der Diagonale des s-Diagramms; das Ideal ist 1/1.',
+vdiTechnical: 'Technisches Kriterium — klicken, um als wirtschaftlich (€) zu markieren',
+vdiEconomic: 'Wirtschaftliches Kriterium (€) — klicken, um als technisch zu markieren',
+vdiWt: 'Technische Wertigkeit Wt (gewichtete Bewertung relativ zum Ideal)',
+vdiWe: 'Wirtschaftliche Wertigkeit We (gewichtete Bewertung relativ zum Ideal)',
+vdiS: 'Stärke s = √(Wt·We)',
 scenarios: 'Szenarien',
 scenarioBaseline: 'Basis',
 scenarioSave: 'Aktuelle Gewichte speichern',
@@ -312,7 +382,10 @@ document.querySelectorAll('[data-i18n-title]').forEach(el => {
 const v = t(el.dataset.i18nTitle);
 if (typeof v === 'string') el.title = v;
 });
-document.getElementById('langToggle').textContent = lang === 'en' ? 'DE' : 'EN';
+const langBtn = document.getElementById('langToggle');
+langBtn.textContent = lang.toUpperCase();
+langBtn.title = lang === 'en' ? 'Auf Deutsch umschalten' : 'Switch to English';
+try { localStorage.setItem('dl_lang', lang); } catch (e) {}
 document.querySelectorAll('#criteriaList input').forEach((i, idx) => i.placeholder = `${t('criterionDefault')} ${idx + 1}`);
 document.querySelectorAll('#solutionList input:not(.sol-note)').forEach(i => i.placeholder = t('solutionPlaceholder'));
 document.querySelectorAll('#solutionList input.sol-note').forEach(i => i.placeholder = t('solutionNotePlaceholder'));
@@ -344,8 +417,10 @@ ratings,
 ratingNotes,
 criteriaAnchors,
 knockoutCriteria,
+economicCriteria,
 solutionNotes,
 scenarios,
+raters,
 sensWeights,
 explorationRatings,
 };
@@ -434,6 +509,7 @@ bearbeiter = state.bearbeiter || '';
 ratingNotes = state.ratingNotes || {};
 criteriaAnchors = state.criteriaAnchors || {};
 knockoutCriteria = state.knockoutCriteria || {};
+economicCriteria = state.economicCriteria || {};
 solutionNotes = state.solutionNotes || {};
 document.getElementById('decisionNameInput').value = decisionName;
 document.getElementById('bearbeiterInput').value = bearbeiter;
@@ -442,6 +518,7 @@ customWeights = state.customWeights || null;
 customWeightReasons = state.customWeightReasons || {};
 customWeightPinned = state.customWeightPinned || {};
 scenarios = state.scenarios || [];
+raters = state.raters || [];
 proMode = state.proMode || false;
 lang = state.lang || 'en';
 if ((state.criteria || []).length >= 2) startComparison(true, true);
@@ -655,7 +732,7 @@ compareSection.classList.remove('active');
 resultsSection.classList.remove('active');
 fineTuneSection.classList.remove('active');
 comparisonStarted = false;
-criteria = []; pairs = []; pairStates = {}; customWeights = null; customWeightReasons = {}; customWeightPinned = {}; scenarios = [];
+criteria = []; pairs = []; pairStates = {}; customWeights = null; customWeightReasons = {}; customWeightPinned = {}; scenarios = []; raters = [];
 sensWeights = {}; explorationRatings = {};
 applyProMode();
 updateTabState();
@@ -667,7 +744,7 @@ updateSensImpact(); updateRatingImpact();
 function startComparison(preserveWeights = false, suppressScroll = false) {
 const incoming = getCriteria();
 const wasStarted = comparisonStarted;
-if (!preserveWeights && criteriaKey(incoming) !== criteriaKey(criteria)) { customWeights = null; customWeightReasons = {}; customWeightPinned = {}; scenarios = []; }
+if (!preserveWeights && criteriaKey(incoming) !== criteriaKey(criteria)) { customWeights = null; customWeightReasons = {}; customWeightPinned = {}; scenarios = []; raters = []; }
 criteria = incoming;
 pairs = [];
 for (let i = 0; i < criteria.length; i++)
@@ -789,6 +866,7 @@ saveState();
 });
 });
 customBadge.classList.toggle('visible', customWeights !== null);
+document.getElementById('resetFineBtn').disabled = customWeights === null;
 }
 (function setupFineTuneDrag() {
 const container = document.getElementById('fineTuneList');
@@ -841,6 +919,7 @@ let ratings = {};
 let ratingNotes = {};
 let criteriaAnchors = {};
 let knockoutCriteria = {};
+let economicCriteria = {};
 let solutionNotes = {};
 let solutionDebounce = null;
 function addSolutionInput(value = '', note = '', id = null) {
@@ -916,8 +995,23 @@ card.classList.toggle('knockout-active', !!knockoutCriteria[c.id]);
 updateSolutionRanking(); updateSensRanking();
 saveState();
 };
+const ecoBtn = document.createElement('button');
+const syncEcoBtn = () => {
+const isEco = !!economicCriteria[c.id];
+ecoBtn.className = 'eco-toggle' + (isEco ? ' active' : '');
+ecoBtn.textContent = isEco ? '€' : 'T';
+ecoBtn.title = isEco ? t('vdiEconomic') : t('vdiTechnical');
+};
+syncEcoBtn();
+ecoBtn.onclick = () => {
+if (economicCriteria[c.id]) delete economicCriteria[c.id];
+else economicCriteria[c.id] = true;
+syncEcoBtn();
+updateSolutionRanking();
+};
 header.appendChild(nameSpanH);
 header.appendChild(weightSpan);
+header.appendChild(ecoBtn);
 header.appendChild(koBtn);
 card.appendChild(header);
 const anchorDefaults = t('anchorDefaults');
@@ -1030,8 +1124,81 @@ return { key: solId, html: `<td class="rank-ko"><div class="rank-ko-name">${esc(
 ];
 animateRows(tbody, entries);
 renderRobustness();
+renderVdi();
+renderTeam();
 renderScenarios();
 saveState();
+}
+function computeVdi(ratingsObj = ratings, weightsObj = null) {
+const tech = criteria.filter(c => !economicCriteria[c.id]);
+const eco = criteria.filter(c => economicCriteria[c.id]);
+if (!tech.length || !eco.length) return null;
+const w = weightsObj || computeWeights();
+const groupValue = (sol, group) => {
+const wSum = group.reduce((s, c) => s + (w[c.id] ?? 0), 0);
+if (wSum <= 0) return 0;
+return group.reduce((s, c) => s + (ratingsObj[`${sol.id}|${c.id}`] ?? 0) * (w[c.id] ?? 0), 0) / (4 * wSum);
+};
+return getSolutions().map(sol => {
+const wt = groupValue(sol, tech), we = groupValue(sol, eco);
+return { sol, wt, we, s: Math.sqrt(wt * we) };
+});
+}
+function vdiDiagramSvg(data, ko, sols, light = false) {
+const padL = 40, padR = 72, padT = 30, padB = 40;
+const plot = 240;
+const W = padL + plot + padR, H = padT + plot + padB;
+const axis = light ? '#999' : 'rgba(255,255,255,.3)';
+const grid = light ? '#e5e5e5' : 'rgba(255,255,255,.08)';
+const text = light ? '#777' : 'rgba(255,255,255,.45)';
+const X = v => padL + v * plot;
+const Y = v => padT + (1 - v) * plot;
+let svg = `<svg class="vdi-svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg">`;
+for (let i = 0; i <= 4; i++) {
+const v = i / 4;
+svg += `<line x1="${X(0)}" y1="${Y(v)}" x2="${X(1)}" y2="${Y(v)}" stroke="${grid}" stroke-width="1"/>`;
+svg += `<line x1="${X(v)}" y1="${Y(0)}" x2="${X(v)}" y2="${Y(1)}" stroke="${grid}" stroke-width="1"/>`;
+if (i % 2 === 0) {
+svg += `<text x="${X(v)}" y="${Y(0) + 16}" fill="${text}" font-size="10" text-anchor="middle">${v.toFixed(1)}</text>`;
+svg += `<text x="${X(0) - 8}" y="${Y(v) + 3}" fill="${text}" font-size="10" text-anchor="end">${v.toFixed(1)}</text>`;
+}
+}
+svg += `<line x1="${X(0)}" y1="${Y(0)}" x2="${X(1)}" y2="${Y(1)}" stroke="${axis}" stroke-width="1" stroke-dasharray="4 3"/>`;
+svg += `<circle cx="${X(1)}" cy="${Y(1)}" r="3" fill="none" stroke="${axis}"/>`;
+svg += `<text x="${X(1) + 8}" y="${Y(1) + 3}" fill="${text}" font-size="10">1/1</text>`;
+svg += `<text x="-6" y="30" fill="${text}" font-size="11" text-anchor="start">Wt ↑</text>`;
+svg += `<text x="${X(1)}" y="${Y(0) + 34}" fill="${text}" font-size="11" text-anchor="end">We →</text>`;
+data.forEach(({ sol, wt, we }) => {
+const color = SOL_COLORS[sols.findIndex(x => x.id === sol.id) % SOL_COLORS.length];
+const isKO = !!ko[sol.id];
+svg += `<circle cx="${X(we)}" cy="${Y(wt)}" r="5" fill="${isKO ? 'none' : color}" stroke="${color}" stroke-width="2"${isKO ? ' stroke-dasharray="2 2"' : ''}/>`;
+const label = `${esc(sol.name)}${isKO ? ' ⊗' : ''}`;
+if (we > 0.78) svg += `<text x="${X(we) - 9}" y="${Y(wt) + 3}" fill="${color}" font-size="10" text-anchor="end">${label}</text>`;
+else svg += `<text x="${X(we) + 9}" y="${Y(wt) + 3}" fill="${color}" font-size="10">${label}</text>`;
+});
+svg += '</svg>';
+return `<div class="vdi-diagram">${svg}</div>`;
+}
+function renderVdi() {
+const section = document.getElementById('vdiSection');
+const container = document.getElementById('vdiContainer');
+if (!section || !container) return;
+const sols = getSolutions();
+const data = comparisonStarted && proMode && sols.length ? computeVdi() : null;
+if (!data) { section.style.display = 'none'; container.innerHTML = ''; return; }
+section.style.display = '';
+const ko = getKnockedOut();
+let html = `<table class="vdi-table"><thead><tr><th>${t('thSolution')}</th>` +
+`<th title="${t('vdiWt')}">Wt</th><th title="${t('vdiWe')}">We</th><th title="${t('vdiS')}">s</th></tr></thead><tbody>`;
+[...data].sort((a, b) => b.s - a.s).forEach(({ sol, wt, we, s }) => {
+const color = SOL_COLORS[sols.findIndex(x => x.id === sol.id) % SOL_COLORS.length];
+const isKO = !!ko[sol.id];
+html += `<tr${isKO ? ' class="vdi-ko"' : ''}><td style="color:${color};font-weight:600">${esc(sol.name)}${isKO ? ' ⊗' : ''}</td>` +
+`<td>${wt.toFixed(2)}</td><td>${we.toFixed(2)}</td><td><strong>${s.toFixed(2)}</strong></td></tr>`;
+});
+html += '</tbody></table>';
+html += vdiDiagramSvg(data, ko, sols);
+container.innerHTML = html;
 }
 function computeRobustness() {
 if (!comparisonStarted || criteria.length === 0) return null;
@@ -1060,6 +1227,7 @@ return best ? { stable: false, winner, ...best } : { stable: true, winner };
 function renderRobustness() {
 const el = document.getElementById('robustnessHint');
 if (!el) return;
+el.title = t('robustnessBasis');
 const r = computeRobustness();
 if (!r) { el.innerHTML = ''; el.className = 'robustness'; return; }
 if (r.stable) {
@@ -1125,6 +1293,18 @@ return `background:repeating-linear-gradient(-45deg,${stops});opacity:.9`;
 }
 function winnerLabel(winner) {
 return (Array.isArray(winner) ? winner : [winner]).map(s => s.name).join(' & ');
+}
+function updateResetButtons() {
+const w = computeWeights();
+const weightsDiffer = criteria.some(c => Math.abs((sensWeights[c.id] ?? 0) - (w[c.id] ?? 0)) > 0.005);
+const ratingsDiffer = getSolutions().some(sol => criteria.some(c => {
+const k = `${sol.id}|${c.id}`;
+return (explorationRatings[k] ?? 0) !== (ratings[k] ?? 0);
+}));
+const wBtn = document.getElementById('resetWeightsBtn');
+const rBtn = document.getElementById('resetRatingsBtn');
+if (wBtn) wBtn.disabled = !weightsDiffer;
+if (rBtn) rBtn.disabled = !ratingsDiffer;
 }
 function sensLegendHtml(sols) {
 const ko = getKnockedOut(explorationRatings);
@@ -1222,16 +1402,22 @@ return;
 }
 ensureSensState();
 const koNow = getKnockedOut(explorationRatings);
+const committedW = computeWeights();
 let html = sensLegendHtml(sols);
 criteriaByWeight().forEach(c => {
 const segments = computeBreakevens(c.id, sols);
 const currentPct = (sensWeights[c.id] ?? 0) * 100;
+const committedPct = (committedW[c.id] ?? 0) * 100;
 html += `<div class="be-row"><span class="be-label" title="${esc(c.name)}">${esc(c.name)}</span><div class="be-track-wrap" data-criterion="${c.id}"><div class="be-track">`;
 segments.forEach(seg => {
 const w = (seg.to - seg.from) * 100;
 html += `<div class="be-segment" style="width:${w}%;${segmentBg(seg.sol, sols, koNow)}" title="${esc(winnerLabel(seg.sol))}: ${Math.round(seg.from * 100)}%–${Math.round(seg.to * 100)}%"></div>`;
 });
-html += `</div><div class="be-current" style="left:${currentPct.toFixed(2)}%"></div>`;
+html += `</div>`;
+if (Math.abs(committedPct - currentPct) > 0.5) {
+html += `<div class="be-committed" style="left:${committedPct.toFixed(2)}%" title="${t('committedMarker')}: ${committedPct.toFixed(1)}%"></div>`;
+}
+html += `<div class="be-current" style="left:${currentPct.toFixed(2)}%"></div>`;
 const innerBps = segments.slice(1).map(s => s.from * 100);
 if (innerBps.length > 0) {
 html += `<div class="be-bp-row">`;
@@ -1245,6 +1431,7 @@ html += `<div class="be-bp-row"></div>`;
 html += `</div></div>`;
 });
 container.innerHTML = html;
+updateResetButtons();
 }
 document.getElementById('resetWeightsBtn').onclick = () => {
 initSensWeights();
@@ -1341,21 +1528,29 @@ const solColor = SOL_COLORS[si % SOL_COLORS.length];
 const koMark = koNow[sol.id] ? ` <span class="be-ko-mark" title="${esc(t('knockedOut'))}: ${esc(koNow[sol.id].map(critName).join(', '))}">⊗</span>` : '';
 html += `<div class="ri-sol-header" style="color:${solColor}">${esc(sol.name)}${koMark}</div>`;
 criteriaByWeight().forEach(c => {
+const key = `${sol.id}|${c.id}`;
 const segs = computeRatingBreakevens(sol, c.id, sols, weights);
-const cur = ((explorationRatings[`${sol.id}|${c.id}`] ?? 0) / 4 * 100).toFixed(2);
+const curVal = explorationRatings[key] ?? 0;
+const commVal = ratings[key] ?? 0;
+const cur = (curVal / 4 * 100).toFixed(2);
 html += `<div class="be-row"><span class="be-label" title="${esc(c.name)}">${esc(c.name)}</span>`;
 html += `<div class="be-track-wrap" data-sol="${sol.id}" data-crit="${c.id}">`;
 html += `<div class="be-track">`;
 segs.forEach(seg => {
 html += `<div class="be-segment" style="width:${((seg.to - seg.from) * 100).toFixed(3)}%;${segmentBg(seg.winner, sols, koNow)}" title="${esc(winnerLabel(seg.winner))}"></div>`;
 });
-html += `</div><div class="be-current" style="left:${cur}%"></div>`;
+html += `</div>`;
+if (commVal !== curVal) {
+html += `<div class="be-committed" style="left:${(commVal / 4 * 100).toFixed(2)}%" title="${t('committedMarker')}: ${commVal}"></div>`;
+}
+html += `<div class="be-current" style="left:${cur}%"></div>`;
 html += `<div class="rs-ticks">`;
 for (let i = 0; i <= 4; i++) html += `<span class="rs-tick" style="left:${i * 25}%">${i}</span>`;
 html += `</div></div></div>`;
 });
 });
 container.innerHTML = html;
+updateResetButtons();
 }
 document.getElementById('resetRatingsBtn').onclick = () => {
 initExplorationRatings();
@@ -1526,6 +1721,126 @@ updateSensRanking();
 updateRatingImpact();
 saveState();
 }
+let raters = [];
+function addRaterData(state) {
+if (!state || state.version !== STATE_VERSION) return false;
+const idsOf = list => (list || []).map(x => x.id).sort().join('|');
+if (idsOf(criteria) !== idsOf(state.criteria)) return false;
+if (idsOf(getSolutions()) !== idsOf(state.solutions)) return false;
+const name = (state.bearbeiter || '').trim() || `${t('teamRater')} ${raters.length + 1}`;
+const existing = raters.find(r => r.name === name);
+if (existing) existing.ratings = { ...(state.ratings || {}) };
+else raters.push({ id: newId('r'), name, ratings: { ...(state.ratings || {}) } });
+renderTeam();
+saveState();
+return true;
+}
+function removeRater(id) {
+raters = raters.filter(r => r.id !== id);
+renderTeam();
+saveState();
+}
+function teamColumns() {
+return [{ id: '__you__', name: (bearbeiter || '').trim() || t('teamYou'), ratings }, ...raters];
+}
+function teamMeanRatings() {
+const cols = teamColumns();
+const mean = {};
+getSolutions().forEach(sol => criteria.forEach(c => {
+const k = `${sol.id}|${c.id}`;
+mean[k] = cols.reduce((s, col) => s + (col.ratings[k] ?? 0), 0) / cols.length;
+}));
+return mean;
+}
+function renderTeam() {
+const section = document.getElementById('teamSection');
+const container = document.getElementById('teamContainer');
+if (!section || !container) return;
+const sols = getSolutions();
+const active = comparisonStarted && proMode && criteria.length > 0 && sols.length > 0;
+section.style.display = active ? '' : 'none';
+const exploreBtn = document.getElementById('teamExploreBtn');
+if (exploreBtn) exploreBtn.style.display = raters.length ? '' : 'none';
+if (!active) { container.innerHTML = ''; return; }
+if (!raters.length) {
+container.innerHTML = `<p class="hint">${t('teamNoData')}</p>`;
+return;
+}
+const weights = computeWeights();
+const cols = teamColumns();
+const mean = teamMeanRatings();
+const colData = cols.map(col => {
+const ko = getKnockedOut(col.ratings);
+const ranked = scoreSolutions(weights, col.ratings).filter(({ sol }) => !ko[sol.id]);
+const map = {};
+ranked.forEach(({ sol, score }, i) => { map[sol.id] = { rank: i + 1, score }; });
+return { rankings: map, ko };
+});
+const meanKo = getKnockedOut(mean);
+const meanRanked = scoreSolutions(weights, mean).filter(({ sol }) => !meanKo[sol.id]);
+const meanMap = {};
+meanRanked.forEach(({ sol, score }, i) => { meanMap[sol.id] = { rank: i + 1, score }; });
+let disagreements = 0;
+const spreadOf = key => {
+const vals = cols.map(col => col.ratings[key] ?? 0);
+return Math.max(...vals) - Math.min(...vals);
+};
+sols.forEach(sol => criteria.forEach(c => { if (spreadOf(`${sol.id}|${c.id}`) >= 2) disagreements++; }));
+let html = `<p class="hint tm-summary${disagreements ? ' tm-summary-warn' : ''}">${t('teamDisagree')(disagreements)}</p>`;
+html += '<div class="sc-wrap"><table class="sc-table"><thead><tr><th></th>';
+cols.forEach(col => {
+const del = col.id === '__you__' ? '' : `<button class="sc-del" onclick="removeRater('${col.id}')" title="Remove">✕</button>`;
+html += `<th>${esc(col.name)} ${del}</th>`;
+});
+html += `<th title="${t('teamMeanTitle')}">Ø</th></tr></thead><tbody>`;
+const orderedCriteria = criteriaByWeight();
+const sortedSols = [...sols].sort((a, b) => (meanMap[a.id]?.rank ?? 99) - (meanMap[b.id]?.rank ?? 99));
+sortedSols.forEach(sol => {
+const color = SOL_COLORS[sols.findIndex(s => s.id === sol.id) % SOL_COLORS.length];
+html += `<tr class="sc-s-row"><td class="sc-label sc-sol-name" style="color:${color}">${esc(sol.name)}</td>`;
+cols.forEach((col, ci) => {
+const r = colData[ci].rankings[sol.id];
+if (colData[ci].ko[sol.id] || !r) { html += '<td class="sc-ko-cell">—</td>'; return; }
+html += `<td class="sc-cell"><span class="sc-rank">#${r.rank}</span><span class="sc-score">${r.score.toFixed(2)}</span></td>`;
+});
+const mr = meanMap[sol.id];
+html += mr
+? `<td class="sc-cell sc-winner"><span class="sc-rank">#${mr.rank}</span><span class="sc-score">${mr.score.toFixed(2)}</span></td>`
+: '<td class="sc-ko-cell">—</td>';
+html += '</tr>';
+orderedCriteria.forEach(c => {
+const key = `${sol.id}|${c.id}`;
+const warn = spreadOf(key) >= 2;
+html += `<tr class="sc-cr-row${warn ? ' tm-diff' : ''}">`;
+html += `<td class="sc-cr-label">${esc(c.name)}</td>`;
+cols.forEach(col => { html += `<td class="sc-cr-cell">${col.ratings[key] ?? 0}</td>`; });
+html += `<td class="sc-cr-cell tm-mean">${(mean[key]).toFixed(1)}</td>`;
+html += '</tr>';
+});
+});
+html += '</tbody></table></div>';
+container.innerHTML = html;
+}
+document.getElementById('raterInput').onchange = e => {
+[...e.target.files].forEach(file => {
+const reader = new FileReader();
+reader.onload = ev => {
+try {
+if (!addRaterData(JSON.parse(ev.target.result))) alert(t('teamMismatch'));
+} catch { alert(t('alertInvalidFile')); }
+};
+reader.readAsText(file);
+});
+e.target.value = '';
+};
+document.getElementById('teamExploreBtn').onclick = () => {
+if (!raters.length) return;
+explorationRatings = teamMeanRatings();
+updateSensImpact(); updateSensRanking(); updateRatingImpact();
+saveState();
+const btn = document.querySelector('.tab-btn[data-tab="sensitivity"]');
+if (btn && !btn.classList.contains('disabled') && btn.onclick) btn.onclick();
+};
 function generatePrintView(tradeName = '', exporter = '') {
 const criteria = getCriteria();
 const weights = computeWeights();
@@ -1598,12 +1913,14 @@ sensHtml += printLegend(sols);
 orderedCriteria.forEach(c => {
 const segs = computeBreakevens(c.id, sols);
 const curPct = ((sensWeights[c.id] ?? 0) * 100).toFixed(2);
+const commPct = (weights[c.id] ?? 0) * 100;
 sensHtml += `<div class="be-row"><span class="be-label" title="${esc(c.name)}">${esc(c.name)}</span><div class="be-track-wrap"><div class="be-track">`;
 segs.forEach(seg => {
 const w = ((seg.to - seg.from) * 100).toFixed(3);
 sensHtml += `<div class="be-segment" style="width:${w}%;${segmentBg(seg.sol, sols, koExp)}"></div>`;
 });
 sensHtml += `</div>`;
+if (Math.abs(commPct - parseFloat(curPct)) > 0.5) sensHtml += `<div class="be-committed" style="left:${commPct.toFixed(2)}%"></div>`;
 sensHtml += `<div class="be-current" style="left:${curPct}%"></div>`;
 sensHtml += `<div class="be-cur-label" style="left:${curPct}%">${Math.round(parseFloat(curPct))}%</div>`;
 segs.slice(1).forEach(seg => {
@@ -1620,18 +1937,55 @@ sols.forEach((sol, si) => {
 const solColor = SOL_COLORS[si % SOL_COLORS.length];
 ratingHtml += `<div class="ri-sol-header" style="color:${solColor}">${esc(sol.name)}</div>`;
 orderedCriteria.forEach(c => {
+const key = `${sol.id}|${c.id}`;
 const segs = computeRatingBreakevens(sol, c.id, sols, sensWeights);
-const cur = ((explorationRatings[`${sol.id}|${c.id}`] ?? 0) / 4 * 100).toFixed(2);
+const curVal = explorationRatings[key] ?? 0;
+const commVal = ratings[key] ?? 0;
+const cur = (curVal / 4 * 100).toFixed(2);
 ratingHtml += `<div class="be-row"><span class="be-label" title="${esc(c.name)}">${esc(c.name)}</span><div class="be-track-wrap"><div class="be-track">`;
 segs.forEach(seg => {
 const w = ((seg.to - seg.from) * 100).toFixed(3);
 ratingHtml += `<div class="be-segment" style="width:${w}%;${segmentBg(seg.winner, sols, koExp)}"></div>`;
 });
-ratingHtml += `</div><div class="be-current" style="left:${cur}%"></div>`;
+ratingHtml += `</div>`;
+if (commVal !== curVal) ratingHtml += `<div class="be-committed" style="left:${(commVal / 4 * 100).toFixed(2)}%"></div>`;
+ratingHtml += `<div class="be-current" style="left:${cur}%"></div>`;
 for (let i = 0; i <= 4; i++) ratingHtml += `<div class="be-tick" style="left:${i * 25}%">${i}</div>`;
 ratingHtml += `</div></div>`;
 });
 });
+}
+let vdiHtml = '';
+const vdiData = proMode ? computeVdi() : null;
+if (vdiData && vdiData.length) {
+vdiHtml = `<h2>${t('vdiTitle')}</h2><table style="width:auto"><thead><tr><th>${t('printThSolution')}</th><th style="text-align:right">Wt</th><th style="text-align:right">We</th><th style="text-align:right">s</th></tr></thead><tbody>`;
+[...vdiData].sort((a, b) => b.s - a.s).forEach(({ sol, wt, we, s }) => {
+const isKO = !!koSols[sol.id];
+const color = SOL_COLORS[sols.findIndex(x => x.id === sol.id) % SOL_COLORS.length];
+vdiHtml += `<tr${isKO ? ' style="opacity:.55"' : ''}><td style="color:${color};font-weight:600${isKO ? ';text-decoration:line-through' : ''}">${esc(sol.name)}${isKO ? ' ⊗' : ''}</td><td style="text-align:right">${wt.toFixed(2)}</td><td style="text-align:right">${we.toFixed(2)}</td><td style="text-align:right;font-weight:600">${s.toFixed(2)}</td></tr>`;
+});
+vdiHtml += '</tbody></table>' + vdiDiagramSvg(vdiData, koSols, sols, true);
+}
+let teamHtml = '';
+if (proMode && raters.length && sols.length) {
+const cols = teamColumns();
+const mean = teamMeanRatings();
+teamHtml = `<h2>${t('teamTitle')}</h2><table><thead><tr><th>${t('printThSolution')} / ${t('printThCriterion')}</th>` +
+cols.map(col => `<th style="text-align:center">${esc(col.name)}</th>`).join('') +
+`<th style="text-align:center">Ø</th></tr></thead><tbody>`;
+sols.forEach(sol => {
+const color = SOL_COLORS[sols.findIndex(x => x.id === sol.id) % SOL_COLORS.length];
+teamHtml += `<tr><td colspan="${cols.length + 2}" style="color:${color};font-weight:600;padding-top:10px">${esc(sol.name)}</td></tr>`;
+orderedCriteria.forEach(c => {
+const key = `${sol.id}|${c.id}`;
+const vals = cols.map(col => col.ratings[key] ?? 0);
+const warn = Math.max(...vals) - Math.min(...vals) >= 2;
+teamHtml += `<tr${warn ? ' style="background:#fef3c7"' : ''}><td style="padding-left:18px;color:#666">${esc(c.name)}</td>` +
+vals.map(v => `<td style="text-align:center${warn ? ';font-weight:600' : ''}">${v}</td>`).join('') +
+`<td style="text-align:center;font-weight:600">${mean[key].toFixed(1)}</td></tr>`;
+});
+});
+teamHtml += '</tbody></table>';
 }
 const koActive = orderedCriteria.filter(c => knockoutCriteria[c.id]);
 let knockoutHtml = '';
@@ -1678,7 +2032,6 @@ return `<!DOCTYPE html>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Inter,Arial,sans-serif;padding:40px;color:#1a1a2e;background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 h1{font-size:1.4rem;font-weight:700;margin-bottom:4px}
-.meta{color:#888;font-size:0.8rem;margin-bottom:32px}
 h2{font-size:0.78rem;font-weight:600;color:#777;text-transform:uppercase;letter-spacing:.06em;margin:28px 0 12px;padding-bottom:6px;border-bottom:1px solid #eee}
 table{width:100%;border-collapse:collapse;margin-bottom:4px}
 th,td{padding:7px 10px;text-align:left;border-bottom:1px solid #f4f4f4;font-size:0.85rem}
@@ -1696,18 +2049,20 @@ th{font-weight:600;color:#aaa;font-size:0.73rem;text-transform:uppercase;letter-
 .be-track{height:20px;display:flex;border-radius:4px;overflow:hidden}
 .be-segment{height:100%}
 .be-current{position:absolute;top:0;height:20px;width:2px;background:#333;border-radius:1px;transform:translateX(-50%)}
+.be-committed{position:absolute;top:2px;height:16px;width:2px;background:#bbb;border-radius:1px;transform:translateX(-50%)}
 .be-cur-label{position:absolute;top:-18px;transform:translateX(-50%);font-size:0.7rem;font-weight:700;color:#333;white-space:nowrap;background:#fff;padding:0 2px}
 .be-tick{position:absolute;top:24px;transform:translateX(-50%);font-size:0.68rem;color:#888;white-space:nowrap}
 .ri-sol-header{font-size:0.85rem;font-weight:600;margin:16px 0 4px}
 .rating-scale{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px;font-size:0.75rem;color:#555}
 .rs-item{display:flex;align-items:center;gap:5px}
 .rs-item strong,.rs-num{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:4px;color:#1a1a2e;font-size:0.72rem;flex-shrink:0}
+.vdi-svg{overflow:visible}
 @media print{body{padding:20px}@page{margin:15mm}}
 </style>
 </head>
 <body>
 <div style="display:flex;justify-content:space-between;align-items:baseline;border-bottom:2px solid #1a1a2e;padding-bottom:10px;margin-bottom:6px">
-<div><h1>${tradeName ? `${esc(tradeName)} <span style="font-size:.8rem;font-weight:400;color:#888">· DecisionLab v0.5</span>` : 'DecisionLab <span style="font-size:.8rem;font-weight:400;color:#888">v0.5</span>'}</h1></div>
+<div><h1>${tradeName ? `${esc(tradeName)} <span style="font-size:.8rem;font-weight:400;color:#888">· DecisionLab v0.6</span>` : 'DecisionLab <span style="font-size:.8rem;font-weight:400;color:#888">v0.6</span>'}</h1></div>
 <div style="text-align:right;font-size:0.75rem;color:#888">${exporter ? `<div><strong>${t('exportedBy')}:</strong> ${esc(exporter)}</div>` : ''}<div>${t('printGenerated')(date)}</div></div>
 </div>
 ${pairs.length ? `<h2>${t('printCriteriaComparisons')}</h2><table><tbody>${pairListRows}</tbody></table>` : ''}
@@ -1717,6 +2072,8 @@ ${customWeights ? `<h2>${t('printWeightAdjustments')}</h2><table><thead><tr><th>
 ${knockoutHtml}${anchorsHtml}
 <h2>${t('printSolutionRanking')}</h2>
 <table><thead><tr><th>${t('printThSolution')}</th><th>${t('printThScore')}</th><th></th>${solRankThds}</tr></thead><tbody>${solRows}</tbody></table>
+${vdiHtml}
+${teamHtml}
 ${(() => { const r = computeRobustness(); if (!r) return ''; const txt = r.stable ? t('robustnessStable')(esc(r.winner.name)) : t('robustnessFlip')(esc(r.challenger), esc(r.crit.name), Math.round(r.cur * 100), Math.round(r.bp * 100)); return `<p style="font-size:0.78rem;color:#777;margin:6px 0 0">${txt}</p>`; })()}
 ${proMode && sols.length >= 2 ? `<h2>${t('criterionImpact')}</h2>${sensHtml}<h2>${t('ratingImpact')}</h2>${ratingHtml}` : ''}
 </body>
@@ -1744,27 +2101,27 @@ const readOnlyCss = '\n/* Read-only export */\n' +
 '[data-readonly] #criteriaInputSection,[data-readonly] .btn-remove,' +
 '[data-readonly] .pair-buttons,[data-readonly] #solutionList,[data-readonly] #addSolutionBtn,' +
 '[data-readonly] #proToggle,[data-readonly] .app-brand,[data-readonly] #helpBtn,' +
-'[data-readonly] #printBtn,[data-readonly] #newBtn,[data-readonly] #exportHtmlBtn,' +
-'[data-readonly] #undoBtn,[data-readonly] #redoBtn,[data-readonly] #exportCsvBtn,' +
-'[data-readonly] #exportBtn,[data-readonly] label.btn-toolbar{display:none}\n' +
-'[data-readonly] .toolbar{justify-content:flex-end;margin-bottom:0}\n' +
+'[data-readonly] #printBtn,[data-readonly] #undoBtn,[data-readonly] #redoBtn{display:none}\n' +
+'[data-readonly] .toolbar{position:absolute;top:10px;right:0;margin:0;padding:0}\n' +
 '[data-readonly] .rating-btn{pointer-events:none}\n' +
-'[data-readonly] .project-header{display:none}\n' +
+'[data-readonly] #fileMenuWrap{display:none}\n' +
 '[data-readonly] .scenario-save-row{display:none}\n' +
 '[data-readonly] #resetFineBtn,[data-readonly] .sc-del,[data-readonly] .knockout-toggle{display:none}\n' +
+'[data-readonly] .eco-toggle{pointer-events:none}\n' +
+'[data-readonly] .team-load{display:none}\n' +
 '[data-readonly] .fine-tune-input,[data-readonly] .fine-tune-reason,[data-readonly] .fine-tune-bar,[data-readonly] .anchor-input,[data-readonly] .rating-note{pointer-events:none;opacity:.5}\n' +
-'.export-info{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px;padding:14px 0 18px;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:24px}\n' +
+'.export-info{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px;padding:2px 80px 12px 0;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:6px}\n' +
 '.export-info-title{font-size:1.05rem;font-weight:700;color:#fff;letter-spacing:-.01em}\n' +
 '.export-info-title span{font-size:0.72rem;font-weight:400;color:rgba(255,255,255,.4);background:rgba(255,255,255,.08);padding:2px 8px;border-radius:20px;margin-left:8px;vertical-align:middle}\n' +
 '.export-info-meta{font-size:0.72rem;color:rgba(255,255,255,.4);display:flex;gap:16px}\n' +
 '.export-info-meta strong{color:rgba(255,255,255,.6)}\n';
 const tradeLabel = tradeName ? `<span style="color:#fff;font-size:.95rem;font-weight:600">${esc(tradeName)}</span> · ` : '';
-const infoBanner = `<div class="export-info"><div class="export-info-title">${tradeLabel}DecisionLab<span>v0.5</span></div><div class="export-info-meta"><span><strong>${t('exportedBy')}:</strong> ${esc(exporter)}</span><span><strong>${t('exportedDate')}:</strong> ${exportedAt}</span></div></div>\n`;
+const infoBanner = `<div class="export-info"><div class="export-info-title">${tradeLabel}DecisionLab<span>v0.6</span></div><div class="export-info-meta"><span><strong>${t('exportedBy')}:</strong> ${esc(exporter)}</span><span><strong>${t('exportedDate')}:</strong> ${exportedAt}</span></div></div>\n`;
 const pageTitle = tradeName ? `${esc(tradeName)} – DecisionLab` : 'DecisionLab';
 const out = '<!DOCTYPE html>\n<html data-readonly lang="' + lang + '">\n<head>\n<meta charset="UTF-8">\n' +
 '<meta name="viewport" content="width=device-width,initial-scale=1">\n<title>' + pageTitle + '</title>\n' +
 '<style>\n' + _styleText + readOnlyCss + '</style>\n</head>\n<body>\n' +
-_bodyHtml.replace('<div class="container">', '<div class="container">\n' + infoBanner) +
+_bodyHtml.replace('<div class="app-header">', '<div class="app-header">\n' + infoBanner) +
 '\n<script>\n' + bakedScript + '\n<\/script>\n</body>\n</html>';
 const a = Object.assign(document.createElement('a'), {
 href: URL.createObjectURL(new Blob([out], { type: 'text/html' })),
@@ -1806,6 +2163,12 @@ rows.push([t('csvRank'), '', ...sols.map(s => {
 const i = alive.findIndex(r => r.sol.id === s.id);
 return i >= 0 ? '#' + (i + 1) : `${t('knockedOut')}: ${ko[s.id].map(critName).join(' + ')}`;
 })]);
+const vdi = computeVdi();
+if (vdi) {
+rows.push(['Wt', '', ...sols.map(s => num(vdi.find(v => v.sol.id === s.id).wt))]);
+rows.push(['We', '', ...sols.map(s => num(vdi.find(v => v.sol.id === s.id).we))]);
+rows.push(['s', '', ...sols.map(s => num(vdi.find(v => v.sol.id === s.id).s))]);
+}
 const csv = '\ufeff' + rows.map(r => r.map(q).join(sep)).join('\n');
 const a = Object.assign(document.createElement('a'), {
 href: URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' })),
@@ -1868,9 +2231,26 @@ btn.classList.add('active');
 document.getElementById(`tab-${btn.dataset.tab}`).classList.add('active');
 if (btn.dataset.tab === 'solutions') renderSolutionMatrix();
 if (btn.dataset.tab === 'sensitivity') { updateSensRanking(); updateSensImpact(); updateRatingImpact(); }
+if (typeof window.scrollTo === 'function') window.scrollTo(0, 0);
 };
 });
 updateTabState();
+(function setupFileMenu() {
+const menu = document.getElementById('fileMenu');
+document.getElementById('fileMenuBtn').onclick = e => {
+e.stopPropagation();
+menu.classList.toggle('hidden');
+};
+menu.addEventListener('click', e => {
+if (e.target.closest('button, label')) menu.classList.add('hidden');
+});
+document.addEventListener('click', e => {
+if (!e.target.closest('#fileMenuWrap')) menu.classList.add('hidden');
+});
+document.addEventListener('keydown', e => {
+if (e.key === 'Escape') menu.classList.add('hidden');
+});
+}());
 document.getElementById('undoBtn').onclick = () => undoState();
 document.getElementById('redoBtn').onclick = () => redoState();
 document.addEventListener('keydown', e => {
@@ -1887,6 +2267,7 @@ if (!saved || !applyState(JSON.parse(saved))) {
 decisionName = ''; bearbeiter = '';
 document.getElementById('decisionNameInput').value = '';
 document.getElementById('bearbeiterInput').value = '';
+try { lang = localStorage.getItem('dl_lang') || lang; } catch (e) {}
 applyProMode();
 applyLang();
 }

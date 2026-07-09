@@ -69,6 +69,21 @@ function winnerLabel(winner) {
   return (Array.isArray(winner) ? winner : [winner]).map(s => s.name).join(' & ');
 }
 
+// Reset buttons are only active while the exploration differs from the
+// committed state — otherwise there is nothing to reset.
+function updateResetButtons() {
+  const w = computeWeights();
+  const weightsDiffer = criteria.some(c => Math.abs((sensWeights[c.id] ?? 0) - (w[c.id] ?? 0)) > 0.005);
+  const ratingsDiffer = getSolutions().some(sol => criteria.some(c => {
+    const k = `${sol.id}|${c.id}`;
+    return (explorationRatings[k] ?? 0) !== (ratings[k] ?? 0);
+  }));
+  const wBtn = document.getElementById('resetWeightsBtn');
+  const rBtn = document.getElementById('resetRatingsBtn');
+  if (wBtn) wBtn.disabled = !weightsDiffer;
+  if (rBtn) rBtn.disabled = !ratingsDiffer;
+}
+
 // Legend for the breakeven panels. Solutions failing a must-have (based on
 // the current exploration ratings) are struck through with a ⊗ marker —
 // the bars still show them, since they depict the theoretical possibility.
@@ -178,18 +193,25 @@ function updateSensImpact() {
   ensureSensState();
 
   const koNow = getKnockedOut(explorationRatings);
+  const committedW = computeWeights();
   let html = sensLegendHtml(sols);
 
   criteriaByWeight().forEach(c => {
     const segments = computeBreakevens(c.id, sols);
     const currentPct = (sensWeights[c.id] ?? 0) * 100;
+    const committedPct = (committedW[c.id] ?? 0) * 100;
 
     html += `<div class="be-row"><span class="be-label" title="${esc(c.name)}">${esc(c.name)}</span><div class="be-track-wrap" data-criterion="${c.id}"><div class="be-track">`;
     segments.forEach(seg => {
       const w = (seg.to - seg.from) * 100;
       html += `<div class="be-segment" style="width:${w}%;${segmentBg(seg.sol, sols, koNow)}" title="${esc(winnerLabel(seg.sol))}: ${Math.round(seg.from * 100)}%–${Math.round(seg.to * 100)}%"></div>`;
     });
-    html += `</div><div class="be-current" style="left:${currentPct.toFixed(2)}%"></div>`;
+    html += `</div>`;
+    // Ghost marker: committed weight, shown when the exploration has drifted
+    if (Math.abs(committedPct - currentPct) > 0.5) {
+      html += `<div class="be-committed" style="left:${committedPct.toFixed(2)}%" title="${t('committedMarker')}: ${committedPct.toFixed(1)}%"></div>`;
+    }
+    html += `<div class="be-current" style="left:${currentPct.toFixed(2)}%"></div>`;
 
     const innerBps = segments.slice(1).map(s => s.from * 100);
     if (innerBps.length > 0) {
@@ -205,6 +227,7 @@ function updateSensImpact() {
   });
 
   container.innerHTML = html;
+  updateResetButtons();
 }
 
 document.getElementById('resetWeightsBtn').onclick = () => {
@@ -314,21 +337,30 @@ function updateRatingImpact() {
     const koMark = koNow[sol.id] ? ` <span class="be-ko-mark" title="${esc(t('knockedOut'))}: ${esc(koNow[sol.id].map(critName).join(', '))}">⊗</span>` : '';
     html += `<div class="ri-sol-header" style="color:${solColor}">${esc(sol.name)}${koMark}</div>`;
     criteriaByWeight().forEach(c => {
+      const key = `${sol.id}|${c.id}`;
       const segs = computeRatingBreakevens(sol, c.id, sols, weights);
-      const cur = ((explorationRatings[`${sol.id}|${c.id}`] ?? 0) / 4 * 100).toFixed(2);
+      const curVal = explorationRatings[key] ?? 0;
+      const commVal = ratings[key] ?? 0;
+      const cur = (curVal / 4 * 100).toFixed(2);
       html += `<div class="be-row"><span class="be-label" title="${esc(c.name)}">${esc(c.name)}</span>`;
       html += `<div class="be-track-wrap" data-sol="${sol.id}" data-crit="${c.id}">`;
       html += `<div class="be-track">`;
       segs.forEach(seg => {
         html += `<div class="be-segment" style="width:${((seg.to - seg.from) * 100).toFixed(3)}%;${segmentBg(seg.winner, sols, koNow)}" title="${esc(winnerLabel(seg.winner))}"></div>`;
       });
-      html += `</div><div class="be-current" style="left:${cur}%"></div>`;
+      html += `</div>`;
+      // Ghost marker: committed rating, shown when the exploration has drifted
+      if (commVal !== curVal) {
+        html += `<div class="be-committed" style="left:${(commVal / 4 * 100).toFixed(2)}%" title="${t('committedMarker')}: ${commVal}"></div>`;
+      }
+      html += `<div class="be-current" style="left:${cur}%"></div>`;
       html += `<div class="rs-ticks">`;
       for (let i = 0; i <= 4; i++) html += `<span class="rs-tick" style="left:${i * 25}%">${i}</span>`;
       html += `</div></div></div>`;
     });
   });
   container.innerHTML = html;
+  updateResetButtons();
 }
 
 document.getElementById('resetRatingsBtn').onclick = () => {

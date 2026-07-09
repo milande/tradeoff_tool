@@ -9,10 +9,17 @@
 <body>
 <div class="container">
 
+  <div class="app-header">
   <div class="toolbar">
     <div class="app-brand">
       <span class="app-name">DecisionLab</span>
-      <span class="app-version">v0.5</span>
+      <span class="app-version">v0.6</span>
+      <span class="crumb-sep">▸</span>
+      <div class="toolbar-project">
+        <input id="decisionNameInput" class="project-input project-input-name" type="text" data-i18n-placeholder="decisionNamePlaceholder" placeholder="">
+        <span class="proj-sep">·</span>
+        <input id="bearbeiterInput" class="project-input project-input-author" type="text" data-i18n-placeholder="bearbeiterPlaceholder" placeholder="">
+      </div>
     </div>
     <div class="toolbar-actions">
       <button id="langToggle" class="btn-toolbar lang-toggle">DE</button>
@@ -20,11 +27,17 @@
       <button id="redoBtn" class="btn-toolbar" data-i18n-title="redoTitle" disabled>↷</button>
       <button id="helpBtn" class="btn-toolbar" data-i18n="help"></button>
       <button id="printBtn" class="btn-toolbar" data-i18n="print"></button>
-      <button id="newBtn" class="btn-toolbar" data-i18n="newSession"></button>
-      <button id="exportHtmlBtn" class="btn-toolbar" data-i18n="exportHtml"></button>
-      <button id="exportCsvBtn" class="btn-toolbar" data-i18n="exportCsv"></button>
-      <button id="exportBtn" class="btn-toolbar" data-i18n="save"></button>
-      <label class="btn-toolbar"><span data-i18n="load"></span><input type="file" id="importInput" accept=".json"></label>
+      <div class="file-menu-wrap" id="fileMenuWrap">
+        <button id="fileMenuBtn" class="btn-toolbar" data-i18n="fileMenu"></button>
+        <div id="fileMenu" class="file-menu hidden">
+          <button id="exportBtn" data-i18n="save"></button>
+          <label><span data-i18n="load"></span><input type="file" id="importInput" accept=".json"></label>
+          <button id="exportHtmlBtn" data-i18n="exportHtml"></button>
+          <button id="exportCsvBtn" data-i18n="exportCsv"></button>
+          <div class="file-menu-div"></div>
+          <button id="newBtn" class="file-menu-danger" data-i18n="newSession"></button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -56,17 +69,13 @@
     </div>
   </div>
 
-  <div class="project-header">
-    <input id="decisionNameInput" class="project-input project-input-name" type="text" data-i18n-placeholder="decisionNamePlaceholder" placeholder="">
-    <input id="bearbeiterInput" class="project-input project-input-author" type="text" data-i18n-placeholder="bearbeiterPlaceholder" placeholder="">
-  </div>
-
   <div class="tabs">
     <button class="tab-btn active" data-tab="criteria" data-i18n="tabCriteria"></button>
     <button class="tab-btn" data-tab="solutions" data-i18n="tabSolutions"></button>
     <button class="tab-btn" data-tab="sensitivity" id="sensitivityTab" data-i18n="tabSensitivity"></button>
     <button id="proToggle" class="pro-toggle">⚡ Pro</button>
   </div>
+  </div><!-- /app-header -->
 
   <!-- CRITERIA TAB -->
   <div id="tab-criteria" class="tab-content active">
@@ -129,6 +138,24 @@
         <p id="robustnessHint" class="robustness"></p>
       </div>
     </div>
+    <div class="section" id="vdiSection" style="display:none">
+      <div class="section-content">
+        <h2 data-i18n="vdiTitle"></h2>
+        <p class="hint" data-i18n="vdiHint"></p>
+        <div id="vdiContainer"></div>
+      </div>
+    </div>
+    <div class="section" id="teamSection" style="display:none">
+      <div class="section-content">
+        <h2 data-i18n="teamTitle"></h2>
+        <p class="hint" data-i18n="teamHint"></p>
+        <div class="team-actions">
+          <label class="btn-secondary team-load"><span data-i18n="teamAddRater"></span><input type="file" id="raterInput" accept=".json" multiple></label>
+          <button id="teamExploreBtn" class="btn-secondary" data-i18n="teamExplore" style="display:none"></button>
+        </div>
+        <div id="teamContainer"></div>
+      </div>
+    </div>
   </div>
 
   <!-- SENSITIVITY TAB -->
@@ -182,6 +209,7 @@
 <script src="js/solutions.js"></script>
 <script src="js/sensitivity.js"></script>
 <script src="js/scenarios.js"></script>
+<script src="js/team.js"></script>
 <script src="js/export.js"></script>
 <script src="js/main.js"></script>
 <!-- endbuild -->

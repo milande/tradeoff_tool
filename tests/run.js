@@ -8,7 +8,7 @@ const fs = require('fs');
 const path = require('path');
 const SRC = path.join(__dirname, '..', 'src', 'js');
 const DIST = path.join(__dirname, '..', 'dist', 'index.html');
-const VERSION = 'v0.5';
+const VERSION = 'v0.6';
 
 let pass = 0, fail = 0;
 function check(name, cond, extra = '') {
@@ -54,7 +54,7 @@ global.Blob = class { constructor(parts){ this.parts = parts; } };
 global.lastBlob = null;
 global.URL = { createObjectURL(b){ global.lastBlob = b; return 'blob:x'; }, revokeObjectURL(){} };
 
-const files = ['lang/en.js','lang/de.js','i18n.js','state.js','criteria.js','solutions.js','sensitivity.js','scenarios.js','export.js','main.js'];
+const files = ['lang/en.js','lang/de.js','i18n.js','state.js','criteria.js','solutions.js','sensitivity.js','scenarios.js','team.js','export.js','main.js'];
 let all = files.map(f => fs.readFileSync(path.join(SRC, f), 'utf8')).join('\n');
 
 all += `
@@ -173,6 +173,29 @@ all += `
   delete ratings['sEvil|Cost'];
   mockSolutions = ents(['Alpha', 'Beta', 'Gamma']);
 
+  // ══ 4a. VDI 2225 ══════════════════════════════════════════════
+  console.log('— VDI 2225 —');
+  check('VDI inactive without economic criteria', computeVdi() === null);
+  economicCriteria = { Speed: true };
+  proMode = true;
+  const vdi = computeVdi();
+  const wAll = computeWeights();
+  const wtSum = wAll.Cost + wAll.Quality + wAll.Support;
+  const alphaWt = (4 * wAll.Cost + 3 * wAll.Quality + 1 * wAll.Support) / (4 * wtSum);
+  const alphaRow = vdi.find(v => v.sol.id === 'Alpha');
+  check('Wt: weighted mean over technical criteria vs ideal', approx(alphaRow.wt, alphaWt));
+  check('We: economic-only value (Alpha rated 2 on Speed)', approx(alphaRow.we, 0.5));
+  check('s = sqrt(Wt * We)', approx(alphaRow.s, Math.sqrt(alphaRow.wt * alphaRow.we)));
+  check('values bounded 0..1', vdi.every(v => v.wt >= 0 && v.wt <= 1 && v.we >= 0 && v.we <= 1));
+  comparisonStarted = true;
+  renderVdi();
+  const vdiHtml2 = document.getElementById('vdiContainer')._html;
+  check('VDI section renders table + s-diagram', vdiHtml2.includes('vdi-table') && vdiHtml2.includes('<svg') && vdiHtml2.includes('Alpha'));
+  economicCriteria = {};
+  renderVdi();
+  check('VDI section hides without economic criteria', document.getElementById('vdiSection').style.display === 'none');
+  proMode = false;
+
   // ══ 4b. Stable ids ════════════════════════════════════════════
   console.log('— Stable ids —');
   // Rename criterion 'Cost' -> 'Price' (same id): nothing resets, labels update
@@ -226,9 +249,35 @@ all += `
   updateSensImpact();
   check('legend KO mark disappears without knockout', !document.getElementById('sensImpact')._html.includes('be-legend-ko'));
 
+  // Ghost markers show the committed state when exploration drifts
+  adjustSensWeight('Cost', 0.9);
+  updateSensImpact();
+  check('drifted weights show committed ghost marker', document.getElementById('sensImpact')._html.includes('be-committed'));
+  explorationRatings['Alpha|Cost'] = 0;             // committed is 4
+  updateRatingImpact();
+  check('drifted rating shows committed ghost marker', document.getElementById('ratingImpactContainer')._html.includes('be-committed'));
+  explorationRatings['Alpha|Cost'] = 4;
+
   document.getElementById('resetWeightsBtn')._onclick();
   const pw = computeWeights();
   check('reset weights restores pairwise', approx(sensWeights.Cost, pw.Cost) && approx(sensWeights.Support, pw.Support));
+  updateSensImpact();
+  check('no ghost markers when exploration matches committed', !document.getElementById('sensImpact')._html.includes('be-committed'));
+
+  // Reset buttons only active while something differs
+  document.getElementById('resetRatingsBtn')._onclick();   // sync ratings too
+  updateSensImpact();
+  check('reset buttons disabled when unmodified',
+    document.getElementById('resetWeightsBtn').disabled === true && document.getElementById('resetRatingsBtn').disabled === true);
+  adjustSensWeight('Cost', 0.7);
+  check('weight reset button enables on drift', document.getElementById('resetWeightsBtn').disabled === false);
+  explorationRatings['Alpha|Cost'] = 1;
+  updateRatingImpact();
+  check('rating reset button enables on drift', document.getElementById('resetRatingsBtn').disabled === false);
+  document.getElementById('resetWeightsBtn')._onclick();
+  document.getElementById('resetRatingsBtn')._onclick();
+  check('reset buttons disable again after reset',
+    document.getElementById('resetWeightsBtn').disabled === true && document.getElementById('resetRatingsBtn').disabled === true);
 
   explorationRatings['Alpha|Cost'] = 0;
   document.getElementById('resetRatingsBtn')._onclick();
@@ -254,6 +303,32 @@ all += `
   deleteScenario(savedId);
   check('deleteScenario removes it', scenarios.length === 0);
 
+  // ══ 7b. Team ratings ══════════════════════════════════════════
+  console.log('— Team ratings —');
+  proMode = true;
+  raters = [];
+  const raterState = (name, r) => ({ version: 2, bearbeiter: name, criteria: getCriteria(), solutions: getSolutions(), ratings: r });
+  check('mismatched rater file rejected',
+    addRaterData({ version: 2, bearbeiter: 'X', criteria: [{ id: 'Other', name: 'Other' }], solutions: getSolutions(), ratings: {} }) === false && raters.length === 0);
+  check('old-version rater file rejected', addRaterData({ version: 1, criteria: getCriteria(), solutions: getSolutions() }) === false);
+  const annaRatings = { ...ratings, 'Alpha|Cost': 1 };   // host has 4 -> spread 3
+  check('valid rater file accepted', addRaterData(raterState('Anna', annaRatings)) === true && raters.length === 1);
+  check('re-import same name replaces, no duplicate',
+    addRaterData(raterState('Anna', { ...annaRatings, 'Beta|Cost': 3 })) === true && raters.length === 1 && raters[0].ratings['Beta|Cost'] === 3);
+  const mean = teamMeanRatings();
+  check('team mean averages host + raters', approx(mean['Alpha|Cost'], (4 + 1) / 2));
+  renderTeam();
+  const teamOut = document.getElementById('teamContainer')._html;
+  check('team table: rater column, mean, disagreement highlight',
+    teamOut.includes('Anna') && teamOut.includes('tm-diff') && teamOut.includes('tm-mean'));
+  document.getElementById('teamExploreBtn')._onclick();
+  check('explore button loads team average into exploration', approx(explorationRatings['Alpha|Cost'], 2.5));
+  explorationRatings = { ...ratings };
+  const anna = raters[0];
+  removeRater(anna.id);
+  check('removeRater deletes the rater', raters.length === 0);
+  addRaterData(raterState('Anna', annaRatings));   // keep one rater for the round-trip below
+
   // ══ 8. Persistence round-trip ═════════════════════════════════
   console.log('— Persistence —');
   decisionName = 'Server choice'; bearbeiter = 'Milan';
@@ -264,13 +339,14 @@ all += `
   solutionNotes['Beta'] = 'the safe bet';
   criteriaAnchors['Cost|4'] = 'free';
   knockoutCriteria = { Quality: true };
+  economicCriteria = { Cost: true };
   lang = 'de';
   saveState();
   const snapshot = JSON.parse(localStorage.getItem(STORAGE_KEY));
 
   mockCriteria = []; mockSolutions = [];
-  ratings = {}; sensWeights = {}; explorationRatings = {}; scenarios = [];
-  decisionName = ''; ratingNotes = {}; solutionNotes = {}; criteriaAnchors = {}; knockoutCriteria = {}; lang = 'en';
+  ratings = {}; sensWeights = {}; explorationRatings = {}; scenarios = []; raters = [];
+  decisionName = ''; ratingNotes = {}; solutionNotes = {}; criteriaAnchors = {}; knockoutCriteria = {}; economicCriteria = {}; lang = 'en';
   applyState(snapshot);
   check('round-trip: criteria restored', JSON.stringify(getCriteria().map(c => c.name)) === JSON.stringify(['Cost','Quality','Speed','Support']));
   check('round-trip: solutions + ratings', getSolutions().length === 3 && ratings['Alpha|Cost'] === 4);
@@ -278,6 +354,8 @@ all += `
   check('round-trip: sensWeights survive', approx(sensWeights.Quality, 0.45, 1e-6));
   check('round-trip: scenario survives', scenarios.length === 1 && scenarios[0].name === 'Q first');
   check('round-trip: notes/anchors/knockout', ratingNotes['Alpha|Cost'] === 'cheap!' && solutionNotes['Beta'] === 'the safe bet' && criteriaAnchors['Cost|4'] === 'free' && knockoutCriteria.Quality === true);
+  check('round-trip: economic tags survive', economicCriteria.Cost === true);
+  check('round-trip: raters survive', raters.length === 1 && raters[0].name === 'Anna' && raters[0].ratings['Alpha|Cost'] === 1);
 
   // ══ 8b. Undo / Redo ═══════════════════════════════════════════
   console.log('— Undo/Redo —');
@@ -345,6 +423,7 @@ all += `
   document.getElementById('exportCsvBtn')._onclick();
   const csv = lastBlob.parts[0];
   check('CSV export: BOM, matrix, score + rank rows', csv.charCodeAt(0) === 0xFEFF && csv.includes('Cost') && csv.includes('#1') && csv.split('\\n').length >= 7);
+  check('CSV export includes VDI rows when tagged', csv.includes('Wt;') && csv.includes('We;') && csv.includes('s;'));
 
   proMode = true;
   knockoutCriteria = { Cost: true };   // Gamma scores 0 on Cost -> knocked out
@@ -354,6 +433,9 @@ all += `
   check('print: score definitions/scale present', pv.includes(t('printScoreDefinitions')));
   check('print: criteria ordered by weight in ranking header', pv.indexOf('<th title="Cost">') < pv.indexOf('<th title="Support">'));
   check('print: sensitivity + rating impact sections', pv.includes(t('criterionImpact')) && pv.includes(t('ratingImpact')));
+  check('print: VDI section with s-diagram when tagged', pv.includes(t('vdiTitle')) && pv.includes('<svg'));
+  check('print: team section with rater + disagreement highlight', pv.includes(t('teamTitle')) && pv.includes('Anna') && pv.includes('#fef3c7'));
+  check('JSON export carries raters', Array.isArray(json.raters) && json.raters.length === 1 && json.raters[0].name === 'Anna');
   proMode = false;
   const pvStd = generatePrintView('Server choice', 'Milan');
   check('print: no sensitivity sections in standard mode', !pvStd.includes(t('criterionImpact')) && !pvStd.includes(t('ratingImpact')));
@@ -362,10 +444,11 @@ all += `
   // HTML export: fake the capture globals that exist only in the built file
   globalThis._scriptText = 'const S = \\'// Auto-load saved session\\';\\nAPP\\n// Auto-load saved session\\nOLD\\n// END Auto-load\\nTAIL';
   globalThis._styleText = 'CSS{}';
-  globalThis._bodyHtml = '<div class="container">BODY</div>';
+  globalThis._bodyHtml = '<div class="container"><div class="app-header">HDR</div>BODY</div>';
   document.getElementById('exportHtmlBtn')._onclick();
   const out = lastBlob.parts[0];
   check('HTML export: read-only + baked state + body', out.includes('data-readonly') && out.includes('applyState') && out.includes('Server choice') && out.includes('BODY'));
+  check('HTML export: banner injected inside sticky header', /class="app-header">\\s*<div class="export-info"/.test(out));
   check('HTML export: replaces auto-load, keeps string literal', out.includes("const S = '// Auto-load saved session'") && !out.includes('OLD'));
   check('HTML export: carries current proMode', out.includes('"proMode":true'));
 
@@ -402,6 +485,14 @@ try { eval.call(global, all); } catch(e){ console.log('EVAL ERROR:', e.message, 
 // ── Static checks on the built file ───────────────────────────
 console.log('— dist/index.html —');
 const dist = fs.readFileSync(DIST, 'utf8');
+// The minified inline script must be syntactically valid — a truncated string
+// (e.g. a naive comment-stripper eating "http://…") blanks the whole app.
+try {
+  new Function(dist.match(/<script>([\s\S]*)<\/script>/)[1]);
+  check('dist: minified script parses without syntax errors', true);
+} catch (e) {
+  check('dist: minified script parses without syntax errors', false, e.message);
+}
 check('dist: both sentinels survive minification', dist.split('// Auto-load saved session').length >= 3 && dist.split('// END Auto-load').length >= 3);
 check('dist: capture preamble present', dist.includes('_scriptText') && dist.includes('_bodyHtml'));
 check(`dist: ${VERSION} everywhere, no stale versions`, dist.includes(VERSION) && !dist.includes('v0.4') && !dist.includes('v0.3'));
