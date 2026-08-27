@@ -41,11 +41,18 @@ qsa('.tab-btn').forEach(btn => {
     // by the sticky header; in the live tool the pane is already there, so this
     // resolves to the top exactly as before. An embed never scrolls its host.
     if (!embedded && typeof window.scrollTo === 'function') {
-      const pane = byId(`tab-${btn.dataset.tab}`);
+      const tabs = qs('.tabs');
       const header = qs('.app-header');
-      const offset = header ? header.getBoundingClientRect().height : 0;
-      const y = pane ? pane.getBoundingClientRect().top + window.scrollY - offset : 0;
-      window.scrollTo(0, Math.max(0, Math.round(y)));
+      // In the tool the bar rides inside the sticky header, so the top of the
+      // document already is the top of the pane. In a read-only export the bar
+      // has moved below the results block, so scroll to it — measuring the
+      // sticky bar's own rect there would just return where it is pinned.
+      if (!tabs || !header || header.contains(tabs)) {
+        window.scrollTo(0, 0);
+      } else {
+        const y = tabs.getBoundingClientRect().top + window.scrollY - header.getBoundingClientRect().height;
+        window.scrollTo(0, Math.max(0, Math.round(y)));
+      }
     }
   };
 });
@@ -128,6 +135,14 @@ function applyResultsFirst() {
   if (!host || !ranking || !weights) return;
   host.appendChild(ranking);
   host.appendChild(weights);
+
+  // The tab bar has to end up directly above the panes it controls. Left in the
+  // header it sits above the results block, which belongs to no tab — so the
+  // ranking reads as the content of whichever tab happens to be active. Moving
+  // the bar down gives: banner, results, tabs, pane.
+  const tabs = qs('.tabs');
+  const firstPane = byId('tab-criteria');
+  if (tabs && firstPane && firstPane.parentNode) firstPane.parentNode.insertBefore(tabs, firstPane);
 }
 
 if (readOnly) applyResultsFirst();

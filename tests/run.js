@@ -837,8 +837,15 @@ check('dist: scenario functions inlined', dist.includes('function loadScenario')
 // must scroll relative to the pane instead.
 {
   const mainSrc = fs.readFileSync(path.join(SRC, 'main.js'), 'utf8');
-  check('tab switch scrolls to the opened pane, not to a fixed top',
-    !/window\.scrollTo\(0,\s*0\)/.test(mainSrc) && mainSrc.includes('getBoundingClientRect'));
+  // In the tool the bar is inside the sticky header and the top of the document
+  // is the top of the pane. In an export the bar sits below the results block,
+  // so a fixed 0 lands back on the results and the tab looks dead.
+  check('tab switch targets the tab bar when it is not in the sticky header',
+    mainSrc.includes('header.contains(tabs)') && mainSrc.includes('getBoundingClientRect'));
+  // The bar must end up adjacent to the panes it controls, or the results block
+  // between them reads as the active tab's content.
+  check('read-only moves the tab bar down to sit directly above the panes',
+    /insertBefore\(tabs, firstPane\)/.test(mainSrc));
 }
 check('dist: results-first container present and collapsed when empty',
   dist.includes('id="resultsFirst"') && dist.includes('id="rankingSection"')
