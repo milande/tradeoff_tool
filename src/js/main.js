@@ -33,15 +33,8 @@ qsa('.tab-btn').forEach(btn => {
     byId(`tab-${btn.dataset.tab}`).classList.add('active');
     if (btn.dataset.tab === 'solutions') renderSolutionMatrix();
     if (btn.dataset.tab === 'sensitivity') { updateSensRanking(); updateSensImpact(); updateRatingImpact(); }
-    // Always show the freshly opened page from the top
-    // Show the freshly opened pane from its top. Scrolling to 0 was right while
-    // the pane sat directly under the tab bar, but a read-only export puts the
-    // results block above it — there, scrolling to 0 lands back on the results
-    // and the tab looks like it did nothing. Scroll to the pane instead, offset
-    // by the sticky header; in the live tool the pane is already there, so this
-    // resolves to the top exactly as before. An embed never scrolls its host.
-    // Always show the freshly opened pane from the top. The tab bar stays in
-    // the sticky header, so the top of the document is the top of the pane.
+    // Show the freshly opened pane from the top. The tab bar lives in the
+    // sticky header, so the top of the document is the top of the pane.
     // An embed must never scroll the wiki page it sits in.
     if (!embedded && typeof window.scrollTo === 'function') window.scrollTo(0, 0);
   };
@@ -112,12 +105,10 @@ historyLock = false;
 saveState(); // baseline snapshot for undo
 // END Auto-load
 
-// An export is a decision record, read by people who were not in the room, and
-// on a wiki page it is often scrolled past without a click. Lead with the
-// outcome: move the solution ranking and the criteria weights above the tabs,
-// leaving the derivation behind them as evidence. Runs after the auto-load
-// above, so the sections it moves are already populated. Never in the live
-// tool, where you work top-down through criteria while building the decision.
+// An export is a decision record, read by people who were not in the room, so
+// it leads with the outcome. Runs after the auto-load above, so the sections it
+// moves are already populated, and only in a read-only build — in the live tool
+// you work top-down through criteria while building the decision.
 function applyResultsFirst() {
   // Each tab leads with its own result — the ranking in Solutions, the weights
   // in Criteria — and the working detail that produced it follows below. The
@@ -139,3 +130,6 @@ function applyResultsFirst() {
 }
 
 if (readOnly) applyResultsFirst();
+
+// Cached daily, silent on every failure, and never from an export.
+checkForUpdate();

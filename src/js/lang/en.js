@@ -8,6 +8,7 @@ const EN = {
   alertEmbedFailed: 'Could not build the Confluence block.',
   theme_auto: '◐ Auto', theme_light: '☀ Light', theme_dark: '☾ Dark',
   themeTitle: 'Theme: follow system, light, or dark',
+  updateAvailable: v => `Version ${v} is available — click for the changes`,
   undoTitle: 'Undo (Ctrl+Z)', redoTitle: 'Redo (Ctrl+Shift+Z)',
   tabCriteria: 'Criteria', tabSolutions: 'Solutions', tabSensitivity: 'Sensitivity',
   step1: 'Criteria',

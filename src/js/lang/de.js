@@ -8,6 +8,7 @@ const DE = {
   alertEmbedFailed: 'Confluence-Block konnte nicht erzeugt werden.',
   theme_auto: '◐ Auto', theme_light: '☀ Hell', theme_dark: '☾ Dunkel',
   themeTitle: 'Design: System, hell oder dunkel',
+  updateAvailable: v => `Version ${v} ist verfügbar — klicken für die Änderungen`,
   undoTitle: 'Rückgängig (Strg+Z)', redoTitle: 'Wiederholen (Strg+Umschalt+Z)',
   tabCriteria: 'Kriterien', tabSolutions: 'Lösungen', tabSensitivity: 'Sensitivität',
   step1: 'Kriterien',

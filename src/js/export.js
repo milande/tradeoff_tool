@@ -243,7 +243,7 @@ th{font-weight:600;color:#aaa;font-size:0.73rem;text-transform:uppercase;letter-
 </head>
 <body>
 <div style="display:flex;justify-content:space-between;align-items:baseline;border-bottom:2px solid #1a1a2e;padding-bottom:10px;margin-bottom:6px">
-  <div><h1>${tradeName ? `${esc(tradeName)} <span style="font-size:.8rem;font-weight:400;color:#888">· DecisionLab v0.6</span>` : 'DecisionLab <span style="font-size:.8rem;font-weight:400;color:#888">v0.6</span>'}</h1></div>
+  <div><h1>${tradeName ? `${esc(tradeName)} <span style="font-size:.8rem;font-weight:400;color:#888">· DecisionLab ${APP_VERSION}</span>` : `DecisionLab <span style="font-size:.8rem;font-weight:400;color:#888">${APP_VERSION}</span>`}</h1></div>
   <div style="text-align:right;font-size:0.75rem;color:#888">${exporter ? `<div><strong>${t('exportedBy')}:</strong> ${esc(exporter)}</div>` : ''}<div>${t('printGenerated')(date)}</div></div>
 </div>
 ${/* Results first: the outcome, then the weights that produced it, then the
@@ -503,7 +503,7 @@ function embedScript(scriptText, stateJson, rootId) {
 function exportInfoBanner(tradeName, exporter) {
   const exportedAt = new Date().toLocaleString(lang === 'de' ? 'de-DE' : 'en-GB', { dateStyle: 'medium', timeStyle: 'short' });
   const tradeLabel = tradeName ? `<span style="color:var(--text);font-size:.95rem;font-weight:600">${esc(tradeName)}</span> · ` : '';
-  return `<div class="export-info"><div class="export-info-title">${tradeLabel}DecisionLab<span>v0.6</span></div><div class="export-info-meta"><span><strong>${t('exportedBy')}:</strong> ${esc(exporter)}</span><span><strong>${t('exportedDate')}:</strong> ${exportedAt}</span></div></div>\n`;
+  return `<div class="export-info"><div class="export-info-title">${tradeLabel}DecisionLab<span>${APP_VERSION}</span></div><div class="export-info-meta"><span><strong>${t('exportedBy')}:</strong> ${esc(exporter)}</span><span><strong>${t('exportedDate')}:</strong> ${exportedAt}</span></div></div>\n`;
 }
 
 // ── Confluence embed ──────────────────────────────────────────

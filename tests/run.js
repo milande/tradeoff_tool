@@ -53,6 +53,10 @@ global.localStorage = {
   setItem: (k, v) => { store[k] = v; },
   removeItem: k => { delete store[k]; },
 };
+global.fetchCalls = [];
+global.fetchImpl = null;   // per-test: set to a function returning a Response-ish
+global.fetch = (url, opts) => { global.fetchCalls.push(url);
+  return global.fetchImpl ? global.fetchImpl(url, opts) : Promise.reject(new Error('offline')); };
 global.lastCopied = null;
 // Node ships a read-only `navigator` global; a plain assignment is dropped.
 Object.defineProperty(global, 'navigator', {
@@ -67,7 +71,7 @@ global.Blob = class { constructor(parts){ this.parts = parts; } };
 global.lastBlob = null;
 global.URL = { createObjectURL(b){ global.lastBlob = b; return 'blob:x'; }, revokeObjectURL(){} };
 
-const files = ['lang/en.js','lang/de.js','dom.js','i18n.js','state.js','criteria.js','solutions.js','sensitivity.js','scenarios.js','team.js','export.js','main.js'];
+const files = ['lang/en.js','lang/de.js','dom.js','i18n.js','state.js','version.js','criteria.js','solutions.js','sensitivity.js','scenarios.js','team.js','export.js','main.js'];
 let all = files.map(f => fs.readFileSync(path.join(SRC, f), 'utf8')).join('\n');
 
 all += `
@@ -725,6 +729,61 @@ all += `
     iRank > 0 && iRank < iWeights && iWeights < iPairs, iRank + '/' + iWeights + '/' + iPairs);
   check('print: robustness verdict sits with the winner it qualifies',
     iRobust > iRank && iRobust < iWeights, 'at ' + iRobust);
+  // ══ 9h. Update check ══════════════════════════════════════════
+  // Runs from file:// behind a corporate proxy as often as not, so every
+  // failure path has to leave the tool exactly as it was.
+  console.log('— Update check —');
+  check('version: compares numerically, so v0.10 beats v0.9',
+    isNewerVersion('v0.10', 'v0.9') === true && isNewerVersion('v0.9', 'v0.10') === false);
+  check('version: equal or older is not an update',
+    isNewerVersion('v0.6', 'v0.6') === false && isNewerVersion('v0.5', 'v0.6') === false);
+  check('version: a build ahead of the latest release stays quiet',
+    isNewerVersion('v0.6', 'v0.7') === false);
+  check('version: unparseable answers no — rate-limit bodies and proxy HTML',
+    isNewerVersion('API rate limit exceeded', 'v0.6') === false
+      && isNewerVersion(null, 'v0.6') === false && isNewerVersion('<!DOCTYPE html>', 'v0.6') === false);
+  check('version: tolerates the v prefix either way and a patch part',
+    isNewerVersion('0.7', 'v0.6') === true && isNewerVersion('v0.6.1', 'v0.6') === true);
+
+  const savedRO = readOnly, savedEmb = embedded;
+  globalThis.fetchCalls = [];
+  delete __lsStore[UPDATE_KEY];
+  readOnly = true; checkForUpdate();
+  check('update: an export never phones home', fetchCalls.length === 0);
+  readOnly = false; embedded = true; checkForUpdate();
+  check('update: an embed never phones home', fetchCalls.length === 0);
+  embedded = savedEmb; readOnly = savedRO;
+
+  __lsStore[UPDATE_PREF] = 'off';
+  checkForUpdate();
+  check('update: the off preference is respected', fetchCalls.length === 0);
+  delete __lsStore[UPDATE_PREF];
+
+  __lsStore[UPDATE_KEY] = JSON.stringify({ tag: 'v0.6', at: Date.now() });
+  checkForUpdate();
+  check('update: a fresh cached answer skips the network', fetchCalls.length === 0);
+
+  __lsStore[UPDATE_KEY] = JSON.stringify({ tag: 'v0.6', at: Date.now() - 25 * 3600 * 1000 });
+  checkForUpdate();
+  check('update: a stale cache checks again', fetchCalls.length === 1
+    && String(fetchCalls[0]).indexOf('api.github.com') > 0);
+
+  const badge = { classList: { c: {}, add(k){ this.c[k] = 1; }, remove(k){ delete this.c[k]; } }, textContent: '', innerHTML: '', title: '' };
+  const savedQs = qs;
+  qs = sel => (sel === '.app-version' ? badge : savedQs(sel));
+  applyVersionBadge('v0.9');
+  check('update: a newer release turns the badge into a link',
+    !!badge.classList.c['update-available'] && badge.innerHTML.indexOf('v0.9') > 0
+      && badge.innerHTML.indexOf(RELEASES_PAGE) > 0);
+  applyVersionBadge('v0.6');
+  check('update: the same version leaves a plain badge',
+    !badge.classList.c['update-available'] && badge.textContent === APP_VERSION);
+  // The tag comes off the network and lands in innerHTML.
+  applyVersionBadge('v9.9<img src=x onerror=alert(1)>');
+  check('update: a hostile tag is rejected before it reaches the badge',
+    badge.innerHTML.indexOf('<img') === -1);
+  qs = savedQs;
+
   // ══ 9g. Theme ═════════════════════════════════════════════════
   console.log('— Theme —');
   const savedRoot2 = themeRoot, savedPref = theme;
@@ -867,6 +926,23 @@ check('dist: scenario functions inlined', dist.includes('function loadScenario')
 check('dist: result sections carry the ids the read-only hoist targets',
   dist.includes('id="rankingSection"') && dist.includes('id="resultsSection"')
     && !dist.includes('resultsFirst'));
+// One authoritative version. These are the only places it may appear, and they
+// must agree — a badge claiming a version the release check does not share
+// would report an update that is already installed, or miss one that is not.
+{
+  const pkg = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'package.json'), 'utf8'));
+  const src = fs.readFileSync(path.join(SRC, 'version.js'), 'utf8');
+  const declared = (src.match(/APP_VERSION = '([^']+)'/) || [])[1];
+  check('version: APP_VERSION agrees with package.json and the suite',
+    declared === VERSION && 'v' + pkg.version.replace(/\.0$/, '') === VERSION,
+    declared + ' / ' + pkg.version + ' / ' + VERSION);
+  const markup = fs.readFileSync(path.join(__dirname, '..', 'src', 'index.html'), 'utf8');
+  check('version: the badge is filled from APP_VERSION, not hardcoded',
+    markup.includes('<span class="app-version"></span>'));
+  const exportSrc = fs.readFileSync(path.join(SRC, 'export.js'), 'utf8');
+  check('version: no version literal left in the export code',
+    !/v\d+\.\d+/.test(exportSrc));
+}
 check('dist: Confluence menu entry and handler present',
   dist.includes('exportConfluenceBtn') && dist.includes('function buildEmbedPayload'));
 check('dist: capture-preamble sentinels survive minification',
