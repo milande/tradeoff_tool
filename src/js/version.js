@@ -2,7 +2,7 @@
 // The one authoritative version string. Everything that shows a version reads
 // this; package.json, the CHANGELOG and the test suite's expectation are the
 // only other places it appears.
-const APP_VERSION = 'v0.6';
+const APP_VERSION = 'v0.7';
 
 const RELEASES_API = 'https://api.github.com/repos/milande/tradeoff_tool/releases/latest';
 const RELEASES_PAGE = 'https://github.com/milande/tradeoff_tool/releases';
