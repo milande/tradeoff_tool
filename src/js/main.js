@@ -129,6 +129,13 @@ function applyResultsFirst() {
   };
   hoist('rankingSection', 'tab-solutions');
   hoist('resultsSection', 'tab-criteria');
+  // Once weights have been adjusted, those are the weights that produced the
+  // ranking — computeWeights() returns them in place of the pairwise ones. The
+  // Criteria Weights table still shows the pairwise derivation, so leading with
+  // it would put numbers on top that did not produce the result above. Put the
+  // adjusted weights first and leave the derivation below them. (Hidden without
+  // Pro, where hoisting it is a no-op.)
+  if (customWeights) hoist('fineTuneSection', 'tab-criteria');
 }
 
 if (readOnly) applyResultsFirst();

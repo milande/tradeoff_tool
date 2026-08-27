@@ -2555,6 +2555,7 @@ if (section && pane && pane.firstChild) pane.insertBefore(section, pane.firstChi
 };
 hoist('rankingSection', 'tab-solutions');
 hoist('resultsSection', 'tab-criteria');
+if (customWeights) hoist('fineTuneSection', 'tab-criteria');
 }
 if (readOnly) applyResultsFirst();</script>
 </body>

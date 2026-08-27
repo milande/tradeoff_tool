@@ -701,6 +701,21 @@ all += `
       && hoisted[0][0] === 'tab-solutions' && hoisted[0][1] === byId('rankingSection')
       && hoisted[1][0] === 'tab-criteria' && hoisted[1][1] === byId('resultsSection'));
 
+  // With weights adjusted, computeWeights() returns the adjusted ones, so those
+  // are what produced the ranking. The pairwise table must not sit above them.
+  const savedCustom = customWeights;
+  customWeights = { Cost: 0.4, Quality: 0.6 };
+  hoisted.length = 0;
+  applyResultsFirst();
+  check('results first: adjusted weights lead, pairwise derivation below',
+    hoisted.length === 3 && hoisted[2][0] === 'tab-criteria'
+      && hoisted[2][1] === byId('fineTuneSection'));
+  customWeights = savedCustom;
+  hoisted.length = 0;
+  applyResultsFirst();
+  check('results first: without adjustment the pairwise table stays on top',
+    hoisted.length === 2);
+
   const pvOrder = generatePrintView('Server choice', 'Milan');
   const iRank = pvOrder.indexOf(t('printSolutionRanking'));
   const iWeights = pvOrder.indexOf(t('printCriteriaWeights'));
