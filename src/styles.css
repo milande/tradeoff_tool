@@ -49,6 +49,8 @@
   --sol-4:#fb923c;
   --sol-5:#34d399;
   --sol-6:#fbbf24;
+  /* text on a saturated fill — white in both themes */
+  --on-fill:#ffffff;
 }
 :root{
   --accent:var(--c-criteria);
@@ -172,14 +174,14 @@ body{margin:0;font-family:Inter,Arial,sans-serif;background:var(--bg);color:var(
 .hint{opacity:.5;font-size:0.85rem;margin:0 0 16px}
 
 /* Inputs */
-input[type=text]{width:100%;padding:10px;margin:8px 0;border-radius:10px;border:none;background:var(--surface-raised);color:white;box-sizing:border-box}
+input[type=text]{width:100%;padding:10px;margin:8px 0;border-radius:10px;border:none;background:var(--surface-raised);color:var(--text);box-sizing:border-box}
 .criteria-item{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}
 .criteria-item input{margin:0;flex:1;min-width:0}
 .sol-note{width:100%;font-size:0.78rem;color:rgba(var(--fg-rgb),.45);background:transparent;border:none;border-bottom:1px solid rgba(var(--fg-rgb),.08);padding:3px 2px;font-family:inherit;outline:none;transition:border-color .15s}
 .sol-note:focus{border-bottom-color:rgba(var(--fg-rgb),.3);color:rgba(var(--fg-rgb),.7)}
 .sol-note::placeholder{color:rgba(var(--fg-rgb),.18)}
 .rank-note{font-size:0.72rem;font-weight:400;color:rgba(var(--fg-rgb),.35);margin-top:2px;font-style:italic}
-.btn-remove{padding:10px 12px;background:var(--c-danger-strong);color:white;border:none;border-radius:8px;cursor:pointer;font-weight:bold;flex-shrink:0}
+.btn-remove{padding:10px 12px;background:var(--c-danger-strong);color:var(--on-fill);border:none;border-radius:8px;cursor:pointer;font-weight:bold;flex-shrink:0}
 .btn-remove:hover{background:var(--c-danger-hover)}
 .btn-add{padding:12px 22px;border:none;border-radius:12px;background:var(--accent);color:var(--accent-text);font-weight:bold;cursor:pointer;margin-top:10px;transition:background .15s}
 .btn-add:hover{background:var(--accent-hover)}
@@ -412,6 +414,7 @@ th{font-weight:bold;opacity:.8}
   --sol-4:#c2410c;
   --sol-5:#047857;
   --sol-6:#a16207;
+  --on-fill:#ffffff;   /* unchanged: still white on a saturated fill */
   --accent-text:#ffffff;
 }
 :root[data-theme="light"] #tab-solutions{--accent-text:#ffffff}
@@ -461,6 +464,7 @@ th{font-weight:bold;opacity:.8}
   --sol-4:#c2410c;
   --sol-5:#047857;
   --sol-6:#a16207;
+  --on-fill:#ffffff;   /* unchanged: still white on a saturated fill */
     --accent-text:#ffffff;
   }
   :root:not([data-theme="dark"]) #tab-solutions{--accent-text:#ffffff}

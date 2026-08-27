@@ -941,6 +941,12 @@ check('dist: capture-preamble sentinels survive minification',
     [1, 2, 3, 4, 5, 6].map(solTok).join(',') === SOL_COLORS.join(','));
   check('theme: light gives every solution its own value',
     [1, 2, 3, 4, 5, 6].every(n => light.indexOf('--sol-' + n) >= 0));
+  // A bare colour keyword survives a hex/rgba codemod untouched — which is how
+  // input[type=text] kept white text into the light theme. Ban the category.
+  const named = (sheet.slice(sheet.indexOf('}', sheet.indexOf(':root{')))
+    .match(/:\s*(white|black|red|blue|green|yellow|orange|gold|gray|grey|pink|purple|cyan|silver)\b/g) || []);
+  check('theme: no bare colour keyword outside the token definitions',
+    named.length === 0, 'found: ' + named.join(', '));
   check('theme: exports get the automatic path only — the toggle is hidden',
     READONLY_CSS.includes('#themeToggle'));
 }
