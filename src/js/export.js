@@ -289,11 +289,11 @@ const READONLY_CSS = '\n/* Read-only export */\n' +
   '[data-readonly] .eco-toggle{pointer-events:none}\n' +
   '[data-readonly] .team-load{display:none}\n' +
   '[data-readonly] .fine-tune-input,[data-readonly] .fine-tune-reason,[data-readonly] .fine-tune-bar,[data-readonly] .anchor-input,[data-readonly] .rating-note{pointer-events:none;opacity:.5}\n' +
-  '.export-info{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px;padding:2px 80px 12px 0;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:6px}\n' +
-  '.export-info-title{font-size:1.05rem;font-weight:700;color:#fff;letter-spacing:-.01em}\n' +
-  '.export-info-title span{font-size:0.72rem;font-weight:400;color:rgba(255,255,255,.4);background:rgba(255,255,255,.08);padding:2px 8px;border-radius:20px;margin-left:8px;vertical-align:middle}\n' +
-  '.export-info-meta{font-size:0.72rem;color:rgba(255,255,255,.4);display:flex;gap:16px}\n' +
-  '.export-info-meta strong{color:rgba(255,255,255,.6)}\n';
+  '.export-info{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px;padding:2px 80px 12px 0;border-bottom:1px solid rgba(var(--fg-rgb),.1);margin-bottom:6px}\n' +
+  '.export-info-title{font-size:1.05rem;font-weight:700;color:var(--text);letter-spacing:-.01em}\n' +
+  '.export-info-title span{font-size:0.72rem;font-weight:400;color:var(--fg-a4);background:rgba(var(--fg-rgb),.08);padding:2px 8px;border-radius:20px;margin-left:8px;vertical-align:middle}\n' +
+  '.export-info-meta{font-size:0.72rem;color:var(--fg-a4);display:flex;gap:16px}\n' +
+  '.export-info-meta strong{color:var(--fg-a6)}\n';
 
 // ── Scoping CSS for an embed ──────────────────────────────────
 // The Confluence macro injects our stylesheet into the wiki page itself, not
@@ -502,7 +502,7 @@ function embedScript(scriptText, stateJson, rootId) {
 // whose decision this is and how old it is.
 function exportInfoBanner(tradeName, exporter) {
   const exportedAt = new Date().toLocaleString(lang === 'de' ? 'de-DE' : 'en-GB', { dateStyle: 'medium', timeStyle: 'short' });
-  const tradeLabel = tradeName ? `<span style="color:#fff;font-size:.95rem;font-weight:600">${esc(tradeName)}</span> · ` : '';
+  const tradeLabel = tradeName ? `<span style="color:var(--text);font-size:.95rem;font-weight:600">${esc(tradeName)}</span> · ` : '';
   return `<div class="export-info"><div class="export-info-title">${tradeLabel}DecisionLab<span>v0.6</span></div><div class="export-info-meta"><span><strong>${t('exportedBy')}:</strong> ${esc(exporter)}</span><span><strong>${t('exportedDate')}:</strong> ${exportedAt}</span></div></div>\n`;
 }
 

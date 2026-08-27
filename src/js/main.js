@@ -34,8 +34,19 @@ qsa('.tab-btn').forEach(btn => {
     if (btn.dataset.tab === 'solutions') renderSolutionMatrix();
     if (btn.dataset.tab === 'sensitivity') { updateSensRanking(); updateSensImpact(); updateRatingImpact(); }
     // Always show the freshly opened page from the top
-    // An embed must not scroll the wiki page it sits in.
-    if (!embedded && typeof window.scrollTo === 'function') window.scrollTo(0, 0);
+    // Show the freshly opened pane from its top. Scrolling to 0 was right while
+    // the pane sat directly under the tab bar, but a read-only export puts the
+    // results block above it — there, scrolling to 0 lands back on the results
+    // and the tab looks like it did nothing. Scroll to the pane instead, offset
+    // by the sticky header; in the live tool the pane is already there, so this
+    // resolves to the top exactly as before. An embed never scrolls its host.
+    if (!embedded && typeof window.scrollTo === 'function') {
+      const pane = byId(`tab-${btn.dataset.tab}`);
+      const header = qs('.app-header');
+      const offset = header ? header.getBoundingClientRect().height : 0;
+      const y = pane ? pane.getBoundingClientRect().top + window.scrollY - offset : 0;
+      window.scrollTo(0, Math.max(0, Math.round(y)));
+    }
   };
 });
 

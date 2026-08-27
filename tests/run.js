@@ -831,6 +831,15 @@ check('dist: scenario functions inlined', dist.includes('function loadScenario')
   check('dist: embed script reaches storage only through the guarded facade',
     es.includes('embedded = true') && (es.match(/localStorage/g) || []).length === 3);
 }
+// Regression: while the pane sat directly under the tab bar, scrolling to 0 on
+// a tab switch was right. A read-only export puts the results block above it, so
+// scrolling to 0 lands back on the results and the tab looks dead. The handler
+// must scroll relative to the pane instead.
+{
+  const mainSrc = fs.readFileSync(path.join(SRC, 'main.js'), 'utf8');
+  check('tab switch scrolls to the opened pane, not to a fixed top',
+    !/window\.scrollTo\(0,\s*0\)/.test(mainSrc) && mainSrc.includes('getBoundingClientRect'));
+}
 check('dist: results-first container present and collapsed when empty',
   dist.includes('id="resultsFirst"') && dist.includes('id="rankingSection"')
     && dist.includes('#resultsFirst:empty{display:none}'));
@@ -976,6 +985,12 @@ check('dist: capture-preamble sentinels survive minification',
   const printCss = fs.readFileSync(path.join(SRC, 'export.js'), 'utf8');
   check('theme: the print document defines the tokens its output reads',
     printCss.includes('--fg-rgb:15,23,42') && printCss.includes('--sol-1:#0e7490'));
+  // The export banner is app chrome shown inside the themed page, not print
+  // output — it must not carry a fixed white the way the print sheet does.
+  const bannerWhite = (READONLY_CSS.match(/color:\s*(#fff\b|#ffffff\b|rgba\(255,255,255)/g) || []);
+  check('theme: the export banner follows the theme rather than fixing white',
+    bannerWhite.length === 0, 'found: ' + bannerWhite.join(', '));
+
   check('theme: exports get the automatic path only — the toggle is hidden',
     READONLY_CSS.includes('#themeToggle'));
 }
