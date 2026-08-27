@@ -266,6 +266,127 @@ document.getElementById('printBtn').onclick = () => {
   setTimeout(() => win.print(), 350);
 };
 
+const READONLY_CSS = '\n/* Read-only export */\n' +
+  '[data-readonly] #criteriaInputSection,[data-readonly] .btn-remove,' +
+  '[data-readonly] .pair-buttons,[data-readonly] #solutionList,[data-readonly] #addSolutionBtn,' +
+  '[data-readonly] #proToggle,[data-readonly] .app-brand,[data-readonly] #helpBtn,' +
+  '[data-readonly] #printBtn,[data-readonly] #undoBtn,[data-readonly] #redoBtn{display:none}\n' +
+  // banner lives inside the sticky header; the lang toggle (sole remaining
+  // toolbar control) overlays the banner's top-right, merging both rows
+  '[data-readonly] .toolbar{position:absolute;top:10px;right:0;margin:0;padding:0}\n' +
+  '[data-readonly] .rating-btn{pointer-events:none}\n' +
+  '[data-readonly] #fileMenuWrap{display:none}\n' +
+  '[data-readonly] .scenario-save-row{display:none}\n' +
+  '[data-readonly] #resetFineBtn,[data-readonly] .sc-del,[data-readonly] .knockout-toggle{display:none}\n' +
+  '[data-readonly] .eco-toggle{pointer-events:none}\n' +
+  '[data-readonly] .team-load{display:none}\n' +
+  '[data-readonly] .fine-tune-input,[data-readonly] .fine-tune-reason,[data-readonly] .fine-tune-bar,[data-readonly] .anchor-input,[data-readonly] .rating-note{pointer-events:none;opacity:.5}\n' +
+  '.export-info{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px;padding:2px 80px 12px 0;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:6px}\n' +
+  '.export-info-title{font-size:1.05rem;font-weight:700;color:#fff;letter-spacing:-.01em}\n' +
+  '.export-info-title span{font-size:0.72rem;font-weight:400;color:rgba(255,255,255,.4);background:rgba(255,255,255,.08);padding:2px 8px;border-radius:20px;margin-left:8px;vertical-align:middle}\n' +
+  '.export-info-meta{font-size:0.72rem;color:rgba(255,255,255,.4);display:flex;gap:16px}\n' +
+  '.export-info-meta strong{color:rgba(255,255,255,.6)}\n';
+
+// ── Scoping CSS for an embed ──────────────────────────────────
+// The Confluence macro injects our stylesheet into the wiki page itself, not
+// into an iframe, so every rule applies to the whole page. Unscoped, `body`
+// repaints Confluence dark and `table`/`th`/`td`/`input[type=text]` restyle the
+// host page's own tables and form fields — the editor's included.
+//
+// scopeCss() rewrites the sheet so nothing matches outside the wrapper:
+//   - rules describing the document root (:root, html, body) BECOME the wrapper
+//   - root hooks that live ON the wrapper in an embed merge with it
+//   - everything else nests inside it
+const EMBED_SCOPE = '.dl-embed';
+// `pro-on` is toggled onto the app root and `data-readonly` marks an export;
+// in an embed both sit on the wrapper, so they merge rather than nest.
+const EMBED_ROOT_HOOKS = ['.pro-on', '[data-readonly]'];
+
+// Split a selector list on top-level commas only, so :not(a,b) stays intact.
+function splitSelectorList(list) {
+  const out = [];
+  let depth = 0, start = 0;
+  for (let i = 0; i < list.length; i++) {
+    const ch = list[i];
+    if (ch === '(' || ch === '[') depth++;
+    else if (ch === ')' || ch === ']') depth--;
+    else if (ch === ',' && depth === 0) { out.push(list.slice(start, i)); start = i + 1; }
+  }
+  out.push(list.slice(start));
+  return out;
+}
+
+function scopeSelector(sel, scope, rootHooks) {
+  sel = sel.trim();
+  if (!sel) return sel;
+  // The document root itself becomes the wrapper.
+  if (/^(:root|html|body)$/.test(sel)) return scope;
+  // `body.pro-on x` / `html[data-readonly] x` — swap the root token for the wrapper.
+  const attached = sel.match(/^(?::root|html|body)(?=[.:#[])/);
+  if (attached) return scope + sel.slice(attached[0].length);
+  const descendant = sel.match(/^(?::root|html|body)\s+/);
+  if (descendant) return scope + ' ' + sel.slice(descendant[0].length);
+  // Hooks carried by the wrapper merge with it. The trailing-combinator check
+  // keeps `.pro-on` from also matching `.pro-online`.
+  for (const hook of rootHooks) {
+    if (sel === hook) return scope + hook;
+    if (sel.slice(0, hook.length) === hook && /^[\s>+~]/.test(sel.slice(hook.length))) {
+      return scope + hook + sel.slice(hook.length);
+    }
+  }
+  return scope + ' ' + sel;
+}
+
+function scopeCss(css, scope, rootHooks) {
+  scope = scope || EMBED_SCOPE;
+  rootHooks = rootHooks || EMBED_ROOT_HOOKS;
+  let out = '', i = 0;
+  while (i < css.length) {
+    if (css.slice(i, i + 2) === '/*') {           // drop comments
+      const e = css.indexOf('*/', i + 2);
+      i = e < 0 ? css.length : e + 2;
+      continue;
+    }
+    const open = css.indexOf('{', i);
+    if (open < 0) break;
+    const prelude = css.slice(i, open).trim();
+    let depth = 1, j = open + 1;
+    while (j < css.length && depth > 0) {
+      if (css[j] === '{') depth++;
+      else if (css[j] === '}') depth--;
+      j++;
+    }
+    const body = css.slice(open + 1, j - 1);
+    if (/^@(media|supports|container|layer)\b/i.test(prelude)) {
+      out += prelude + '{' + scopeCss(body, scope, rootHooks) + '}';   // scope the rules inside
+    } else if (prelude.charAt(0) === '@') {
+      out += prelude + '{' + body + '}';                               // @keyframes/@font-face: leave alone
+    } else {
+      out += splitSelectorList(prelude).map(sel => scopeSelector(sel, scope, rootHooks)).join(',') + '{' + body + '}';
+    }
+    i = j;
+  }
+  return out;
+}
+
+// Rules an embed needs on top of the scoped sheet. Already scoped — appended
+// after the transform, not put through it.
+const EMBED_EXTRA_CSS =
+  // A viewport-fixed overlay would cover the Confluence chrome. Read-only
+  // builds hide the help button so it cannot be opened; this is belt and braces.
+  EMBED_SCOPE + ' .help-overlay{display:none}' +
+  // A sticky header would detach and float over the wiki content as the reader
+  // scrolls past the embed. `relative` rather than `static` keeps it as the
+  // containing block for the read-only toolbar's absolute positioning.
+  EMBED_SCOPE + ' .app-header{position:relative}' +
+  // Our z-indexes (up to 100) must not compete with the host page's layers.
+  EMBED_SCOPE + '{isolation:isolate}';
+
+// The complete stylesheet for an embed: app sheet + read-only rules, scoped.
+function embedCss(styleText) {
+  return scopeCss(styleText + READONLY_CSS, EMBED_SCOPE, EMBED_ROOT_HOOKS) + EMBED_EXTRA_CSS;
+}
+
 // ── Baking state into an export ───────────────────────────────
 // Replaces the auto-load block of a captured script with one that carries the
 // exported decision. Standalone exports still prefer the viewer's own saved
@@ -301,26 +422,7 @@ document.getElementById('exportHtmlBtn').onclick = () => {
 
   const bakedScript = bakeScript(_scriptText, state, false);
 
-  const readOnlyCss = '\n/* Read-only export */\n' +
-    '[data-readonly] #criteriaInputSection,[data-readonly] .btn-remove,' +
-    '[data-readonly] .pair-buttons,[data-readonly] #solutionList,[data-readonly] #addSolutionBtn,' +
-    '[data-readonly] #proToggle,[data-readonly] .app-brand,[data-readonly] #helpBtn,' +
-    '[data-readonly] #printBtn,[data-readonly] #undoBtn,[data-readonly] #redoBtn{display:none}\n' +
-    // banner lives inside the sticky header; the lang toggle (sole remaining
-    // toolbar control) overlays the banner's top-right, merging both rows
-    '[data-readonly] .toolbar{position:absolute;top:10px;right:0;margin:0;padding:0}\n' +
-    '[data-readonly] .rating-btn{pointer-events:none}\n' +
-    '[data-readonly] #fileMenuWrap{display:none}\n' +
-    '[data-readonly] .scenario-save-row{display:none}\n' +
-    '[data-readonly] #resetFineBtn,[data-readonly] .sc-del,[data-readonly] .knockout-toggle{display:none}\n' +
-    '[data-readonly] .eco-toggle{pointer-events:none}\n' +
-    '[data-readonly] .team-load{display:none}\n' +
-    '[data-readonly] .fine-tune-input,[data-readonly] .fine-tune-reason,[data-readonly] .fine-tune-bar,[data-readonly] .anchor-input,[data-readonly] .rating-note{pointer-events:none;opacity:.5}\n' +
-    '.export-info{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px;padding:2px 80px 12px 0;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:6px}\n' +
-    '.export-info-title{font-size:1.05rem;font-weight:700;color:#fff;letter-spacing:-.01em}\n' +
-    '.export-info-title span{font-size:0.72rem;font-weight:400;color:rgba(255,255,255,.4);background:rgba(255,255,255,.08);padding:2px 8px;border-radius:20px;margin-left:8px;vertical-align:middle}\n' +
-    '.export-info-meta{font-size:0.72rem;color:rgba(255,255,255,.4);display:flex;gap:16px}\n' +
-    '.export-info-meta strong{color:rgba(255,255,255,.6)}\n';
+
 
   const tradeLabel = tradeName ? `<span style="color:#fff;font-size:.95rem;font-weight:600">${esc(tradeName)}</span> · ` : '';
   const infoBanner = `<div class="export-info"><div class="export-info-title">${tradeLabel}DecisionLab<span>v0.6</span></div><div class="export-info-meta"><span><strong>${t('exportedBy')}:</strong> ${esc(exporter)}</span><span><strong>${t('exportedDate')}:</strong> ${exportedAt}</span></div></div>\n`;
@@ -328,7 +430,7 @@ document.getElementById('exportHtmlBtn').onclick = () => {
 
   const out = '<!DOCTYPE html>\n<html data-readonly lang="' + lang + '">\n<head>\n<meta charset="UTF-8">\n' +
     '<meta name="viewport" content="width=device-width,initial-scale=1">\n<title>' + pageTitle + '</title>\n' +
-    '<style>\n' + _styleText + readOnlyCss + '</style>\n</head>\n<body>\n' +
+    '<style>\n' + _styleText + READONLY_CSS + '</style>\n</head>\n<body>\n' +
     _bodyHtml.replace('<div class="app-header">', '<div class="app-header">\n' + infoBanner) +
     '\n<script>\n' + bakedScript + '\n<\/script>\n</body>\n</html>';
 

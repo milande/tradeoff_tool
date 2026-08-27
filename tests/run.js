@@ -452,6 +452,7 @@ all += `
   check('HTML export: banner injected inside sticky header', /class="app-header">\\s*<div class="export-info"/.test(out));
   check('HTML export: replaces auto-load, keeps string literal', out.includes("const S = '// Auto-load saved session'") && !out.includes('OLD'));
   check('HTML export: carries current proMode', out.includes('"proMode":true'));
+  check('HTML export: stylesheet stays unscoped (regression guard)', out.includes('CSS{}') && !out.includes('.dl-embed'));
 
   // ══ 9b. Embedded (Confluence) builds never touch storage ══════
   // An embed shares the host page's origin with every other embed and with the
@@ -491,6 +492,39 @@ all += `
   check('non-embedded persistence still works', __lsStore['tradeoff_v1'] !== undefined
     && JSON.parse(__lsStore['tradeoff_v1']).decisionName !== 'SOMEONE ELSE');
   delete __lsStore['dl_lang'];
+
+  // ══ 9c. Embed CSS scoping ═════════════════════════════════════
+  // The macro injects our stylesheet into the wiki page, so an unscoped rule
+  // restyles Confluence itself.
+  console.log('— Embed CSS scoping —');
+  const sc = css => scopeCss(css, '.dl-embed', ['.pro-on', '[data-readonly]']);
+  check('scope: body becomes the wrapper',
+    sc('body{margin:0;background:#0d1117}') === '.dl-embed{margin:0;background:#0d1117}');
+  check('scope: :root custom properties move onto the wrapper',
+    sc(':root{--bg:#0d1117}') === '.dl-embed{--bg:#0d1117}');
+  check('scope: bare element selectors nest (no host-page tables restyled)',
+    sc('table{width:100%}') === '.dl-embed table{width:100%}');
+  check('scope: every selector in a list is scoped individually',
+    sc('th,td{padding:10px}') === '.dl-embed th,.dl-embed td{padding:10px}');
+  check('scope: attribute selectors nest (host editor inputs untouched)',
+    sc('input[type=text]{border:0}') === '.dl-embed input[type=text]{border:0}');
+  check('scope: root hooks merge with the wrapper, not nest under it',
+    sc('.pro-on .knockout-toggle{display:inline-flex}') === '.dl-embed.pro-on .knockout-toggle{display:inline-flex}'
+      && sc('[data-readonly] #printBtn{display:none}') === '.dl-embed[data-readonly] #printBtn{display:none}');
+  check('scope: a hook prefix is not matched inside a longer class name',
+    sc('.pro-online{color:red}') === '.dl-embed .pro-online{color:red}');
+  check('scope: @media preserved, rules inside it scoped',
+    sc('@media(max-width:700px){.tabs{flex-wrap:wrap}}') === '@media(max-width:700px){.dl-embed .tabs{flex-wrap:wrap}}');
+  check('scope: @keyframes steps left alone',
+    sc('@keyframes spin{from{opacity:0}to{opacity:1}}') === '@keyframes spin{from{opacity:0}to{opacity:1}}');
+  check('scope: comments dropped, declarations untouched',
+    sc('/* note */ .x{content:""}') === '.dl-embed .x{content:""}');
+  check('scope: top-level commas only (:not lists survive)',
+    sc('.a:not(.b,.c),.d{color:red}') === '.dl-embed .a:not(.b,.c),.dl-embed .d{color:red}');
+  check('embedCss: read-only rules scoped and extras appended',
+    embedCss('body{color:#fff}').includes('.dl-embed[data-readonly] #printBtn')
+      && embedCss('body{color:#fff}').includes('.dl-embed .help-overlay{display:none}')
+      && embedCss('body{color:#fff}').includes('.dl-embed .app-header{position:relative}'));
 
   // ══ 10. New session ═══════════════════════════════════════════
   console.log('— New session —');
@@ -554,6 +588,32 @@ check('dist: scenario functions inlined', dist.includes('function loadScenario')
 // Tripwire: every storage access must go through lsGet/lsSet/lsRemove, which are
 // the only three raw references left. A new direct call would let an embed write
 // to the shared origin and clobber every other embedded decision.
+// ── Embed scoping over the REAL stylesheet ────────────────────
+// Enumerates every selector the transform emits and proves none can match
+// outside the wrapper — the whole point of the embed CSS work.
+{
+  const rawCss = fs.readFileSync(path.join(__dirname, '..', 'src', 'styles.css'), 'utf8');
+  const distCss = dist.match(/<style>([\s\S]*?)<\/style>/)[1];
+  const leaks = [];
+  for (const [label, source] of [['src/styles.css', rawCss], ['dist minified', distCss]]) {
+    const scoped = scopeCss(source, '.dl-embed', ['.pro-on', '[data-readonly]']);
+    scoped.replace(/(?:^|[{}])([^{}@]+)\{/g, (m, sel) => {
+      sel.split(',').forEach(one => {
+        if (one.trim() && one.trim().indexOf('.dl-embed') !== 0) leaks.push(label + ': ' + one.trim());
+      });
+      return m;
+    });
+  }
+  check('embed scoping: no rule from the real stylesheet escapes the wrapper',
+    leaks.length === 0, leaks.slice(0, 5).join(' | '));
+}
+// The specific leakers that made this necessary.
+{
+  const scoped = scopeCss(fs.readFileSync(path.join(__dirname, '..', 'src', 'styles.css'), 'utf8'), '.dl-embed', ['.pro-on', '[data-readonly]']);
+  const bare = /(?:^|[{}])\s*(body|table|th|td|input)\s*[,{]/.test(scoped);
+  check('embed scoping: body/table/th/td/input no longer match the host page', !bare);
+}
+
 check('dist: localStorage reached only through the storage facade',
   (dist.match(/localStorage/g) || []).length === 3,
   'found ' + (dist.match(/localStorage/g) || []).length + ' refs, expected 3 (the facade)');

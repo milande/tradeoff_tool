@@ -2099,6 +2099,92 @@ win.document.close();
 win.focus();
 setTimeout(() => win.print(), 350);
 };
+const READONLY_CSS = '\n/* Read-only export */\n' +
+'[data-readonly] #criteriaInputSection,[data-readonly] .btn-remove,' +
+'[data-readonly] .pair-buttons,[data-readonly] #solutionList,[data-readonly] #addSolutionBtn,' +
+'[data-readonly] #proToggle,[data-readonly] .app-brand,[data-readonly] #helpBtn,' +
+'[data-readonly] #printBtn,[data-readonly] #undoBtn,[data-readonly] #redoBtn{display:none}\n' +
+'[data-readonly] .toolbar{position:absolute;top:10px;right:0;margin:0;padding:0}\n' +
+'[data-readonly] .rating-btn{pointer-events:none}\n' +
+'[data-readonly] #fileMenuWrap{display:none}\n' +
+'[data-readonly] .scenario-save-row{display:none}\n' +
+'[data-readonly] #resetFineBtn,[data-readonly] .sc-del,[data-readonly] .knockout-toggle{display:none}\n' +
+'[data-readonly] .eco-toggle{pointer-events:none}\n' +
+'[data-readonly] .team-load{display:none}\n' +
+'[data-readonly] .fine-tune-input,[data-readonly] .fine-tune-reason,[data-readonly] .fine-tune-bar,[data-readonly] .anchor-input,[data-readonly] .rating-note{pointer-events:none;opacity:.5}\n' +
+'.export-info{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px;padding:2px 80px 12px 0;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:6px}\n' +
+'.export-info-title{font-size:1.05rem;font-weight:700;color:#fff;letter-spacing:-.01em}\n' +
+'.export-info-title span{font-size:0.72rem;font-weight:400;color:rgba(255,255,255,.4);background:rgba(255,255,255,.08);padding:2px 8px;border-radius:20px;margin-left:8px;vertical-align:middle}\n' +
+'.export-info-meta{font-size:0.72rem;color:rgba(255,255,255,.4);display:flex;gap:16px}\n' +
+'.export-info-meta strong{color:rgba(255,255,255,.6)}\n';
+const EMBED_SCOPE = '.dl-embed';
+const EMBED_ROOT_HOOKS = ['.pro-on', '[data-readonly]'];
+function splitSelectorList(list) {
+const out = [];
+let depth = 0, start = 0;
+for (let i = 0; i < list.length; i++) {
+const ch = list[i];
+if (ch === '(' || ch === '[') depth++;
+else if (ch === ')' || ch === ']') depth--;
+else if (ch === ',' && depth === 0) { out.push(list.slice(start, i)); start = i + 1; }
+}
+out.push(list.slice(start));
+return out;
+}
+function scopeSelector(sel, scope, rootHooks) {
+sel = sel.trim();
+if (!sel) return sel;
+if (/^(:root|html|body)$/.test(sel)) return scope;
+const attached = sel.match(/^(?::root|html|body)(?=[.:#[])/);
+if (attached) return scope + sel.slice(attached[0].length);
+const descendant = sel.match(/^(?::root|html|body)\s+/);
+if (descendant) return scope + ' ' + sel.slice(descendant[0].length);
+for (const hook of rootHooks) {
+if (sel === hook) return scope + hook;
+if (sel.slice(0, hook.length) === hook && /^[\s>+~]/.test(sel.slice(hook.length))) {
+return scope + hook + sel.slice(hook.length);
+}
+}
+return scope + ' ' + sel;
+}
+function scopeCss(css, scope, rootHooks) {
+scope = scope || EMBED_SCOPE;
+rootHooks = rootHooks || EMBED_ROOT_HOOKS;
+let out = '', i = 0;
+while (i < css.length) {
+if (css.slice(i, i + 2) === '/*') {
+const e = css.indexOf('*/', i + 2);
+i = e < 0 ? css.length : e + 2;
+continue;
+}
+const open = css.indexOf('{', i);
+if (open < 0) break;
+const prelude = css.slice(i, open).trim();
+let depth = 1, j = open + 1;
+while (j < css.length && depth > 0) {
+if (css[j] === '{') depth++;
+else if (css[j] === '}') depth--;
+j++;
+}
+const body = css.slice(open + 1, j - 1);
+if (/^@(media|supports|container|layer)\b/i.test(prelude)) {
+out += prelude + '{' + scopeCss(body, scope, rootHooks) + '}';
+} else if (prelude.charAt(0) === '@') {
+out += prelude + '{' + body + '}';
+} else {
+out += splitSelectorList(prelude).map(sel => scopeSelector(sel, scope, rootHooks)).join(',') + '{' + body + '}';
+}
+i = j;
+}
+return out;
+}
+const EMBED_EXTRA_CSS =
+EMBED_SCOPE + ' .help-overlay{display:none}' +
+EMBED_SCOPE + ' .app-header{position:relative}' +
+EMBED_SCOPE + '{isolation:isolate}';
+function embedCss(styleText) {
+return scopeCss(styleText + READONLY_CSS, EMBED_SCOPE, EMBED_ROOT_HOOKS) + EMBED_EXTRA_CSS;
+}
 const AUTOLOAD_START = '// Auto-load saved session';
 const AUTOLOAD_END = '// END Auto-load';
 function bakedAutoLoad(stateJson, embed) {
@@ -2118,30 +2204,12 @@ const exporter = bearbeiter || t('promptAnonymous');
 const exportedAt = new Date().toLocaleString(lang === 'de' ? 'de-DE' : 'en-GB', { dateStyle: 'medium', timeStyle: 'short' });
 const state = JSON.stringify(buildState());
 const bakedScript = bakeScript(_scriptText, state, false);
-const readOnlyCss = '\n/* Read-only export */\n' +
-'[data-readonly] #criteriaInputSection,[data-readonly] .btn-remove,' +
-'[data-readonly] .pair-buttons,[data-readonly] #solutionList,[data-readonly] #addSolutionBtn,' +
-'[data-readonly] #proToggle,[data-readonly] .app-brand,[data-readonly] #helpBtn,' +
-'[data-readonly] #printBtn,[data-readonly] #undoBtn,[data-readonly] #redoBtn{display:none}\n' +
-'[data-readonly] .toolbar{position:absolute;top:10px;right:0;margin:0;padding:0}\n' +
-'[data-readonly] .rating-btn{pointer-events:none}\n' +
-'[data-readonly] #fileMenuWrap{display:none}\n' +
-'[data-readonly] .scenario-save-row{display:none}\n' +
-'[data-readonly] #resetFineBtn,[data-readonly] .sc-del,[data-readonly] .knockout-toggle{display:none}\n' +
-'[data-readonly] .eco-toggle{pointer-events:none}\n' +
-'[data-readonly] .team-load{display:none}\n' +
-'[data-readonly] .fine-tune-input,[data-readonly] .fine-tune-reason,[data-readonly] .fine-tune-bar,[data-readonly] .anchor-input,[data-readonly] .rating-note{pointer-events:none;opacity:.5}\n' +
-'.export-info{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px;padding:2px 80px 12px 0;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:6px}\n' +
-'.export-info-title{font-size:1.05rem;font-weight:700;color:#fff;letter-spacing:-.01em}\n' +
-'.export-info-title span{font-size:0.72rem;font-weight:400;color:rgba(255,255,255,.4);background:rgba(255,255,255,.08);padding:2px 8px;border-radius:20px;margin-left:8px;vertical-align:middle}\n' +
-'.export-info-meta{font-size:0.72rem;color:rgba(255,255,255,.4);display:flex;gap:16px}\n' +
-'.export-info-meta strong{color:rgba(255,255,255,.6)}\n';
 const tradeLabel = tradeName ? `<span style="color:#fff;font-size:.95rem;font-weight:600">${esc(tradeName)}</span> · ` : '';
 const infoBanner = `<div class="export-info"><div class="export-info-title">${tradeLabel}DecisionLab<span>v0.6</span></div><div class="export-info-meta"><span><strong>${t('exportedBy')}:</strong> ${esc(exporter)}</span><span><strong>${t('exportedDate')}:</strong> ${exportedAt}</span></div></div>\n`;
 const pageTitle = tradeName ? `${esc(tradeName)} – DecisionLab` : 'DecisionLab';
 const out = '<!DOCTYPE html>\n<html data-readonly lang="' + lang + '">\n<head>\n<meta charset="UTF-8">\n' +
 '<meta name="viewport" content="width=device-width,initial-scale=1">\n<title>' + pageTitle + '</title>\n' +
-'<style>\n' + _styleText + readOnlyCss + '</style>\n</head>\n<body>\n' +
+'<style>\n' + _styleText + READONLY_CSS + '</style>\n</head>\n<body>\n' +
 _bodyHtml.replace('<div class="app-header">', '<div class="app-header">\n' + infoBanner) +
 '\n<script>\n' + bakedScript + '\n<\/script>\n</body>\n</html>';
 const a = Object.assign(document.createElement('a'), {
