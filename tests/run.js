@@ -933,6 +933,22 @@ check('dist: capture-preamble sentinels survive minification',
   const missing = dark.filter(k => light.indexOf(k) < 0);
   check('theme: every dark token has a light counterpart',
     dark.length > 10 && missing.length === 0, 'missing: ' + missing.join(', '));
+  // Alpha and opacity do not carry across themes: blending dark ink into white
+  // loses luminance faster than white into dark, so the same value reads ~30%
+  // weaker on light. Every tier must therefore be at least as strong in light.
+  const valsIn = block => { const o = {};
+    (block.match(/--[a-z0-9-]+:\s*[^;]+/g) || []).forEach(d => { const j = d.indexOf(':');
+      o[d.slice(0, j).trim()] = d.slice(j + 1).trim(); }); return o; };
+  const dv = valsIn(sheet.slice(darkAt, sheet.indexOf('}', darkAt)));
+  const lv = valsIn(sheet.slice(lightAt, sheet.indexOf('}', lightAt)));
+  const num = v => parseFloat((String(v).match(/[\d.]+(?=\)?;?\s*$)/) || [0])[0]);
+  const weaker = Object.keys(dv)
+    .filter(k => /^--(fg-a|dim-)/.test(k))
+    .filter(k => !(k in lv) || num(lv[k]) < num(dv[k]));
+  check('theme: every text tier is at least as strong in light as in dark',
+    weaker.length > 0 === false && Object.keys(dv).filter(k => /^--(fg-a|dim-)/.test(k)).length >= 20,
+    'weaker or missing: ' + weaker.join(', '));
+
   check('theme: light applies for an explicit choice and for the system preference',
     sheet.includes(':root[data-theme="light"]{')
       && sheet.includes('@media(prefers-color-scheme:light)')
