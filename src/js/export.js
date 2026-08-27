@@ -134,7 +134,7 @@ function generatePrintView(tradeName = '', exporter = '') {
       const ci = sols.findIndex(x => x.id === sol.id);
       vdiHtml += `<tr${isKO ? ' style="opacity:.55"' : ''}><td style="color:${solText(ci)};font-weight:600${isKO ? ';text-decoration:line-through' : ''}">${esc(sol.name)}${isKO ? ' ⊗' : ''}</td><td style="text-align:right">${wt.toFixed(2)}</td><td style="text-align:right">${we.toFixed(2)}</td><td style="text-align:right;font-weight:600">${s.toFixed(2)}</td></tr>`;
     });
-    vdiHtml += '</tbody></table>' + vdiDiagramSvg(vdiData, koSols, sols, true);
+    vdiHtml += '</tbody></table>' + vdiDiagramSvg(vdiData, koSols, sols);
   }
 
   // Team ratings section (Pro): per-rater ratings with disagreements highlighted
@@ -237,7 +237,7 @@ th{font-weight:600;color:#aaa;font-size:0.73rem;text-transform:uppercase;letter-
 .vdi-svg{overflow:visible}
 /* Print is a light document, so the solution colours use their light
    values — the dark palette scores 1.7-2.7 against white, under AA. */
-:root{--sol-1:#0e7490;--sol-2:#be185d;--sol-3:#7e22ce;--sol-4:#c2410c;--sol-5:#047857;--sol-6:#a16207}
+:root{--fg-rgb:15,23,42;--sol-1:#0e7490;--sol-2:#be185d;--sol-3:#7e22ce;--sol-4:#c2410c;--sol-5:#047857;--sol-6:#a16207}
 @media print{body{padding:20px}@page{margin:15mm}}
 </style>
 </head>

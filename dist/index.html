@@ -1223,37 +1223,37 @@ const wt = groupValue(sol, tech), we = groupValue(sol, eco);
 return { sol, wt, we, s: Math.sqrt(wt * we) };
 });
 }
-function vdiDiagramSvg(data, ko, sols, light = false) {
+function vdiDiagramSvg(data, ko, sols) {
 const padL = 40, padR = 72, padT = 30, padB = 40;
 const plot = 240;
 const W = padL + plot + padR, H = padT + plot + padB;
-const axis = light ? '#999' : 'rgba(255,255,255,.3)';
-const grid = light ? '#e5e5e5' : 'rgba(255,255,255,.08)';
-const text = light ? '#777' : 'rgba(255,255,255,.45)';
+const axis = 'stroke:rgba(var(--fg-rgb),.3)';
+const grid = 'stroke:rgba(var(--fg-rgb),.08)';
+const text = 'fill:rgba(var(--fg-rgb),.45)';
 const X = v => padL + v * plot;
 const Y = v => padT + (1 - v) * plot;
 let svg = `<svg class="vdi-svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg">`;
 for (let i = 0; i <= 4; i++) {
 const v = i / 4;
-svg += `<line x1="${X(0)}" y1="${Y(v)}" x2="${X(1)}" y2="${Y(v)}" stroke="${grid}" stroke-width="1"/>`;
-svg += `<line x1="${X(v)}" y1="${Y(0)}" x2="${X(v)}" y2="${Y(1)}" stroke="${grid}" stroke-width="1"/>`;
+svg += `<line x1="${X(0)}" y1="${Y(v)}" x2="${X(1)}" y2="${Y(v)}" style="${grid}" stroke-width="1"/>`;
+svg += `<line x1="${X(v)}" y1="${Y(0)}" x2="${X(v)}" y2="${Y(1)}" style="${grid}" stroke-width="1"/>`;
 if (i % 2 === 0) {
-svg += `<text x="${X(v)}" y="${Y(0) + 16}" fill="${text}" font-size="10" text-anchor="middle">${v.toFixed(1)}</text>`;
-svg += `<text x="${X(0) - 8}" y="${Y(v) + 3}" fill="${text}" font-size="10" text-anchor="end">${v.toFixed(1)}</text>`;
+svg += `<text x="${X(v)}" y="${Y(0) + 16}" style="${text}" font-size="10" text-anchor="middle">${v.toFixed(1)}</text>`;
+svg += `<text x="${X(0) - 8}" y="${Y(v) + 3}" style="${text}" font-size="10" text-anchor="end">${v.toFixed(1)}</text>`;
 }
 }
-svg += `<line x1="${X(0)}" y1="${Y(0)}" x2="${X(1)}" y2="${Y(1)}" stroke="${axis}" stroke-width="1" stroke-dasharray="4 3"/>`;
-svg += `<circle cx="${X(1)}" cy="${Y(1)}" r="3" fill="none" stroke="${axis}"/>`;
-svg += `<text x="${X(1) + 8}" y="${Y(1) + 3}" fill="${text}" font-size="10">1/1</text>`;
-svg += `<text x="-6" y="30" fill="${text}" font-size="11" text-anchor="start">Wt ↑</text>`;
-svg += `<text x="${X(1)}" y="${Y(0) + 34}" fill="${text}" font-size="11" text-anchor="end">We →</text>`;
+svg += `<line x1="${X(0)}" y1="${Y(0)}" x2="${X(1)}" y2="${Y(1)}" style="${axis}" stroke-width="1" stroke-dasharray="4 3"/>`;
+svg += `<circle cx="${X(1)}" cy="${Y(1)}" r="3" style="fill:none;${axis}"/>`;
+svg += `<text x="${X(1) + 8}" y="${Y(1) + 3}" style="${text}" font-size="10">1/1</text>`;
+svg += `<text x="-6" y="30" style="${text}" font-size="11" text-anchor="start">Wt ↑</text>`;
+svg += `<text x="${X(1)}" y="${Y(0) + 34}" style="${text}" font-size="11" text-anchor="end">We →</text>`;
 data.forEach(({ sol, wt, we }) => {
-const color = SOL_COLORS[sols.findIndex(x => x.id === sol.id) % SOL_COLORS.length];
+const c = solText(sols.findIndex(x => x.id === sol.id));
 const isKO = !!ko[sol.id];
-svg += `<circle cx="${X(we)}" cy="${Y(wt)}" r="5" fill="${isKO ? 'none' : color}" stroke="${color}" stroke-width="2"${isKO ? ' stroke-dasharray="2 2"' : ''}/>`;
+svg += `<circle cx="${X(we)}" cy="${Y(wt)}" r="5" style="fill:${isKO ? 'none' : c};stroke:${c}" stroke-width="2"${isKO ? ' stroke-dasharray="2 2"' : ''}/>`;
 const label = `${esc(sol.name)}${isKO ? ' ⊗' : ''}`;
-if (we > 0.78) svg += `<text x="${X(we) - 9}" y="${Y(wt) + 3}" fill="${color}" font-size="10" text-anchor="end">${label}</text>`;
-else svg += `<text x="${X(we) + 9}" y="${Y(wt) + 3}" fill="${color}" font-size="10">${label}</text>`;
+if (we > 0.78) svg += `<text x="${X(we) - 9}" y="${Y(wt) + 3}" style="fill:${c}" font-size="10" text-anchor="end">${label}</text>`;
+else svg += `<text x="${X(we) + 9}" y="${Y(wt) + 3}" style="fill:${c}" font-size="10">${label}</text>`;
 });
 svg += '</svg>';
 return `<div class="vdi-diagram">${svg}</div>`;
@@ -2047,7 +2047,7 @@ const isKO = !!koSols[sol.id];
 const ci = sols.findIndex(x => x.id === sol.id);
 vdiHtml += `<tr${isKO ? ' style="opacity:.55"' : ''}><td style="color:${solText(ci)};font-weight:600${isKO ? ';text-decoration:line-through' : ''}">${esc(sol.name)}${isKO ? ' ⊗' : ''}</td><td style="text-align:right">${wt.toFixed(2)}</td><td style="text-align:right">${we.toFixed(2)}</td><td style="text-align:right;font-weight:600">${s.toFixed(2)}</td></tr>`;
 });
-vdiHtml += '</tbody></table>' + vdiDiagramSvg(vdiData, koSols, sols, true);
+vdiHtml += '</tbody></table>' + vdiDiagramSvg(vdiData, koSols, sols);
 }
 let teamHtml = '';
 if (proMode && raters.length && sols.length) {
@@ -2142,7 +2142,7 @@ th{font-weight:600;color:#aaa;font-size:0.73rem;text-transform:uppercase;letter-
 .vdi-svg{overflow:visible}
 /* Print is a light document, so the solution colours use their light
 values — the dark palette scores 1.7-2.7 against white, under AA. */
-:root{--sol-1:#0e7490;--sol-2:#be185d;--sol-3:#7e22ce;--sol-4:#c2410c;--sol-5:#047857;--sol-6:#a16207}
+:root{--fg-rgb:15,23,42;--sol-1:#0e7490;--sol-2:#be185d;--sol-3:#7e22ce;--sol-4:#c2410c;--sol-5:#047857;--sol-6:#a16207}
 @media print{body{padding:20px}@page{margin:15mm}}
 </style>
 </head>

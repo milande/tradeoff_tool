@@ -447,6 +447,14 @@ all += `
   check('print: criteria ordered by weight in ranking header', pv.indexOf('<th title="Cost">') < pv.indexOf('<th title="Support">'));
   check('print: sensitivity + rating impact sections', pv.includes(t('criterionImpact')) && pv.includes(t('ratingImpact')));
   check('print: VDI section with s-diagram when tagged', pv.includes(t('vdiTitle')) && pv.includes('<svg'));
+  // The s-diagram is inline SVG, so it must follow the surrounding theme. A
+  // presentation attribute cannot hold var(), which is why these go via style=.
+  {
+    const svg = pv.slice(pv.indexOf('<svg'), pv.indexOf('</svg>'));
+    check('print: s-diagram is themed by token, not by hardcoded colours',
+      svg.includes('var(--fg-rgb)') && svg.includes('var(--sol-')
+        && svg.indexOf('#') === -1 && svg.indexOf('rgba(255,255,255') === -1);
+  }
   check('print: team section with rater + disagreement highlight', pv.includes(t('teamTitle')) && pv.includes('Anna') && pv.includes('#fef3c7'));
   check('JSON export carries raters', Array.isArray(json.raters) && json.raters.length === 1 && json.raters[0].name === 'Anna');
   proMode = false;
@@ -947,6 +955,11 @@ check('dist: capture-preamble sentinels survive minification',
     .match(/:\s*(white|black|red|blue|green|yellow|orange|gold|gray|grey|pink|purple|cyan|silver)\b/g) || []);
   check('theme: no bare colour keyword outside the token definitions',
     named.length === 0, 'found: ' + named.join(', '));
+  // The print document is standalone: it must define every token its markup
+  // and its SVG reference, or they fall back to nothing on paper.
+  const printCss = fs.readFileSync(path.join(SRC, 'export.js'), 'utf8');
+  check('theme: the print document defines the tokens its output reads',
+    printCss.includes('--fg-rgb:15,23,42') && printCss.includes('--sol-1:#0e7490'));
   check('theme: exports get the automatic path only — the toggle is hidden',
     READONLY_CSS.includes('#themeToggle'));
 }
