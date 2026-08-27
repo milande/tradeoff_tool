@@ -433,19 +433,44 @@ function newEmbedId() {
   return 'dl-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 }
 
-// A complete embed script. The IIFE keeps every binding — `lang`, `ratings`,
-// `t`, `esc`, … — out of the wiki page's scope, where they would collide with
-// Confluence's own code and, fatally, with a second embed redeclaring them.
-// `_embedRoot` is read by dom.js as it initialises, so every lookup from then
-// on resolves inside this instance's wrapper. currentScript is preferred, so
-// even two copies of the same export work; the id is the fallback for a macro
-// rendered after parse, when currentScript is null.
-function embedScript(scriptText, stateJson, rootId) {
+// A complete embed script, as plain source. The IIFE keeps every binding —
+// `lang`, `ratings`, `t`, `esc`, … — out of the wiki page's scope, where they
+// would collide with Confluence's own code and, fatally, with a second embed
+// redeclaring them. `_embedRoot` is read by dom.js as it initialises, so every
+// lookup from then on resolves inside this instance's wrapper. currentScript is
+// preferred, so even two copies of the same export work; the id is the fallback
+// for a macro rendered after parse, when currentScript is null.
+function embedScriptSource(scriptText, stateJson, rootId) {
   return '(function(){\n'
     + 'var _embedRoot=(document.currentScript&&document.currentScript.closest('
     + JSON.stringify(EMBED_SCOPE) + '))||document.getElementById(' + JSON.stringify(rootId) + ');\n'
     + bakeScript(stripCapturePreamble(scriptText), stateJson, true)
     + '\n})();';
+}
+
+// UTF-8 safe base64: btoa is Latin-1 only and the app carries umlauts and
+// symbols (⚡ ✓ ⊗ ›), so encode to bytes first. Chunked because
+// String.fromCharCode.apply blows the argument limit on a 100 KB array.
+function toBase64Utf8(str) {
+  const bytes = new TextEncoder().encode(str);
+  let bin = '';
+  for (let i = 0; i < bytes.length; i += 0x8000) {
+    bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+  }
+  return btoa(bin);
+}
+
+// Confluence content filters parse a macro body as HTML and strip markup out of
+// the script text. Our bundle is full of markup — every <div>, <td> and
+// style="…" the app writes — so a filter silently deletes thousands of
+// characters from the middle of the script, leaving an intact-looking start and
+// end around syntactically broken code. Base64 gives it nothing to react to: no
+// <, no &, no CDATA terminator. new Function scopes the decoded source and runs
+// synchronously, so document.currentScript is still valid inside it.
+function embedScript(scriptText, stateJson, rootId) {
+  const b64 = toBase64Utf8(embedScriptSource(scriptText, stateJson, rootId));
+  return 'new Function(new TextDecoder().decode(Uint8Array.from(atob('
+    + JSON.stringify(b64) + '),c=>c.charCodeAt(0))))();';
 }
 
 // Provenance line shown at the top of every export. On a wiki page this

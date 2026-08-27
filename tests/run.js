@@ -543,7 +543,16 @@ all += `
   check('strip: a script without a preamble is returned untouched',
     stripCapturePreamble('PLAIN') === 'PLAIN');
 
-  const es = embedScript(fakeScript, '{"version":2}', 'dl-test1');
+  // Recovers the source from the shipped base64 envelope. Accepts a whole
+  // payload too: anchor on the call, since the wrapper and stylesheet around it
+  // have quoted runs of their own (lang="en" and friends).
+  const decodeEmbed = text => {
+    const at = text.indexOf('new Function(');
+    const b64 = (at < 0 ? text : text.slice(at)).match(/"([A-Za-z0-9+/=]+)"/)[1];
+    return new TextDecoder().decode(Uint8Array.from(atob(b64), c => c.charCodeAt(0)));
+  };
+
+  const es = embedScriptSource(fakeScript, '{"version":2}', 'dl-test1');
   check('embed script: wrapped in an IIFE, nothing reaches page scope',
     es.indexOf('(function(){') === 0 && es.slice(-5) === '})();');
   check('embed script: binds to its own wrapper (currentScript, id fallback)',
@@ -552,6 +561,20 @@ all += `
     !es.includes('_scriptText') && !es.includes('_styleText') && !es.includes('_bodyHtml'));
   check('embed script: baked state, no storage access (with #25)',
     es.includes('embedded = true') && !es.includes('localStorage') && !es.includes('OLD'));
+
+  // Confluence content filters parse the macro body as HTML and delete markup
+  // out of the script text. The shipped script must therefore contain none.
+  const wrapped = embedScript(fakeScript, '{"version":2}', 'dl-test1');
+  check('embed script: shipped form contains no markup for a filter to eat',
+    !wrapped.includes('<') && !wrapped.includes('&') && !wrapped.includes(']]' + '>'));
+  check('embed script: shipped form is a self-scoping new Function call',
+    wrapped.indexOf('new Function(') === 0 && wrapped.slice(-4) === ')();');
+  check('embed script: base64 round-trips to exactly the source',
+    decodeEmbed(wrapped) === es);
+  // btoa is Latin-1 only; the app carries umlauts and symbols.
+  check('embed script: non-ASCII survives the encoding',
+    decodeEmbed(embedScript(fakeScript.replace('APP', 'const s="⚡ ✓ ⊗ Prüfung";'), '{}', 'dl-u'))
+      .includes('"⚡ ✓ ⊗ Prüfung"'));
   check('embed ids are unique per export', newEmbedId() !== newEmbedId());
 
   // Element lookups must resolve inside the instance root rather than the page.
@@ -591,16 +614,22 @@ all += `
   check('embed payload: app markup with the provenance banner',
     pay.includes('BODY') && pay.includes('export-info-title') && pay.includes('Server choice') && pay.includes('Milan'));
   check('embed payload: isolated script carrying the baked decision',
-    pay.includes('<script>(function(){') && pay.includes('embedded = true')
-      && pay.includes('"decisionName":"Server choice"'));
+    pay.includes('<script>new Function(')
+      && decodeEmbed(pay).includes('embedded = true')
+      && decodeEmbed(pay).includes('"decisionName":"Server choice"'));
   check('embed payload: CDATA-safe', !pay.includes(']]' + '>'));
+  // The only markup left in the payload is the wrapper, the stylesheet and the
+  // app template — all of which a filter is expected to leave alone.
+  check('embed payload: no markup inside the script element',
+    pay.slice(pay.indexOf('<script>'), pay.indexOf('</scr' + 'ipt>')).indexOf('<', 8) === -1);
 
   // A decision containing the CDATA terminator is escaped, not rejected: inside
   // the baked JS string literals > is the same character.
   decisionName = 'Odd ]]' + '> name';
   const payEsc = buildEmbedPayload();
   check('embed payload: CDATA terminator in user text is escaped, not rejected',
-    !payEsc.includes(']]' + '>') && payEsc.includes('u003e') && payEsc.includes('Odd ]]'));
+    !payEsc.includes(']]' + '>') && decodeEmbed(payEsc).includes('u003e')
+      && decodeEmbed(payEsc).includes('Odd ]]'));
   decisionName = 'Server choice';
 
   globalThis.lastCopied = null;
@@ -688,10 +717,15 @@ check('dist: scenario functions inlined', dist.includes('function loadScenario')
 // ── Embed scope isolation over the REAL bundle ────────────────
 {
   const script = dist.match(/<script>([\s\S]*)<\/script>/)[1];
-  const es = embedScript(script, '{"version":2}', 'dl-real');
+  const shipped = embedScript(script, '{"version":2}', 'dl-real');
+  const es = new TextDecoder().decode(
+    Uint8Array.from(atob(shipped.match(/"([A-Za-z0-9+/=]+)"/)[1]), c => c.charCodeAt(0)));
   let ok = false, err = '';
   try { new Function(es); ok = true; } catch (e) { err = e.message; }
   check('dist: embed script parses against the minified bundle', ok, err);
+  // What actually ships must give a Confluence content filter nothing to strip.
+  check('dist: shipped script is markup-free base64',
+    !shipped.includes('<') && !shipped.includes('&') && shipped.indexOf('new Function(') === 0);
   // The preamble BLOCK is gone. References to its globals survive inside the
   // HTML-export handler, which an embed guards and hides rather than removes.
   // The sentinel itself still appears once, as export.js's own string literal.

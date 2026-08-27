@@ -2232,12 +2232,25 @@ return scriptText.slice(0, si) + scriptText.slice(ei);
 function newEmbedId() {
 return 'dl-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 }
-function embedScript(scriptText, stateJson, rootId) {
+function embedScriptSource(scriptText, stateJson, rootId) {
 return '(function(){\n'
 + 'var _embedRoot=(document.currentScript&&document.currentScript.closest('
 + JSON.stringify(EMBED_SCOPE) + '))||document.getElementById(' + JSON.stringify(rootId) + ');\n'
 + bakeScript(stripCapturePreamble(scriptText), stateJson, true)
 + '\n})();';
+}
+function toBase64Utf8(str) {
+const bytes = new TextEncoder().encode(str);
+let bin = '';
+for (let i = 0; i < bytes.length; i += 0x8000) {
+bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+}
+return btoa(bin);
+}
+function embedScript(scriptText, stateJson, rootId) {
+const b64 = toBase64Utf8(embedScriptSource(scriptText, stateJson, rootId));
+return 'new Function(new TextDecoder().decode(Uint8Array.from(atob('
++ JSON.stringify(b64) + '),c=>c.charCodeAt(0))))();';
 }
 function exportInfoBanner(tradeName, exporter) {
 const exportedAt = new Date().toLocaleString(lang === 'de' ? 'de-DE' : 'en-GB', { dateStyle: 'medium', timeStyle: 'short' });
