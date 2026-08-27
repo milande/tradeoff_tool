@@ -110,17 +110,6 @@
   --glow:rgba(var(--c-sensitivity-rgb),.08);
 }
 
-/* Results first (read-only exports). Empty in the live tool, so it collapses.
-   The ranking keeps the solutions accent it had inside its own tab. */
-#resultsFirst:empty{display:none}
-#resultsFirst #rankingSection{
-  --accent:var(--c-solutions);
-  --accent-hover:var(--c-solutions-hover);
-  --accent-text:#1a0020;
-  --accent-dim:rgba(var(--c-solutions-rgb),.35);
-  --glow:rgba(var(--c-solutions-rgb),.08);
-}
-
 body{margin:0;font-family:Inter,Arial,sans-serif;background:var(--bg);color:var(--text);padding:20px}
 .container{max-width:900px;margin:0 auto}
 
@@ -487,7 +476,6 @@ th{font-weight:bold;opacity:var(--dim-8)}
 }
 :root[data-theme="light"] #tab-solutions{--accent-text:#ffffff}
 :root[data-theme="light"] #tab-sensitivity{--accent-text:#ffffff}
-:root[data-theme="light"] #resultsFirst #rankingSection{--accent-text:#ffffff}
 :root[data-theme="light"] .file-menu{box-shadow:0 14px 34px rgba(15,23,42,.14)}
 
 @media(prefers-color-scheme:light){
@@ -569,6 +557,5 @@ th{font-weight:bold;opacity:var(--dim-8)}
   }
   :root:not([data-theme="dark"]) #tab-solutions{--accent-text:#ffffff}
   :root:not([data-theme="dark"]) #tab-sensitivity{--accent-text:#ffffff}
-  :root:not([data-theme="dark"]) #resultsFirst #rankingSection{--accent-text:#ffffff}
   :root:not([data-theme="dark"]) .file-menu{box-shadow:0 14px 34px rgba(15,23,42,.14)}
 }

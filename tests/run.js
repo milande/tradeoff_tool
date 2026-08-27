@@ -687,12 +687,19 @@ all += `
   // is often scrolled past without a click. It must lead with the outcome.
   console.log('— Results first —');
   check('live tool layout is untouched', readOnly === false);
-  const rfHost = byId('resultsFirst');
-  const movedUp = [];
-  rfHost.appendChild = el => movedUp.push(el);
+  // Each result is hoisted to the top of the tab it already belongs to. The
+  // sections do not change tab and the tab bar is not touched — a reader
+  // navigates the record by tab, and a section under the wrong tab lies.
+  const hoisted = [];
+  const solPane = byId('tab-solutions'), critPane = byId('tab-criteria');
+  solPane.firstChild = {}; critPane.firstChild = {};
+  solPane.insertBefore = el => hoisted.push(['tab-solutions', el]);
+  critPane.insertBefore = el => hoisted.push(['tab-criteria', el]);
   applyResultsFirst();
-  check('results first: ranking then criteria weights move above the tabs',
-    movedUp.length === 2 && movedUp[0] === byId('rankingSection') && movedUp[1] === byId('resultsSection'));
+  check('results first: each tab leads with its own result, in its own tab',
+    hoisted.length === 2
+      && hoisted[0][0] === 'tab-solutions' && hoisted[0][1] === byId('rankingSection')
+      && hoisted[1][0] === 'tab-criteria' && hoisted[1][1] === byId('resultsSection'));
 
   const pvOrder = generatePrintView('Server choice', 'Milan');
   const iRank = pvOrder.indexOf(t('printSolutionRanking'));
@@ -837,19 +844,14 @@ check('dist: scenario functions inlined', dist.includes('function loadScenario')
 // must scroll relative to the pane instead.
 {
   const mainSrc = fs.readFileSync(path.join(SRC, 'main.js'), 'utf8');
-  // In the tool the bar is inside the sticky header and the top of the document
-  // is the top of the pane. In an export the bar sits below the results block,
-  // so a fixed 0 lands back on the results and the tab looks dead.
-  check('tab switch targets the tab bar when it is not in the sticky header',
-    mainSrc.includes('header.contains(tabs)') && mainSrc.includes('getBoundingClientRect'));
-  // The bar must end up adjacent to the panes it controls, or the results block
-  // between them reads as the active tab's content.
-  check('read-only moves the tab bar down to sit directly above the panes',
-    /insertBefore\(tabs, firstPane\)/.test(mainSrc));
+  // The tab bar stays in the sticky header in every build: it is how a reader
+  // navigates the record, so it must not be moved out of view.
+  check('the tab bar is never moved out of the header',
+    !/insertBefore\(tabs/.test(mainSrc) && !mainSrc.includes("qs('.tabs')"));
 }
-check('dist: results-first container present and collapsed when empty',
-  dist.includes('id="resultsFirst"') && dist.includes('id="rankingSection"')
-    && dist.includes('#resultsFirst:empty{display:none}'));
+check('dist: result sections carry the ids the read-only hoist targets',
+  dist.includes('id="rankingSection"') && dist.includes('id="resultsSection"')
+    && !dist.includes('resultsFirst'));
 check('dist: Confluence menu entry and handler present',
   dist.includes('exportConfluenceBtn') && dist.includes('function buildEmbedPayload'));
 check('dist: capture-preamble sentinels survive minification',

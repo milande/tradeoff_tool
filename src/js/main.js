@@ -40,20 +40,10 @@ qsa('.tab-btn').forEach(btn => {
     // and the tab looks like it did nothing. Scroll to the pane instead, offset
     // by the sticky header; in the live tool the pane is already there, so this
     // resolves to the top exactly as before. An embed never scrolls its host.
-    if (!embedded && typeof window.scrollTo === 'function') {
-      const tabs = qs('.tabs');
-      const header = qs('.app-header');
-      // In the tool the bar rides inside the sticky header, so the top of the
-      // document already is the top of the pane. In a read-only export the bar
-      // has moved below the results block, so scroll to it — measuring the
-      // sticky bar's own rect there would just return where it is pinned.
-      if (!tabs || !header || header.contains(tabs)) {
-        window.scrollTo(0, 0);
-      } else {
-        const y = tabs.getBoundingClientRect().top + window.scrollY - header.getBoundingClientRect().height;
-        window.scrollTo(0, Math.max(0, Math.round(y)));
-      }
-    }
+    // Always show the freshly opened pane from the top. The tab bar stays in
+    // the sticky header, so the top of the document is the top of the pane.
+    // An embed must never scroll the wiki page it sits in.
+    if (!embedded && typeof window.scrollTo === 'function') window.scrollTo(0, 0);
   };
 });
 
@@ -129,20 +119,16 @@ saveState(); // baseline snapshot for undo
 // above, so the sections it moves are already populated. Never in the live
 // tool, where you work top-down through criteria while building the decision.
 function applyResultsFirst() {
-  const host = byId('resultsFirst');
-  const ranking = byId('rankingSection');
-  const weights = byId('resultsSection');
-  if (!host || !ranking || !weights) return;
-  host.appendChild(ranking);
-  host.appendChild(weights);
-
-  // The tab bar has to end up directly above the panes it controls. Left in the
-  // header it sits above the results block, which belongs to no tab — so the
-  // ranking reads as the content of whichever tab happens to be active. Moving
-  // the bar down gives: banner, results, tabs, pane.
-  const tabs = qs('.tabs');
-  const firstPane = byId('tab-criteria');
-  if (tabs && firstPane && firstPane.parentNode) firstPane.parentNode.insertBefore(tabs, firstPane);
+  // Each tab leads with its own result — the ranking in Solutions, the weights
+  // in Criteria — and the working detail that produced it follows below. The
+  // sections stay in the tab they belong to, and the tabs themselves are left
+  // alone: they are how a reader navigates the record.
+  const hoist = (sectionId, paneId) => {
+    const section = byId(sectionId), pane = byId(paneId);
+    if (section && pane && pane.firstChild) pane.insertBefore(section, pane.firstChild);
+  };
+  hoist('rankingSection', 'tab-solutions');
+  hoist('resultsSection', 'tab-criteria');
 }
 
 if (readOnly) applyResultsFirst();
