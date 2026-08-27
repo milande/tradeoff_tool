@@ -6,6 +6,8 @@ const DE = {
   alertEmbedCdata: 'Confluence-Block kann nicht erzeugt werden: Der Inhalt enthält "]]" gefolgt von ">". Das würde das Makro abschneiden und die Seite beschädigen. Bitte diese Zeichenfolge aus dem Entscheidungstext entfernen.',
   alertEmbedDownloaded: 'Zwischenablage nicht verfügbar — der Block wurde stattdessen heruntergeladen. Datei öffnen und den Inhalt ins Makro einfügen.',
   alertEmbedFailed: 'Confluence-Block konnte nicht erzeugt werden.',
+  theme_auto: '◐ Auto', theme_light: '☀ Hell', theme_dark: '☾ Dunkel',
+  themeTitle: 'Design: System, hell oder dunkel',
   undoTitle: 'Rückgängig (Strg+Z)', redoTitle: 'Wiederholen (Strg+Umschalt+Z)',
   tabCriteria: 'Kriterien', tabSolutions: 'Lösungen', tabSensitivity: 'Sensitivität',
   step1: 'Kriterien',

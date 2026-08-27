@@ -95,8 +95,8 @@ function renderTeam() {
   const sortedSols = [...sols].sort((a, b) => (meanMap[a.id]?.rank ?? 99) - (meanMap[b.id]?.rank ?? 99));
 
   sortedSols.forEach(sol => {
-    const color = SOL_COLORS[sols.findIndex(s => s.id === sol.id) % SOL_COLORS.length];
-    html += `<tr class="sc-s-row"><td class="sc-label sc-sol-name" style="color:${color}">${esc(sol.name)}</td>`;
+    const si = sols.findIndex(s => s.id === sol.id);   // cols.forEach below shadows ci
+    html += `<tr class="sc-s-row"><td class="sc-label sc-sol-name" style="color:${solText(si)}">${esc(sol.name)}</td>`;
     cols.forEach((col, ci) => {
       const r = colData[ci].rankings[sol.id];
       if (colData[ci].ko[sol.id] || !r) { html += '<td class="sc-ko-cell">—</td>'; return; }

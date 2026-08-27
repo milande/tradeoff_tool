@@ -34,6 +34,7 @@ function applyLang() {
   const langBtn = byId('langToggle');
   langBtn.textContent = lang.toUpperCase();
   langBtn.title = lang === 'en' ? 'Auf Deutsch umschalten' : 'Switch to English';
+  updateThemeLabel();
   // Language is a user preference that survives "New decision"
   lsSet('dl_lang', lang);
   qsa('#criteriaList input').forEach((i, idx) => i.placeholder = `${t('criterionDefault')} ${idx + 1}`);

@@ -39,7 +39,8 @@ function generatePrintView(tradeName = '', exporter = '') {
   const solRows = rankedOrdered.map(({ sol, score }) => {
     const isKO = !!koSols[sol.id];
     const pct = Math.min(100, (score / 4) * 100).toFixed(1);
-    const color = SOL_COLORS[sols.findIndex(s => s.id === sol.id) % SOL_COLORS.length];
+    const ci = sols.findIndex(s => s.id === sol.id);
+    const color = SOL_COLORS[ci % SOL_COLORS.length];
     const ratingCells = orderedCriteria.map(c => {
       const v = ratings[`${sol.id}|${c.id}`] ?? 0;
       const rn = ratingNotes[`${sol.id}|${c.id}`];
@@ -51,7 +52,7 @@ function generatePrintView(tradeName = '', exporter = '') {
     // Strike only name and score — the KO reason and notes must stay readable
     const strike = isKO ? 'text-decoration:line-through;' : '';
     const rowStyle = isKO ? ' style="opacity:.55"' : '';
-    return `<tr${rowStyle}><td style="color:${color};font-weight:600"><div style="${strike}">${esc(sol.name)}</div>${note}${koReason}</td><td style="${strike}">${score.toFixed(2)}</td><td><div class="bar-inline"><div class="bar-wrap"><div class="bar" style="width:${pct}%;background:${color}"></div></div><span class="bar-pct">${pct}%</span></div></td>${ratingCells}</tr>`;
+    return `<tr${rowStyle}><td style="color:${solText(ci)};font-weight:600"><div style="${strike}">${esc(sol.name)}</div>${note}${koReason}</td><td style="${strike}">${score.toFixed(2)}</td><td><div class="bar-inline"><div class="bar-wrap"><div class="bar" style="width:${pct}%;background:${color}"></div></div><span class="bar-pct">${pct}%</span></div></td>${ratingCells}</tr>`;
   }).join('');
 
   const pairListRows = pairs.map(([idA, idB]) => {
@@ -102,7 +103,7 @@ function generatePrintView(tradeName = '', exporter = '') {
     ratingHtml += printLegend(sols);
     sols.forEach((sol, si) => {
       const solColor = SOL_COLORS[si % SOL_COLORS.length];
-      ratingHtml += `<div class="ri-sol-header" style="color:${solColor}">${esc(sol.name)}</div>`;
+      ratingHtml += `<div class="ri-sol-header" style="color:${solText(si)}">${esc(sol.name)}</div>`;
       orderedCriteria.forEach(c => {
         const key = `${sol.id}|${c.id}`;
         const segs = computeRatingBreakevens(sol, c.id, sols, sensWeights);
@@ -130,8 +131,8 @@ function generatePrintView(tradeName = '', exporter = '') {
     vdiHtml = `<h2>${t('vdiTitle')}</h2><table style="width:auto"><thead><tr><th>${t('printThSolution')}</th><th style="text-align:right">Wt</th><th style="text-align:right">We</th><th style="text-align:right">s</th></tr></thead><tbody>`;
     [...vdiData].sort((a, b) => b.s - a.s).forEach(({ sol, wt, we, s }) => {
       const isKO = !!koSols[sol.id];
-      const color = SOL_COLORS[sols.findIndex(x => x.id === sol.id) % SOL_COLORS.length];
-      vdiHtml += `<tr${isKO ? ' style="opacity:.55"' : ''}><td style="color:${color};font-weight:600${isKO ? ';text-decoration:line-through' : ''}">${esc(sol.name)}${isKO ? ' ⊗' : ''}</td><td style="text-align:right">${wt.toFixed(2)}</td><td style="text-align:right">${we.toFixed(2)}</td><td style="text-align:right;font-weight:600">${s.toFixed(2)}</td></tr>`;
+      const ci = sols.findIndex(x => x.id === sol.id);
+      vdiHtml += `<tr${isKO ? ' style="opacity:.55"' : ''}><td style="color:${solText(ci)};font-weight:600${isKO ? ';text-decoration:line-through' : ''}">${esc(sol.name)}${isKO ? ' ⊗' : ''}</td><td style="text-align:right">${wt.toFixed(2)}</td><td style="text-align:right">${we.toFixed(2)}</td><td style="text-align:right;font-weight:600">${s.toFixed(2)}</td></tr>`;
     });
     vdiHtml += '</tbody></table>' + vdiDiagramSvg(vdiData, koSols, sols, true);
   }
@@ -145,8 +146,8 @@ function generatePrintView(tradeName = '', exporter = '') {
       cols.map(col => `<th style="text-align:center">${esc(col.name)}</th>`).join('') +
       `<th style="text-align:center">Ø</th></tr></thead><tbody>`;
     sols.forEach(sol => {
-      const color = SOL_COLORS[sols.findIndex(x => x.id === sol.id) % SOL_COLORS.length];
-      teamHtml += `<tr><td colspan="${cols.length + 2}" style="color:${color};font-weight:600;padding-top:10px">${esc(sol.name)}</td></tr>`;
+      const ci = sols.findIndex(x => x.id === sol.id);
+      teamHtml += `<tr><td colspan="${cols.length + 2}" style="color:${solText(ci)};font-weight:600;padding-top:10px">${esc(sol.name)}</td></tr>`;
       orderedCriteria.forEach(c => {
         const key = `${sol.id}|${c.id}`;
         const vals = cols.map(col => col.ratings[key] ?? 0);
@@ -234,6 +235,9 @@ th{font-weight:600;color:#aaa;font-size:0.73rem;text-transform:uppercase;letter-
 .rs-item{display:flex;align-items:center;gap:5px}
 .rs-item strong,.rs-num{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:4px;color:#1a1a2e;font-size:0.72rem;flex-shrink:0}
 .vdi-svg{overflow:visible}
+/* Print is a light document, so the solution colours use their light
+   values — the dark palette scores 1.7-2.7 against white, under AA. */
+:root{--sol-1:#0e7490;--sol-2:#be185d;--sol-3:#7e22ce;--sol-4:#c2410c;--sol-5:#047857;--sol-6:#a16207}
 @media print{body{padding:20px}@page{margin:15mm}}
 </style>
 </head>
@@ -273,7 +277,8 @@ const READONLY_CSS = '\n/* Read-only export */\n' +
   '[data-readonly] #criteriaInputSection,[data-readonly] .btn-remove,' +
   '[data-readonly] .pair-buttons,[data-readonly] #solutionList,[data-readonly] #addSolutionBtn,' +
   '[data-readonly] #proToggle,[data-readonly] .app-brand,[data-readonly] #helpBtn,' +
-  '[data-readonly] #printBtn,[data-readonly] #undoBtn,[data-readonly] #redoBtn{display:none}\n' +
+  '[data-readonly] #printBtn,[data-readonly] #undoBtn,[data-readonly] #redoBtn,' +
+  '[data-readonly] #themeToggle{display:none}\n' +
   // banner lives inside the sticky header; the lang toggle (sole remaining
   // toolbar control) overlays the banner's top-right, merging both rows
   '[data-readonly] .toolbar{position:absolute;top:10px;right:0;margin:0;padding:0}\n' +

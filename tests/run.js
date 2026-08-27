@@ -30,6 +30,11 @@ function mkEl() {
     set oninput(f){ this._oninput = f; }, get oninput(){ return this._oninput; },
     click(){ if (this._onclick) this._onclick({}); },
     focus(){}, select(){}, remove(){}, animate(){ return { cancel(){} }; }, scrollIntoView(){},
+    _attrs: {},
+    setAttribute(k, v){ this._attrs[k] = String(v); },
+    getAttribute(k){ return k in this._attrs ? this._attrs[k] : null; },
+    removeAttribute(k){ delete this._attrs[k]; },
+    hasAttribute(k){ return k in this._attrs; },
   };
 }
 const elCache = {};
@@ -38,7 +43,7 @@ global.document = {
   querySelector(){ return mkEl(); }, querySelectorAll(){ return []; },
   createElement(){ return mkEl(); },
   addEventListener(){}, removeEventListener(){},
-  body: mkEl(), get currentScript(){ return mkEl(); },
+  body: mkEl(), documentElement: mkEl(), get currentScript(){ return mkEl(); },
 };
 global.window = global;
 const store = {};
@@ -543,6 +548,7 @@ all += `
     !sc('/* a */ .x, /* b */ .y{color:red}').includes('/*'));
   // const declarations do not escape a direct eval — hand it to the static checks.
   globalThis.READONLY_CSS = READONLY_CSS;
+  globalThis.SOL_COLORS = SOL_COLORS;
 
   check('embedCss: read-only rules scoped and extras appended',
     embedCss('body{color:#fff}').includes('.dl-embed[data-readonly] #printBtn')
@@ -689,6 +695,45 @@ all += `
     iRank > 0 && iRank < iWeights && iWeights < iPairs, iRank + '/' + iWeights + '/' + iPairs);
   check('print: robustness verdict sits with the winner it qualifies',
     iRobust > iRank && iRobust < iWeights, 'at ' + iRobust);
+  // ══ 9g. Theme ═════════════════════════════════════════════════
+  console.log('— Theme —');
+  const savedRoot2 = themeRoot, savedPref = theme;
+  const fakeThemeRoot = document.createElement('div');
+  themeRoot = fakeThemeRoot;          // pretend we are an embed
+  theme = 'auto';
+  document.documentElement.removeAttribute('data-color-mode');
+  applyTheme();
+  check('theme: auto with no host signal leaves the attribute off, so CSS decides',
+    !fakeThemeRoot.hasAttribute('data-theme'));
+  document.documentElement.setAttribute('data-color-mode', 'dark');
+  applyTheme();
+  check('theme: an embed follows the host page', fakeThemeRoot.getAttribute('data-theme') === 'dark');
+  document.documentElement.setAttribute('data-color-mode', 'light');
+  applyTheme();
+  check('theme: host light is followed too', fakeThemeRoot.getAttribute('data-theme') === 'light');
+  theme = 'dark'; applyTheme();
+  check('theme: an explicit choice overrides the host', fakeThemeRoot.getAttribute('data-theme') === 'dark');
+  document.documentElement.removeAttribute('data-color-mode');
+  // Owning the document, we would otherwise read back the attribute we set.
+  themeRoot = document.documentElement;
+  document.documentElement.setAttribute('data-theme', 'light');
+  check('theme: host detection is skipped when we own the document', hostTheme() === null);
+  document.documentElement.removeAttribute('data-theme');
+  themeRoot = savedRoot2;
+
+  theme = 'auto';
+  byId('themeToggle')._onclick();
+  const th1 = theme; byId('themeToggle')._onclick();
+  const th2 = theme; byId('themeToggle')._onclick();
+  check('theme: toggle cycles auto → light → dark → auto',
+    th1 === 'light' && th2 === 'dark' && theme === 'auto');
+  check('theme: the choice is persisted as a preference', __lsStore['dl_theme'] === 'auto');
+  check('theme: solution text uses the themed token and wraps at the palette length',
+    solText(0) === 'var(--sol-1)' && solText(5) === 'var(--sol-6)' && solText(6) === 'var(--sol-1)');
+  check('theme: absent from the decision state, so an export follows its reader',
+    !('theme' in buildState()));
+  theme = savedPref; applyTheme();
+
   check('print: the reorder drops nothing',
     [t('printCriteriaComparisons'), t('printCriteriaWeights'), t('printSolutionRanking'),
      t('printScoreDefinitions'), t('vdiTitle'), t('teamTitle')].every(s => pvOrder.includes(s)));
@@ -866,6 +911,38 @@ check('dist: capture-preamble sentinels survive minification',
   const sheet = fs.readFileSync(path.join(__dirname, '..', 'src', 'styles.css'), 'utf8');
   check('stylesheet has no url() or non-empty content: to confuse comment stripping',
     !/url\(/.test(sheet) && !/content:\s*['"][^'"]/.test(sheet));
+}
+
+// Light theme: a token defined for dark but not for light silently keeps a dark
+// value on a light page, which is the failure mode nobody notices in review.
+{
+  const sheet = fs.readFileSync(path.join(__dirname, '..', 'src', 'styles.css'), 'utf8');
+  const tokensIn = block => [...new Set(block.match(/--[a-z0-9-]+(?=\s*:)/g) || [])].sort();
+  const darkAt = sheet.indexOf(':root{');
+  const dark = tokensIn(sheet.slice(darkAt, sheet.indexOf('}', darkAt)));
+  const lightAt = sheet.indexOf(':root[data-theme="light"]{');
+  const light = tokensIn(sheet.slice(lightAt, sheet.indexOf('}', lightAt)));
+  const missing = dark.filter(k => light.indexOf(k) < 0);
+  check('theme: every dark token has a light counterpart',
+    dark.length > 10 && missing.length === 0, 'missing: ' + missing.join(', '));
+  check('theme: light applies for an explicit choice and for the system preference',
+    sheet.includes(':root[data-theme="light"]{')
+      && sheet.includes('@media(prefers-color-scheme:light)')
+      && sheet.includes(':root:not([data-theme="dark"])'));
+  // :root maps onto the wrapper; a bare [data-theme] would be scoped as a
+  // descendant and never match.
+  const scoped = scopeCss(sheet, '.dl-embed', ['.pro-on', '[data-readonly]']);
+  check('theme: light rules scope onto the wrapper itself, not a descendant',
+    scoped.includes('.dl-embed[data-theme="light"]{') && !scoped.includes('.dl-embed [data-theme'));
+  // Text reads --sol-N, fills read SOL_COLORS. If they drift, a solution is one
+  // colour in the ranking and another in its own bar.
+  const solTok = n => (sheet.slice(darkAt, sheet.indexOf('}', darkAt)).match(new RegExp('--sol-' + n + ':([^;]+)')) || [])[1];
+  check('theme: dark solution tokens track SOL_COLORS',
+    [1, 2, 3, 4, 5, 6].map(solTok).join(',') === SOL_COLORS.join(','));
+  check('theme: light gives every solution its own value',
+    [1, 2, 3, 4, 5, 6].every(n => light.indexOf('--sol-' + n) >= 0));
+  check('theme: exports get the automatic path only — the toggle is hidden',
+    READONLY_CSS.includes('#themeToggle'));
 }
 
 // The specific leakers that made this necessary.

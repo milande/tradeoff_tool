@@ -70,6 +70,21 @@ onGlobal('keydown', e => {
   else if ((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === 'y' || (e.shiftKey && e.key.toLowerCase() === 'z'))) { e.preventDefault(); redoState(); }
 });
 
+// Theme. A preference, not part of the decision: it survives New decision like
+// the language, and is deliberately absent from buildState() — an export must
+// follow its reader's environment, not the author's, so exports get the
+// automatic path only and their toggle is hidden.
+const savedTheme = lsGet('dl_theme');
+if (savedTheme === 'auto' || savedTheme === 'light' || savedTheme === 'dark') theme = savedTheme;
+applyTheme();
+watchTheme();
+
+byId('themeToggle').onclick = () => {
+  theme = theme === 'auto' ? 'light' : theme === 'light' ? 'dark' : 'auto';
+  lsSet('dl_theme', theme);
+  applyTheme();
+};
+
 // Auto-load saved session
 historyLock = true;
 try {

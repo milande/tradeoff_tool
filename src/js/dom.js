@@ -17,6 +17,59 @@ let readOnly = !!(document.documentElement && document.documentElement.hasAttrib
   && document.documentElement.hasAttribute('data-readonly'))
   || !!(appRootEl && appRootEl.hasAttribute && appRootEl.hasAttribute('data-readonly'));
 
+// Where the theme attribute lives: the document element when we own the page,
+// the wrapper when we are one embed among a wiki page's own content. The light
+// rules are written `:root[…]`, which scopeCss() rewrites onto the wrapper, so
+// they land on whichever of the two this is.
+let themeRoot = (appRoot === document) ? document.documentElement : appRootEl;
+
+// 'auto' | 'light' | 'dark'. Auto means: follow the host page where we can read
+// it, otherwise the browser's prefers-color-scheme — which the stylesheet
+// handles by itself, so auto simply leaves the attribute off.
+let theme = 'auto';
+
+// Only meaningful in an embed. Skipped when we own the document, where we would
+// read back the attribute we set ourselves. Confluence's actual hook is
+// unverified, so this is best-effort: anything unrecognised falls through to
+// the media query rather than guessing wrong.
+function hostTheme() {
+  const el = document.documentElement;
+  if (themeRoot === el || !el || !el.getAttribute) return null;
+  const hint = [el.getAttribute('data-color-mode'), el.getAttribute('data-theme'),
+    el.getAttribute('data-mode'), el.className].filter(Boolean).join(' ').toLowerCase();
+  if (hint.indexOf('dark') >= 0) return 'dark';
+  if (hint.indexOf('light') >= 0) return 'light';
+  return null;
+}
+
+function applyTheme() {
+  if (!themeRoot || !themeRoot.setAttribute) return;
+  const forced = theme === 'auto' ? hostTheme() : theme;
+  if (forced) themeRoot.setAttribute('data-theme', forced);
+  else themeRoot.removeAttribute('data-theme');
+  updateThemeLabel();
+}
+
+function updateThemeLabel() {
+  const btn = byId('themeToggle');
+  if (!btn) return;
+  btn.textContent = t('theme_' + theme);
+  btn.title = t('themeTitle');
+}
+
+// Both signals can change while the page is open, so follow them live rather
+// than only at load.
+function watchTheme() {
+  if (window.matchMedia) {
+    const mq = window.matchMedia('(prefers-color-scheme: light)');
+    if (mq && mq.addEventListener) mq.addEventListener('change', applyTheme);
+  }
+  if (typeof MutationObserver === 'function' && themeRoot !== document.documentElement && document.documentElement) {
+    new MutationObserver(applyTheme).observe(document.documentElement,
+      { attributes: true, attributeFilter: ['data-color-mode', 'data-theme', 'data-mode', 'class'] });
+  }
+}
+
 function byId(id) {
   return appRoot.getElementById ? appRoot.getElementById(id) : appRoot.querySelector('#' + id);
 }

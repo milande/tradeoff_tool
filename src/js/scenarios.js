@@ -86,11 +86,12 @@ function renderScenarios() {
 
   // ── Solution rows ────────────────────────────────────────────
   sortedSols.forEach(sol => {
-    const color = SOL_COLORS[sols.findIndex(s => s.id === sol.id) % SOL_COLORS.length];
+    const ci = sols.findIndex(s => s.id === sol.id);
+    const color = SOL_COLORS[ci % SOL_COLORS.length];
     const isKO = !!colData[0].ko[sol.id];
 
     html += `<tr class="sc-s-row${isKO ? ' sc-ko' : ''}">`;
-    html += `<td class="sc-label sc-sol-name" style="color:${color}">${esc(sol.name)}</td>`;
+    html += `<td class="sc-label sc-sol-name" style="color:${solText(ci)}">${esc(sol.name)}</td>`;
     cols.forEach((col, ci) => {
       const d = colData[ci];
       const r = d.rankings[sol.id];

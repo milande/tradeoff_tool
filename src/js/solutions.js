@@ -307,9 +307,9 @@ function renderVdi() {
   let html = `<table class="vdi-table"><thead><tr><th>${t('thSolution')}</th>` +
     `<th title="${t('vdiWt')}">Wt</th><th title="${t('vdiWe')}">We</th><th title="${t('vdiS')}">s</th></tr></thead><tbody>`;
   [...data].sort((a, b) => b.s - a.s).forEach(({ sol, wt, we, s }) => {
-    const color = SOL_COLORS[sols.findIndex(x => x.id === sol.id) % SOL_COLORS.length];
+    const ci = sols.findIndex(x => x.id === sol.id);
     const isKO = !!ko[sol.id];
-    html += `<tr${isKO ? ' class="vdi-ko"' : ''}><td style="color:${color};font-weight:600">${esc(sol.name)}${isKO ? ' ⊗' : ''}</td>` +
+    html += `<tr${isKO ? ' class="vdi-ko"' : ''}><td style="color:${solText(ci)};font-weight:600">${esc(sol.name)}${isKO ? ' ⊗' : ''}</td>` +
       `<td>${wt.toFixed(2)}</td><td>${we.toFixed(2)}</td><td><strong>${s.toFixed(2)}</strong></td></tr>`;
   });
   html += '</tbody></table>';

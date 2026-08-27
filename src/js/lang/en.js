@@ -6,6 +6,8 @@ const EN = {
   alertEmbedCdata: 'Cannot build the Confluence block: the content contains "]]" followed by ">", which would truncate the macro and corrupt the page. Remove that sequence from your decision text and try again.',
   alertEmbedDownloaded: 'Clipboard unavailable — the block was downloaded instead. Open the file and paste its contents into the macro.',
   alertEmbedFailed: 'Could not build the Confluence block.',
+  theme_auto: '◐ Auto', theme_light: '☀ Light', theme_dark: '☾ Dark',
+  themeTitle: 'Theme: follow system, light, or dark',
   undoTitle: 'Undo (Ctrl+Z)', redoTitle: 'Redo (Ctrl+Shift+Z)',
   tabCriteria: 'Criteria', tabSolutions: 'Solutions', tabSensitivity: 'Sensitivity',
   step1: 'Criteria',
