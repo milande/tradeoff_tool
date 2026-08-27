@@ -266,6 +266,31 @@ document.getElementById('printBtn').onclick = () => {
   setTimeout(() => win.print(), 350);
 };
 
+// ── Baking state into an export ───────────────────────────────
+// Replaces the auto-load block of a captured script with one that carries the
+// exported decision. Standalone exports still prefer the viewer's own saved
+// session, so re-opening a file they have explored shows their work. Embedded
+// builds have no session of their own — see the storage note in state.js — so
+// they set `embedded` before anything can touch storage and render the baked
+// state only.
+const AUTOLOAD_START = '// Auto-load saved session';
+const AUTOLOAD_END = '// END Auto-load';
+
+function bakedAutoLoad(stateJson, embed) {
+  const body = embed
+    ? 'embedded = true;\ntry { applyState(' + stateJson + '); } catch (e) {}\n'
+    : 'try {\n  const _s = lsGet(STORAGE_KEY);\n  applyState(_s ? JSON.parse(_s) : ' + stateJson + ');\n} catch (e) { try { applyState(' + stateJson + '); } catch (_) {} }\n';
+  return AUTOLOAD_START + '\n' + body + AUTOLOAD_END;
+}
+
+function bakeScript(scriptText, stateJson, embed) {
+  // lastIndexOf: find the real auto-load block at the end of the bundle, not
+  // the sentinel occurrences inside this module's own string literals.
+  const si = scriptText.lastIndexOf(AUTOLOAD_START);
+  const ei = scriptText.indexOf(AUTOLOAD_END, si) + AUTOLOAD_END.length;
+  return scriptText.slice(0, si) + bakedAutoLoad(stateJson, embed) + scriptText.slice(ei);
+}
+
 // ── HTML Export ───────────────────────────────────────────────
 document.getElementById('exportHtmlBtn').onclick = () => {
   const tradeName = decisionName;
@@ -274,14 +299,7 @@ document.getElementById('exportHtmlBtn').onclick = () => {
 
   const state = JSON.stringify(buildState());
 
-  // Use lastIndexOf so we always find the actual auto-load block at the end of the file,
-  // not an earlier occurrence of the sentinel inside the replacement template string.
-  const S = '// Auto-load saved session';
-  const E = '// END Auto-load';
-  const si = _scriptText.lastIndexOf(S);
-  const ei = _scriptText.indexOf(E, si) + E.length;
-  const newBlock = S + '\ntry {\n  const _s = localStorage.getItem(STORAGE_KEY);\n  applyState(_s ? JSON.parse(_s) : ' + state + ');\n} catch (e) { try { applyState(' + state + '); } catch (_) {} }\n' + E;
-  const bakedScript = _scriptText.slice(0, si) + newBlock + _scriptText.slice(ei);
+  const bakedScript = bakeScript(_scriptText, state, false);
 
   const readOnlyCss = '\n/* Read-only export */\n' +
     '[data-readonly] #criteriaInputSection,[data-readonly] .btn-remove,' +
@@ -401,6 +419,6 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') helpOverlay.
 // ── New session ───────────────────────────────────────────────
 document.getElementById('newBtn').onclick = () => {
   if (!confirm(t('confirmNewSession'))) return;
-  localStorage.removeItem(STORAGE_KEY);
+  lsRemove(STORAGE_KEY);
   location.reload();
 };

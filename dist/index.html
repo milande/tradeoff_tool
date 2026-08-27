@@ -385,7 +385,7 @@ if (typeof v === 'string') el.title = v;
 const langBtn = document.getElementById('langToggle');
 langBtn.textContent = lang.toUpperCase();
 langBtn.title = lang === 'en' ? 'Auf Deutsch umschalten' : 'Switch to English';
-try { localStorage.setItem('dl_lang', lang); } catch (e) {}
+lsSet('dl_lang', lang);
 document.querySelectorAll('#criteriaList input').forEach((i, idx) => i.placeholder = `${t('criterionDefault')} ${idx + 1}`);
 document.querySelectorAll('#solutionList input:not(.sol-note)').forEach(i => i.placeholder = t('solutionPlaceholder'));
 document.querySelectorAll('#solutionList input.sol-note').forEach(i => i.placeholder = t('solutionNotePlaceholder'));
@@ -401,6 +401,19 @@ saveState();
 };
 const STORAGE_KEY = 'tradeoff_v1';
 const STATE_VERSION = 2;
+let embedded = false;
+function lsGet(key) {
+if (embedded) return null;
+try { return localStorage.getItem(key); } catch (e) { return null; }
+}
+function lsSet(key, value) {
+if (embedded) return;
+try { localStorage.setItem(key, value); } catch (e) {}
+}
+function lsRemove(key) {
+if (embedded) return;
+try { localStorage.removeItem(key); } catch (e) {}
+}
 function buildState() {
 return {
 version: STATE_VERSION,
@@ -427,7 +440,7 @@ explorationRatings,
 }
 function saveState() {
 const json = JSON.stringify(buildState());
-try { localStorage.setItem(STORAGE_KEY, json); } catch (e) {}
+lsSet(STORAGE_KEY, json);
 recordHistory(json);
 }
 let undoStack = [], redoStack = [];
@@ -473,7 +486,7 @@ function restoreFromHistory(json) {
 historyLock = true;
 const activeTab = (document.querySelector('.tab-btn.active') || {}).dataset?.tab;
 try { applyState(JSON.parse(json)); } finally { historyLock = false; }
-try { localStorage.setItem(STORAGE_KEY, json); } catch (e) {}
+lsSet(STORAGE_KEY, json);
 lastHistoryTime = 0;
 lastHistorySig = null;
 if (activeTab && activeTab !== 'criteria') {
@@ -2086,17 +2099,25 @@ win.document.close();
 win.focus();
 setTimeout(() => win.print(), 350);
 };
+const AUTOLOAD_START = '// Auto-load saved session';
+const AUTOLOAD_END = '// END Auto-load';
+function bakedAutoLoad(stateJson, embed) {
+const body = embed
+? 'embedded = true;\ntry { applyState(' + stateJson + '); } catch (e) {}\n'
+: 'try {\n  const _s = lsGet(STORAGE_KEY);\n  applyState(_s ? JSON.parse(_s) : ' + stateJson + ');\n} catch (e) { try { applyState(' + stateJson + '); } catch (_) {} }\n';
+return AUTOLOAD_START + '\n' + body + AUTOLOAD_END;
+}
+function bakeScript(scriptText, stateJson, embed) {
+const si = scriptText.lastIndexOf(AUTOLOAD_START);
+const ei = scriptText.indexOf(AUTOLOAD_END, si) + AUTOLOAD_END.length;
+return scriptText.slice(0, si) + bakedAutoLoad(stateJson, embed) + scriptText.slice(ei);
+}
 document.getElementById('exportHtmlBtn').onclick = () => {
 const tradeName = decisionName;
 const exporter = bearbeiter || t('promptAnonymous');
 const exportedAt = new Date().toLocaleString(lang === 'de' ? 'de-DE' : 'en-GB', { dateStyle: 'medium', timeStyle: 'short' });
 const state = JSON.stringify(buildState());
-const S = '// Auto-load saved session';
-const E = '// END Auto-load';
-const si = _scriptText.lastIndexOf(S);
-const ei = _scriptText.indexOf(E, si) + E.length;
-const newBlock = S + '\ntry {\n  const _s = localStorage.getItem(STORAGE_KEY);\n  applyState(_s ? JSON.parse(_s) : ' + state + ');\n} catch (e) { try { applyState(' + state + '); } catch (_) {} }\n' + E;
-const bakedScript = _scriptText.slice(0, si) + newBlock + _scriptText.slice(ei);
+const bakedScript = bakeScript(_scriptText, state, false);
 const readOnlyCss = '\n/* Read-only export */\n' +
 '[data-readonly] #criteriaInputSection,[data-readonly] .btn-remove,' +
 '[data-readonly] .pair-buttons,[data-readonly] #solutionList,[data-readonly] #addSolutionBtn,' +
@@ -2197,7 +2218,7 @@ helpOverlay.addEventListener('click', e => { if (e.target === helpOverlay) helpO
 document.addEventListener('keydown', e => { if (e.key === 'Escape') helpOverlay.classList.add('hidden'); });
 document.getElementById('newBtn').onclick = () => {
 if (!confirm(t('confirmNewSession'))) return;
-localStorage.removeItem(STORAGE_KEY);
+lsRemove(STORAGE_KEY);
 location.reload();
 };
 function applyProMode() {
@@ -2262,12 +2283,12 @@ else if ((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === 'y' || (e.shiftKey
 // Auto-load saved session
 historyLock = true;
 try {
-const saved = localStorage.getItem(STORAGE_KEY);
+const saved = lsGet(STORAGE_KEY);
 if (!saved || !applyState(JSON.parse(saved))) {
 decisionName = ''; bearbeiter = '';
 document.getElementById('decisionNameInput').value = '';
 document.getElementById('bearbeiterInput').value = '';
-try { lang = localStorage.getItem('dl_lang') || lang; } catch (e) {}
+lang = lsGet('dl_lang') || lang;
 applyProMode();
 applyLang();
 }

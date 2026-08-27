@@ -72,14 +72,14 @@ document.addEventListener('keydown', e => {
 // Auto-load saved session
 historyLock = true;
 try {
-  const saved = localStorage.getItem(STORAGE_KEY);
+  const saved = lsGet(STORAGE_KEY);
   if (!saved || !applyState(JSON.parse(saved))) {
     // Fresh session (or incompatible old save) — clear fields the browser
     // may have restored on reload, but keep the language preference
     decisionName = ''; bearbeiter = '';
     document.getElementById('decisionNameInput').value = '';
     document.getElementById('bearbeiterInput').value = '';
-    try { lang = localStorage.getItem('dl_lang') || lang; } catch (e) {}
+    lang = lsGet('dl_lang') || lang;
     applyProMode();
     applyLang();
   }

@@ -42,6 +42,7 @@ global.document = {
 };
 global.window = global;
 const store = {};
+global.__lsStore = store;   // embedded-mode tests assert this stays untouched
 global.localStorage = {
   getItem: k => store[k] ?? null,
   setItem: (k, v) => { store[k] = v; },
@@ -452,6 +453,45 @@ all += `
   check('HTML export: replaces auto-load, keeps string literal', out.includes("const S = '// Auto-load saved session'") && !out.includes('OLD'));
   check('HTML export: carries current proMode', out.includes('"proMode":true'));
 
+  // ══ 9b. Embedded (Confluence) builds never touch storage ══════
+  // An embed shares the host page's origin with every other embed and with the
+  // live tool, so a single read or write would make embedded pages render or
+  // clobber each other's decisions.
+  console.log('— Embedded storage isolation —');
+  const embedBlock = bakedAutoLoad('{"version":2}', true);
+  const soloBlock = bakedAutoLoad('{"version":2}', false);
+  check('embed auto-load: no storage access at all',
+    !embedBlock.includes('localStorage') && !embedBlock.includes('lsGet') && !embedBlock.includes('STORAGE_KEY'));
+  check('embed auto-load: sets embedded before applying baked state',
+    embedBlock.indexOf('embedded = true') >= 0 && embedBlock.indexOf('embedded = true') < embedBlock.indexOf('applyState'));
+  check('standalone auto-load still prefers the viewer session (regression guard)',
+    soloBlock.includes('lsGet(STORAGE_KEY)') && !soloBlock.includes('embedded = true'));
+  check('bakeScript swaps only the real block, keeps the string literal',
+    bakeScript(globalThis._scriptText, '{"version":2}', true).includes("const S = '// Auto-load saved session'")
+      && !bakeScript(globalThis._scriptText, '{"version":2}', true).includes('OLD'));
+
+  // Drive the real app through the writes a read-only embed still exposes:
+  // the language toggle and a sensitivity drag both call saveState().
+  __lsStore['tradeoff_v1'] = JSON.stringify({ version: 2, decisionName: 'SOMEONE ELSE' });
+  __lsStore['dl_lang'] = 'de';
+  const storeBefore = JSON.stringify(__lsStore);
+  embedded = true;
+  check('embed: reads are blindfolded even with a session present',
+    lsGet(STORAGE_KEY) === null && lsGet('dl_lang') === null);
+  document.getElementById('langToggle')._onclick();   // applyLang() + saveState()
+  saveState();
+  updateSensImpact();
+  restoreFromHistory(JSON.stringify(buildState()));
+  lsRemove(STORAGE_KEY);
+  check('embed: language toggle, saveState, history and reset write nothing',
+    JSON.stringify(__lsStore) === storeBefore, 'store mutated: ' + JSON.stringify(__lsStore));
+  check('embed: undo history still records (kept in memory)', undoStack.length > 0);
+  embedded = false;
+  saveState();
+  check('non-embedded persistence still works', __lsStore['tradeoff_v1'] !== undefined
+    && JSON.parse(__lsStore['tradeoff_v1']).decisionName !== 'SOMEONE ELSE');
+  delete __lsStore['dl_lang'];
+
   // ══ 10. New session ═══════════════════════════════════════════
   console.log('— New session —');
   document.getElementById('newBtn')._onclick();
@@ -498,6 +538,25 @@ check('dist: capture preamble present', dist.includes('_scriptText') && dist.inc
 check(`dist: ${VERSION} everywhere, no stale versions`, dist.includes(VERSION) && !dist.includes('v0.4') && !dist.includes('v0.3'));
 check('dist: no stale i18n fallback text', (dist.match(/data-i18n="[^"]*">[^<]/g) || []).length === 0);
 check('dist: scenario functions inlined', dist.includes('function loadScenario') && dist.includes('function renderScenarios'));
+
+// The embed bake runs against the MINIFIED bundle, where the sentinels and the
+// surrounding code have already been rewritten — a bake that produces invalid
+// JS renders a blank box in a Confluence page, with no error the author sees.
+{
+  const script = dist.match(/<script>([\s\S]*)<\/script>/)[1];
+  const S = '// Auto-load saved session', E = '// END Auto-load';
+  const si = script.lastIndexOf(S), ei = script.indexOf(E, si) + E.length;
+  const block = S + '\nembedded = true;\ntry { applyState({"version":2}); } catch (e) {}\n' + E;
+  let ok = false, err = '';
+  try { new Function(script.slice(0, si) + block + script.slice(ei)); ok = true; } catch (e) { err = e.message; }
+  check('dist: embed bake parses against the minified bundle', ok, err);
+}
+// Tripwire: every storage access must go through lsGet/lsSet/lsRemove, which are
+// the only three raw references left. A new direct call would let an embed write
+// to the shared origin and clobber every other embedded decision.
+check('dist: localStorage reached only through the storage facade',
+  (dist.match(/localStorage/g) || []).length === 3,
+  'found ' + (dist.match(/localStorage/g) || []).length + ' refs, expected 3 (the facade)');
 
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

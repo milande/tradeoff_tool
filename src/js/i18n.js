@@ -35,7 +35,7 @@ function applyLang() {
   langBtn.textContent = lang.toUpperCase();
   langBtn.title = lang === 'en' ? 'Auf Deutsch umschalten' : 'Switch to English';
   // Language is a user preference that survives "New decision"
-  try { localStorage.setItem('dl_lang', lang); } catch (e) {}
+  lsSet('dl_lang', lang);
   document.querySelectorAll('#criteriaList input').forEach((i, idx) => i.placeholder = `${t('criterionDefault')} ${idx + 1}`);
   document.querySelectorAll('#solutionList input:not(.sol-note)').forEach(i => i.placeholder = t('solutionPlaceholder'));
   document.querySelectorAll('#solutionList input.sol-note').forEach(i => i.placeholder = t('solutionNotePlaceholder'));

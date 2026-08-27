@@ -3,6 +3,30 @@ const STORAGE_KEY = 'tradeoff_v1';
 // Version-1 files (name-keyed) are not loadable.
 const STATE_VERSION = 2;
 
+// ── Storage ───────────────────────────────────────────────────
+// Every localStorage access goes through here so embedded builds can opt out
+// in one place. An embed (Confluence macro) shares the host page's origin with
+// every other embed and with the live tool, and the storage key is a constant —
+// so an embed that persisted anything would overwrite every other embed's
+// session, and one that read anything would render someone else's decision.
+// Embeds render from their baked state and nothing else.
+let embedded = false;
+
+function lsGet(key) {
+  if (embedded) return null;
+  try { return localStorage.getItem(key); } catch (e) { return null; }
+}
+
+function lsSet(key, value) {
+  if (embedded) return;
+  try { localStorage.setItem(key, value); } catch (e) {}
+}
+
+function lsRemove(key) {
+  if (embedded) return;
+  try { localStorage.removeItem(key); } catch (e) {}
+}
+
 function buildState() {
   return {
     version: STATE_VERSION,
@@ -30,7 +54,7 @@ function buildState() {
 
 function saveState() {
   const json = JSON.stringify(buildState());
-  try { localStorage.setItem(STORAGE_KEY, json); } catch (e) {}
+  lsSet(STORAGE_KEY, json);
   recordHistory(json);
 }
 
@@ -87,7 +111,7 @@ function restoreFromHistory(json) {
   historyLock = true;
   const activeTab = (document.querySelector('.tab-btn.active') || {}).dataset?.tab;
   try { applyState(JSON.parse(json)); } finally { historyLock = false; }
-  try { localStorage.setItem(STORAGE_KEY, json); } catch (e) {}
+  lsSet(STORAGE_KEY, json);
   // The next change must never collapse into (and destroy) the checkpoint
   // we just restored to.
   lastHistoryTime = 0;
