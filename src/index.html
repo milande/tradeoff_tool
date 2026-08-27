@@ -78,6 +78,10 @@
   </div>
   </div><!-- /app-header -->
 
+  <!-- Results first: read-only exports move the ranking and the criteria
+       weights here, above the tabs. Empty (and hidden) in the live tool. -->
+  <div id="resultsFirst"></div>
+
   <!-- CRITERIA TAB -->
   <div id="tab-criteria" class="tab-content active">
     <div class="section" id="criteriaInputSection">
@@ -129,7 +133,7 @@
         <div id="solutionMatrix"></div>
       </div>
     </div>
-    <div class="section">
+    <div class="section" id="rankingSection">
       <div class="section-content">
         <h2 data-i18n="ranking"></h2>
         <table>

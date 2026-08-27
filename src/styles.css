@@ -20,6 +20,17 @@
   --glow:rgba(74,222,128,.08);
 }
 
+/* Results first (read-only exports). Empty in the live tool, so it collapses.
+   The ranking keeps the solutions accent it had inside its own tab. */
+#resultsFirst:empty{display:none}
+#resultsFirst #rankingSection{
+  --accent:#f472b6;
+  --accent-hover:#f9a8d4;
+  --accent-text:#1a0020;
+  --accent-dim:rgba(244,114,182,.35);
+  --glow:rgba(244,114,182,.08);
+}
+
 body{margin:0;font-family:Inter,Arial,sans-serif;background:#0d1117;color:#fff;padding:20px}
 .container{max-width:900px;margin:0 auto}
 

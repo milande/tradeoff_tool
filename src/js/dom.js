@@ -10,6 +10,13 @@ let appRoot = (typeof _embedRoot !== 'undefined' && _embedRoot) ? _embedRoot : d
 // the `data-readonly` attribute. The scoped stylesheet expects them here.
 let appRootEl = (typeof _embedRoot !== 'undefined' && _embedRoot) ? _embedRoot : document.body;
 
+// True in a generated export. The standalone export marks <html>, an embed
+// marks its wrapper — check both, since appRootEl is the body in one case and
+// the wrapper in the other.
+let readOnly = !!(document.documentElement && document.documentElement.hasAttribute
+  && document.documentElement.hasAttribute('data-readonly'))
+  || !!(appRootEl && appRootEl.hasAttribute && appRootEl.hasAttribute('data-readonly'));
+
 function byId(id) {
   return appRoot.getElementById ? appRoot.getElementById(id) : appRoot.querySelector('#' + id);
 }

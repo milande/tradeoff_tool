@@ -88,3 +88,20 @@ try {
 historyLock = false;
 saveState(); // baseline snapshot for undo
 // END Auto-load
+
+// An export is a decision record, read by people who were not in the room, and
+// on a wiki page it is often scrolled past without a click. Lead with the
+// outcome: move the solution ranking and the criteria weights above the tabs,
+// leaving the derivation behind them as evidence. Runs after the auto-load
+// above, so the sections it moves are already populated. Never in the live
+// tool, where you work top-down through criteria while building the decision.
+function applyResultsFirst() {
+  const host = byId('resultsFirst');
+  const ranking = byId('rankingSection');
+  const weights = byId('resultsSection');
+  if (!host || !ranking || !weights) return;
+  host.appendChild(ranking);
+  host.appendChild(weights);
+}
+
+if (readOnly) applyResultsFirst();

@@ -668,6 +668,31 @@ all += `
   globalThis._scriptText = savedCapture;
   globalThis.alertMsg = null;
 
+  // ══ 9f. Results first in exports ══════════════════════════════
+  // An export is read by people who were not in the room, and on a wiki page it
+  // is often scrolled past without a click. It must lead with the outcome.
+  console.log('— Results first —');
+  check('live tool layout is untouched', readOnly === false);
+  const rfHost = byId('resultsFirst');
+  const movedUp = [];
+  rfHost.appendChild = el => movedUp.push(el);
+  applyResultsFirst();
+  check('results first: ranking then criteria weights move above the tabs',
+    movedUp.length === 2 && movedUp[0] === byId('rankingSection') && movedUp[1] === byId('resultsSection'));
+
+  const pvOrder = generatePrintView('Server choice', 'Milan');
+  const iRank = pvOrder.indexOf(t('printSolutionRanking'));
+  const iWeights = pvOrder.indexOf(t('printCriteriaWeights'));
+  const iPairs = pvOrder.indexOf(t('printCriteriaComparisons'));
+  const iRobust = pvOrder.indexOf('font-size:0.78rem;color:#777');
+  check('print: ranking, then weights, then the derivation',
+    iRank > 0 && iRank < iWeights && iWeights < iPairs, iRank + '/' + iWeights + '/' + iPairs);
+  check('print: robustness verdict sits with the winner it qualifies',
+    iRobust > iRank && iRobust < iWeights, 'at ' + iRobust);
+  check('print: the reorder drops nothing',
+    [t('printCriteriaComparisons'), t('printCriteriaWeights'), t('printSolutionRanking'),
+     t('printScoreDefinitions'), t('vdiTitle'), t('teamTitle')].every(s => pvOrder.includes(s)));
+
   // ══ 10. New session ═══════════════════════════════════════════
   console.log('— New session —');
   document.getElementById('newBtn')._onclick();
@@ -753,6 +778,9 @@ check('dist: scenario functions inlined', dist.includes('function loadScenario')
   check('dist: embed script reaches storage only through the guarded facade',
     es.includes('embedded = true') && (es.match(/localStorage/g) || []).length === 3);
 }
+check('dist: results-first container present and collapsed when empty',
+  dist.includes('id="resultsFirst"') && dist.includes('id="rankingSection"')
+    && dist.includes('#resultsFirst:empty{display:none}'));
 check('dist: Confluence menu entry and handler present',
   dist.includes('exportConfluenceBtn') && dist.includes('function buildEmbedPayload'));
 check('dist: capture-preamble sentinels survive minification',
