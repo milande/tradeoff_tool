@@ -35,6 +35,9 @@ DecisionLab uses a three-step process:
 | HTML export | Self-contained, shareable HTML with all data baked in — opens in read-only mode; Pro features are included when Pro mode was active at export |
 | Print view | Printable summary including ranking, weights, and all notes |
 | EN / DE | Full English and German UI, including dialogs and exports |
+| Light / dark theme | ◐ cycles Auto (follows your system, or a Confluence page's theme), Light, Dark. Exports follow the reader's environment automatically |
+| Update check | The version badge links to the newer release when one exists. Once a day, silent on failure, never from an export |
+| Confluence embed | Paste the live tool into a Confluence Server/DC page ([setup](#embedding-in-confluence)) |
 
 ### Pro mode ⚡
 
@@ -63,6 +66,8 @@ src/
     lang/
       en.js               ← English strings
       de.js               ← German strings
+    dom.js                ← app root, byId/qs/qsa, onGlobal (instance-scoped lookups)
+    version.js            ← APP_VERSION, release check, version badge
     i18n.js               ← STRINGS object, t(), applyLang()
     state.js              ← saveState(), applyState()
     criteria.js           ← pairwise comparison, weights
@@ -86,8 +91,10 @@ README.md
 Open `src/index.html` directly in any browser — no server needed. All features work except HTML export (which requires the inlined script text only available in the built file).
 
 ```bash
-npm test    # headless test suite over the real source files (no dependencies)
+node build.js && npm test   # several checks run against the built file
 ```
+
+The suite has no dependencies. Some assertions inspect `dist/index.html`, so build before testing after changing anything under `src/`.
 
 ## Build
 
@@ -105,7 +112,8 @@ Produces `dist/index.html` — the single portable file for sharing.
 
 | Format | Use case |
 |---|---|
-| `↓ HTML` | Shareable read-only snapshot; embeddable in Confluence, wikis, email |
+| `↓ HTML` | Self-contained read-only file — open it anywhere, mail it, attach it |
+| `⧉ Copy for Confluence` | Macro body for a Confluence **Server/DC** page: the live tool, read-only, data baked in ([setup](#embedding-in-confluence)) |
 | `↓ JSON` | Re-importable data file for ongoing editing |
 | `↓ CSV` | Decision matrix for Excel & Co. (locale-aware separator) |
 | `⎙ Print` | Formatted print view with all data, notes, and sensitivity bars |
@@ -114,8 +122,68 @@ Exported HTML and JSON filenames include the decision name and author (e.g. `Ser
 
 ---
 
+## Embedding in Confluence
+
+Puts the **live tool** — read-only, with the decision baked in — inside a Confluence page. Verified on Confluence **Server/DC 9.2.22**.
+
+### Prerequisites
+
+Both are silent when missing: you get an empty box, not an error.
+
+1. **The Appfire / Bob Swift *HTML for Confluence* app.** The macro is `html-bobswift` (renamed from `HTML` in app release 5.7.0 — instances using *Macro Security for Confluence* need entries for **both** names).
+2. **JavaScript must be allowed.** This is a global toggle, not a macro parameter: Confluence admin → *HTML for Confluence*, or Bob Swift Configuration → HTML → **Allow Javascript**.
+3. **The instance's CSP must permit `unsafe-eval`.** Check in the browser console on that page:
+   ```js
+   try { new Function('return 1')(); console.log('eval OK'); } catch (e) { console.log('CSP blocks eval:', e.message); }
+   ```
+
+Confluence **Cloud** has no HTML macro at all, so this route does not exist there.
+
+### Steps
+
+1. Open `dist/index.html`, load or build your decision, and fill in the decision name and author — both appear in the embed's banner.
+2. **Turn on ⚡ Pro before exporting** if the embed should include Sensitivity, VDI, scenarios or team ratings. The export carries whatever Pro state was active; it does not force it on.
+3. **File ▾ → ⧉ Copy for Confluence**. The toolbar button flashes *✓ Copied*. If the clipboard is blocked the block downloads instead and says so.
+4. Paste into an `{html-bobswift}` macro body on a **scratch page first**, and publish.
+
+### What to expect
+
+- The tool renders read-only: no editing controls, no file menu.
+- Tabs, the language toggle and Pro sensitivity dragging all work; nothing a viewer does is saved or visible to anyone else.
+- The rest of the page is untouched — its tables, headings and form fields keep their own styling.
+- Two embeds on one page render independently.
+- The embed is a **snapshot**, not a live link: changing the decision means re-exporting and re-pasting.
+
+### Troubleshooting
+
+| Symptom | Cause |
+|---|---|
+| Empty box, nothing renders | *Allow Javascript* is off, or the CSP blocks `unsafe-eval` |
+| Styling and blank tabs, but no content | A content filter stripped the script — you are on a pre-v0.7 build |
+| The whole page turns dark, or its tables restyle | CSS scoping failed; please open an issue |
+| Page content truncated after the macro | A `]]>` reached the payload — the export should refuse first |
+| Export refuses, mentioning `]]` and `>` | Your decision text contains the CDATA terminator; remove it |
+
+---
+
+## Why the embed is built the way it is
+
+Three decisions look like over-engineering unless you have watched them fail. They are load-bearing.
+
+**The script ships as base64.** A Confluence content filter parses the macro body as HTML and deletes markup-shaped text from inside `<script>`. This bundle is full of markup — every `<div>`, `<td>` and `style="…"` the app writes — so a plain script lost ~13,700 characters from its middle and rendered styling with no content. Base64 gives the filter nothing to react to. Cost: the payload grows to ~170 KB.
+
+**Embeds never touch `localStorage`.** Every embed on an instance shares one origin and one storage key, so any read or write would make embedded pages show — or overwrite — each other's decisions. All storage goes through one facade gated on a single flag; a test fails if a direct call reappears.
+
+**The stylesheet is scoped to a wrapper.** The macro injects CSS into the wiki page itself. Unscoped, `input[type=text]` restyles Confluence's own editor fields and `table`/`th`/`td` every table on the page.
+
+Related: colour is themed through tokens rather than literals, because the same alpha reads about 30% weaker on light than on dark — see `--fg-a*` and `--dim-*` in `src/styles.css`.
+
+
+---
+
 ## Versions
 
+- **v0.7** — Confluence embed (`⧉ Copy for Confluence`); light/dark theme with automatic switching in exports; results shown first in exports; release-update check on the version badge
 - **v0.6** — VDI 2225 value analysis (Pro): technical/economic criteria, Wt/We/s, s-diagram in app, print, and CSV; Team Ratings (Pro): merge teammates' JSON exports, disagreement view, team-average ranking
 - **v0.5** — consistency check, robustness verdict, undo/redo, CSV export, draggable fine-tune bars with pinned values, must-have marking in sensitivity bars; stable IDs (renames keep all data; save format v2, old files incompatible); HTML-escaped user input everywhere; in-repo test suite (`npm test`)
 - **v0.4** — Scenario Comparison (Pro) with full snapshots and click-to-load; sensitivity fixes + persistence; criteria ordered by importance everywhere; print/export polish; multi-file source with `build.js` assembling minified `dist/index.html`
@@ -128,6 +196,7 @@ Exported HTML and JSON filenames include the decision name and author (e.g. `Ser
 ## Roadmap
 
 - Multiple decisions in parallel (decision list with open/duplicate/delete)
+- Static Confluence fallback — a JavaScript-free report fragment, for instances that disallow scripts in the HTML macro or forbid `unsafe-eval`
 
 ---
 

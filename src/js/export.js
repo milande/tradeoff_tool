@@ -39,7 +39,8 @@ function generatePrintView(tradeName = '', exporter = '') {
   const solRows = rankedOrdered.map(({ sol, score }) => {
     const isKO = !!koSols[sol.id];
     const pct = Math.min(100, (score / 4) * 100).toFixed(1);
-    const color = SOL_COLORS[sols.findIndex(s => s.id === sol.id) % SOL_COLORS.length];
+    const ci = sols.findIndex(s => s.id === sol.id);
+    const color = SOL_COLORS[ci % SOL_COLORS.length];
     const ratingCells = orderedCriteria.map(c => {
       const v = ratings[`${sol.id}|${c.id}`] ?? 0;
       const rn = ratingNotes[`${sol.id}|${c.id}`];
@@ -51,7 +52,7 @@ function generatePrintView(tradeName = '', exporter = '') {
     // Strike only name and score — the KO reason and notes must stay readable
     const strike = isKO ? 'text-decoration:line-through;' : '';
     const rowStyle = isKO ? ' style="opacity:.55"' : '';
-    return `<tr${rowStyle}><td style="color:${color};font-weight:600"><div style="${strike}">${esc(sol.name)}</div>${note}${koReason}</td><td style="${strike}">${score.toFixed(2)}</td><td><div class="bar-inline"><div class="bar-wrap"><div class="bar" style="width:${pct}%;background:${color}"></div></div><span class="bar-pct">${pct}%</span></div></td>${ratingCells}</tr>`;
+    return `<tr${rowStyle}><td style="color:${solText(ci)};font-weight:600"><div style="${strike}">${esc(sol.name)}</div>${note}${koReason}</td><td style="${strike}">${score.toFixed(2)}</td><td><div class="bar-inline"><div class="bar-wrap"><div class="bar" style="width:${pct}%;background:${color}"></div></div><span class="bar-pct">${pct}%</span></div></td>${ratingCells}</tr>`;
   }).join('');
 
   const pairListRows = pairs.map(([idA, idB]) => {
@@ -102,7 +103,7 @@ function generatePrintView(tradeName = '', exporter = '') {
     ratingHtml += printLegend(sols);
     sols.forEach((sol, si) => {
       const solColor = SOL_COLORS[si % SOL_COLORS.length];
-      ratingHtml += `<div class="ri-sol-header" style="color:${solColor}">${esc(sol.name)}</div>`;
+      ratingHtml += `<div class="ri-sol-header" style="color:${solText(si)}">${esc(sol.name)}</div>`;
       orderedCriteria.forEach(c => {
         const key = `${sol.id}|${c.id}`;
         const segs = computeRatingBreakevens(sol, c.id, sols, sensWeights);
@@ -130,10 +131,10 @@ function generatePrintView(tradeName = '', exporter = '') {
     vdiHtml = `<h2>${t('vdiTitle')}</h2><table style="width:auto"><thead><tr><th>${t('printThSolution')}</th><th style="text-align:right">Wt</th><th style="text-align:right">We</th><th style="text-align:right">s</th></tr></thead><tbody>`;
     [...vdiData].sort((a, b) => b.s - a.s).forEach(({ sol, wt, we, s }) => {
       const isKO = !!koSols[sol.id];
-      const color = SOL_COLORS[sols.findIndex(x => x.id === sol.id) % SOL_COLORS.length];
-      vdiHtml += `<tr${isKO ? ' style="opacity:.55"' : ''}><td style="color:${color};font-weight:600${isKO ? ';text-decoration:line-through' : ''}">${esc(sol.name)}${isKO ? ' ⊗' : ''}</td><td style="text-align:right">${wt.toFixed(2)}</td><td style="text-align:right">${we.toFixed(2)}</td><td style="text-align:right;font-weight:600">${s.toFixed(2)}</td></tr>`;
+      const ci = sols.findIndex(x => x.id === sol.id);
+      vdiHtml += `<tr${isKO ? ' style="opacity:.55"' : ''}><td style="color:${solText(ci)};font-weight:600${isKO ? ';text-decoration:line-through' : ''}">${esc(sol.name)}${isKO ? ' ⊗' : ''}</td><td style="text-align:right">${wt.toFixed(2)}</td><td style="text-align:right">${we.toFixed(2)}</td><td style="text-align:right;font-weight:600">${s.toFixed(2)}</td></tr>`;
     });
-    vdiHtml += '</tbody></table>' + vdiDiagramSvg(vdiData, koSols, sols, true);
+    vdiHtml += '</tbody></table>' + vdiDiagramSvg(vdiData, koSols, sols);
   }
 
   // Team ratings section (Pro): per-rater ratings with disagreements highlighted
@@ -145,8 +146,8 @@ function generatePrintView(tradeName = '', exporter = '') {
       cols.map(col => `<th style="text-align:center">${esc(col.name)}</th>`).join('') +
       `<th style="text-align:center">Ø</th></tr></thead><tbody>`;
     sols.forEach(sol => {
-      const color = SOL_COLORS[sols.findIndex(x => x.id === sol.id) % SOL_COLORS.length];
-      teamHtml += `<tr><td colspan="${cols.length + 2}" style="color:${color};font-weight:600;padding-top:10px">${esc(sol.name)}</td></tr>`;
+      const ci = sols.findIndex(x => x.id === sol.id);
+      teamHtml += `<tr><td colspan="${cols.length + 2}" style="color:${solText(ci)};font-weight:600;padding-top:10px">${esc(sol.name)}</td></tr>`;
       orderedCriteria.forEach(c => {
         const key = `${sol.id}|${c.id}`;
         const vals = cols.map(col => col.ratings[key] ?? 0);
@@ -234,31 +235,37 @@ th{font-weight:600;color:#aaa;font-size:0.73rem;text-transform:uppercase;letter-
 .rs-item{display:flex;align-items:center;gap:5px}
 .rs-item strong,.rs-num{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:4px;color:#1a1a2e;font-size:0.72rem;flex-shrink:0}
 .vdi-svg{overflow:visible}
+/* Print is a light document, so the solution colours use their light
+   values — the dark palette scores 1.7-2.7 against white, under AA. */
+:root{--fg-rgb:15,23,42;--sol-1:#0e7490;--sol-2:#be185d;--sol-3:#7e22ce;--sol-4:#c2410c;--sol-5:#047857;--sol-6:#a16207}
 @media print{body{padding:20px}@page{margin:15mm}}
 </style>
 </head>
 <body>
 <div style="display:flex;justify-content:space-between;align-items:baseline;border-bottom:2px solid #1a1a2e;padding-bottom:10px;margin-bottom:6px">
-  <div><h1>${tradeName ? `${esc(tradeName)} <span style="font-size:.8rem;font-weight:400;color:#888">· DecisionLab v0.6</span>` : 'DecisionLab <span style="font-size:.8rem;font-weight:400;color:#888">v0.6</span>'}</h1></div>
+  <div><h1>${tradeName ? `${esc(tradeName)} <span style="font-size:.8rem;font-weight:400;color:#888">· DecisionLab ${APP_VERSION}</span>` : `DecisionLab <span style="font-size:.8rem;font-weight:400;color:#888">${APP_VERSION}</span>`}</h1></div>
   <div style="text-align:right;font-size:0.75rem;color:#888">${exporter ? `<div><strong>${t('exportedBy')}:</strong> ${esc(exporter)}</div>` : ''}<div>${t('printGenerated')(date)}</div></div>
 </div>
-${pairs.length ? `<h2>${t('printCriteriaComparisons')}</h2><table><tbody>${pairListRows}</tbody></table>` : ''}
+${/* Results first: the outcome, then the weights that produced it, then the
+     derivation as evidence. The robustness verdict follows the winner it
+     qualifies rather than sitting six sections away from it. */ ''}
+<h2>${t('printSolutionRanking')}</h2>
+<table><thead><tr><th>${t('printThSolution')}</th><th>${t('printThScore')}</th><th></th>${solRankThds}</tr></thead><tbody>${solRows}</tbody></table>
+${(() => { const r = computeRobustness(); if (!r) return ''; const txt = r.stable ? t('robustnessStable')(esc(r.winner.name)) : t('robustnessFlip')(esc(r.challenger), esc(r.crit.name), Math.round(r.cur * 100), Math.round(r.bp * 100)); return `<p style="font-size:0.78rem;color:#777;margin:6px 0 0">${txt}</p>`; })()}
 <h2>${t('printCriteriaWeights')}</h2>
 <table><thead><tr><th>${t('printThCriterion')}</th><th>${t('printThWeight')}</th><th></th></tr></thead><tbody>${criteriaRows}</tbody></table>
 ${customWeights ? `<h2>${t('printWeightAdjustments')}</h2><table><thead><tr><th>${t('printThCriterion')}</th><th>${t('printThPairwise')}</th><th>${t('printThAdjusted')}</th><th>${t('printThReason')}</th></tr></thead><tbody>${fineTuneRows}</tbody></table>` : ''}
-${knockoutHtml}${anchorsHtml}
-<h2>${t('printSolutionRanking')}</h2>
-<table><thead><tr><th>${t('printThSolution')}</th><th>${t('printThScore')}</th><th></th>${solRankThds}</tr></thead><tbody>${solRows}</tbody></table>
 ${vdiHtml}
 ${teamHtml}
-${(() => { const r = computeRobustness(); if (!r) return ''; const txt = r.stable ? t('robustnessStable')(esc(r.winner.name)) : t('robustnessFlip')(esc(r.challenger), esc(r.crit.name), Math.round(r.cur * 100), Math.round(r.bp * 100)); return `<p style="font-size:0.78rem;color:#777;margin:6px 0 0">${txt}</p>`; })()}
+${pairs.length ? `<h2>${t('printCriteriaComparisons')}</h2><table><tbody>${pairListRows}</tbody></table>` : ''}
+${knockoutHtml}${anchorsHtml}
 ${proMode && sols.length >= 2 ? `<h2>${t('criterionImpact')}</h2>${sensHtml}<h2>${t('ratingImpact')}</h2>${ratingHtml}` : ''}
 </body>
 </html>`;
 }
 
 // ── Print ─────────────────────────────────────────────────────
-document.getElementById('printBtn').onclick = () => {
+byId('printBtn').onclick = () => {
   const win = window.open('', '_blank', 'width=860,height=700');
   win.document.write(generatePrintView(decisionName, bearbeiter || t('promptAnonymous')));
   win.document.close();
@@ -266,51 +273,346 @@ document.getElementById('printBtn').onclick = () => {
   setTimeout(() => win.print(), 350);
 };
 
+const READONLY_CSS = '\n/* Read-only export */\n' +
+  '[data-readonly] #criteriaInputSection,[data-readonly] .btn-remove,' +
+  '[data-readonly] .pair-buttons,[data-readonly] #solutionList,[data-readonly] #addSolutionBtn,' +
+  '[data-readonly] #proToggle,[data-readonly] .app-brand,[data-readonly] #helpBtn,' +
+  '[data-readonly] #printBtn,[data-readonly] #undoBtn,[data-readonly] #redoBtn,' +
+  '[data-readonly] #themeToggle{display:none}\n' +
+  // banner lives inside the sticky header; the lang toggle (sole remaining
+  // toolbar control) overlays the banner's top-right, merging both rows
+  '[data-readonly] .toolbar{position:absolute;top:10px;right:0;margin:0;padding:0}\n' +
+  '[data-readonly] .rating-btn{pointer-events:none}\n' +
+  '[data-readonly] #fileMenuWrap{display:none}\n' +
+  '[data-readonly] .scenario-save-row{display:none}\n' +
+  '[data-readonly] #resetFineBtn,[data-readonly] .sc-del,[data-readonly] .knockout-toggle{display:none}\n' +
+  '[data-readonly] .eco-toggle{pointer-events:none}\n' +
+  '[data-readonly] .team-load{display:none}\n' +
+  '[data-readonly] .fine-tune-input,[data-readonly] .fine-tune-reason,[data-readonly] .fine-tune-bar,[data-readonly] .anchor-input,[data-readonly] .rating-note{pointer-events:none;opacity:.5}\n' +
+  '.export-info{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px;padding:2px 80px 12px 0;border-bottom:1px solid rgba(var(--fg-rgb),.1);margin-bottom:6px}\n' +
+  '.export-info-title{font-size:1.05rem;font-weight:700;color:var(--text);letter-spacing:-.01em}\n' +
+  '.export-info-title span{font-size:0.72rem;font-weight:400;color:var(--fg-a4);background:rgba(var(--fg-rgb),.08);padding:2px 8px;border-radius:20px;margin-left:8px;vertical-align:middle}\n' +
+  '.export-info-meta{font-size:0.72rem;color:var(--fg-a4);display:flex;gap:16px}\n' +
+  '.export-info-meta strong{color:var(--fg-a6)}\n';
+
+// ── Scoping CSS for an embed ──────────────────────────────────
+// The Confluence macro injects our stylesheet into the wiki page itself, not
+// into an iframe, so every rule applies to the whole page. Unscoped, `body`
+// repaints Confluence dark and `table`/`th`/`td`/`input[type=text]` restyle the
+// host page's own tables and form fields — the editor's included.
+//
+// scopeCss() rewrites the sheet so nothing matches outside the wrapper:
+//   - rules describing the document root (:root, html, body) BECOME the wrapper
+//   - root hooks that live ON the wrapper in an embed merge with it
+//   - everything else nests inside it
+const EMBED_CLASS = 'dl-embed';
+const EMBED_SCOPE = '.' + EMBED_CLASS;
+// `pro-on` is toggled onto the app root and `data-readonly` marks an export;
+// in an embed both sit on the wrapper, so they merge rather than nest.
+const EMBED_ROOT_HOOKS = ['.pro-on', '[data-readonly]'];
+
+// Split a selector list on top-level commas only, so :not(a,b) stays intact.
+function splitSelectorList(list) {
+  const out = [];
+  let depth = 0, start = 0;
+  for (let i = 0; i < list.length; i++) {
+    const ch = list[i];
+    if (ch === '(' || ch === '[') depth++;
+    else if (ch === ')' || ch === ']') depth--;
+    else if (ch === ',' && depth === 0) { out.push(list.slice(start, i)); start = i + 1; }
+  }
+  out.push(list.slice(start));
+  return out;
+}
+
+function scopeSelector(sel, scope, rootHooks) {
+  sel = sel.trim();
+  if (!sel) return sel;
+  // The document root itself becomes the wrapper.
+  if (/^(:root|html|body)$/.test(sel)) return scope;
+  // `body.pro-on x` / `html[data-readonly] x` — swap the root token for the wrapper.
+  const attached = sel.match(/^(?::root|html|body)(?=[.:#[])/);
+  if (attached) return scope + sel.slice(attached[0].length);
+  const descendant = sel.match(/^(?::root|html|body)\s+/);
+  if (descendant) return scope + ' ' + sel.slice(descendant[0].length);
+  // Hooks carried by the wrapper merge with it. The trailing-combinator check
+  // keeps `.pro-on` from also matching `.pro-online`.
+  for (const hook of rootHooks) {
+    if (sel === hook) return scope + hook;
+    if (sel.slice(0, hook.length) === hook && /^[\s>+~]/.test(sel.slice(hook.length))) {
+      return scope + hook + sel.slice(hook.length);
+    }
+  }
+  return scope + ' ' + sel;
+}
+
+// Comments are removed up front rather than at each scan position. A comment
+// that follows whitespace — READONLY_CSS opens with '\n/* Read-only export */\n'
+// — would otherwise be absorbed into the selector that follows it, and a single
+// invalid selector invalidates its whole comma-separated rule, silently
+// unhiding every control that rule covered.
+// Scans rather than regex-replaces so an unterminated comment cannot eat the
+// sheet. It does not track strings: safe while the sheet has no url() and no
+// non-empty content:, which a test guards.
+function stripCssComments(css) {
+  let out = '', i = 0;
+  while (i < css.length) {
+    const start = css.indexOf('/*', i);
+    if (start < 0) { out += css.slice(i); break; }
+    out += css.slice(i, start);
+    const end = css.indexOf('*/', start + 2);
+    i = end < 0 ? css.length : end + 2;
+  }
+  return out;
+}
+
+function scopeCss(css, scope, rootHooks) {
+  scope = scope || EMBED_SCOPE;
+  rootHooks = rootHooks || EMBED_ROOT_HOOKS;
+  css = stripCssComments(css);
+  let out = '', i = 0;
+  while (i < css.length) {
+    const open = css.indexOf('{', i);
+    if (open < 0) break;
+    const prelude = css.slice(i, open).trim();
+    let depth = 1, j = open + 1;
+    while (j < css.length && depth > 0) {
+      if (css[j] === '{') depth++;
+      else if (css[j] === '}') depth--;
+      j++;
+    }
+    const body = css.slice(open + 1, j - 1);
+    if (/^@(media|supports|container|layer)\b/i.test(prelude)) {
+      out += prelude + '{' + scopeCss(body, scope, rootHooks) + '}';   // scope the rules inside
+    } else if (prelude.charAt(0) === '@') {
+      out += prelude + '{' + body + '}';                               // @keyframes/@font-face: leave alone
+    } else {
+      out += splitSelectorList(prelude).map(sel => scopeSelector(sel, scope, rootHooks)).join(',') + '{' + body + '}';
+    }
+    i = j;
+  }
+  return out;
+}
+
+// Rules an embed needs on top of the scoped sheet. Already scoped — appended
+// after the transform, not put through it.
+const EMBED_EXTRA_CSS =
+  // A viewport-fixed overlay would cover the Confluence chrome. Read-only
+  // builds hide the help button so it cannot be opened; this is belt and braces.
+  EMBED_SCOPE + ' .help-overlay{display:none}' +
+  // A sticky header would detach and float over the wiki content as the reader
+  // scrolls past the embed. `relative` rather than `static` keeps it as the
+  // containing block for the read-only toolbar's absolute positioning.
+  EMBED_SCOPE + ' .app-header{position:relative}' +
+  // Our z-indexes (up to 100) must not compete with the host page's layers.
+  EMBED_SCOPE + '{isolation:isolate}';
+
+// The complete stylesheet for an embed: app sheet + read-only rules, scoped.
+function embedCss(styleText) {
+  return scopeCss(styleText + READONLY_CSS, EMBED_SCOPE, EMBED_ROOT_HOOKS) + EMBED_EXTRA_CSS;
+}
+
+// ── Baking state into an export ───────────────────────────────
+// Replaces the auto-load block of a captured script with one that carries the
+// exported decision. Standalone exports still prefer the viewer's own saved
+// session, so re-opening a file they have explored shows their work. Embedded
+// builds have no session of their own — see the storage note in state.js — so
+// they set `embedded` before anything can touch storage and render the baked
+// state only.
+const AUTOLOAD_START = '// Auto-load saved session';
+const AUTOLOAD_END = '// END Auto-load';
+
+function bakedAutoLoad(stateJson, embed) {
+  const body = embed
+    ? 'embedded = true;\ntry { applyState(' + stateJson + '); } catch (e) {}\n'
+    : 'try {\n  const _s = lsGet(STORAGE_KEY);\n  applyState(_s ? JSON.parse(_s) : ' + stateJson + ');\n} catch (e) { try { applyState(' + stateJson + '); } catch (_) {} }\n';
+  return AUTOLOAD_START + '\n' + body + AUTOLOAD_END;
+}
+
+function bakeScript(scriptText, stateJson, embed) {
+  // lastIndexOf: find the real auto-load block at the end of the bundle, not
+  // the sentinel occurrences inside this module's own string literals.
+  const si = scriptText.lastIndexOf(AUTOLOAD_START);
+  const ei = scriptText.indexOf(AUTOLOAD_END, si) + AUTOLOAD_END.length;
+  return scriptText.slice(0, si) + bakedAutoLoad(stateJson, embed) + scriptText.slice(ei);
+}
+
+// ── Assembling an embed script ────────────────────────────────
+const CAPTURE_START = '// Capture preamble';
+const CAPTURE_END = '// END Capture preamble';
+
+// The capture preamble lets a built file re-export itself: it grabs the script
+// text, the stylesheet and the body markup at load. Inside a Confluence page
+// those reads would take the HOST page's first <style> and its body instead of
+// ours, and an embed cannot re-export itself anyway — so it is cut out.
+function stripCapturePreamble(scriptText) {
+  const si = scriptText.indexOf(CAPTURE_START);
+  if (si < 0) return scriptText;
+  const ei = scriptText.indexOf(CAPTURE_END, si) + CAPTURE_END.length;
+  return scriptText.slice(0, si) + scriptText.slice(ei);
+}
+
+// Each embed gets its own wrapper id so two on one page stay apart.
+function newEmbedId() {
+  return 'dl-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+}
+
+// A complete embed script, as plain source. The IIFE keeps every binding —
+// `lang`, `ratings`, `t`, `esc`, … — out of the wiki page's scope, where they
+// would collide with Confluence's own code and, fatally, with a second embed
+// redeclaring them. `_embedRoot` is read by dom.js as it initialises, so every
+// lookup from then on resolves inside this instance's wrapper. currentScript is
+// preferred, so even two copies of the same export work; the id is the fallback
+// for a macro rendered after parse, when currentScript is null.
+function embedScriptSource(scriptText, stateJson, rootId) {
+  return '(function(){\n'
+    + 'var _embedRoot=(document.currentScript&&document.currentScript.closest('
+    + JSON.stringify(EMBED_SCOPE) + '))||document.getElementById(' + JSON.stringify(rootId) + ');\n'
+    + bakeScript(stripCapturePreamble(scriptText), stateJson, true)
+    + '\n})();';
+}
+
+// UTF-8 safe base64: btoa is Latin-1 only and the app carries umlauts and
+// symbols (⚡ ✓ ⊗ ›), so encode to bytes first. Chunked because
+// String.fromCharCode.apply blows the argument limit on a 100 KB array.
+function toBase64Utf8(str) {
+  const bytes = new TextEncoder().encode(str);
+  let bin = '';
+  for (let i = 0; i < bytes.length; i += 0x8000) {
+    bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+  }
+  return btoa(bin);
+}
+
+// Confluence content filters parse a macro body as HTML and strip markup out of
+// the script text. Our bundle is full of markup — every <div>, <td> and
+// style="…" the app writes — so a filter silently deletes thousands of
+// characters from the middle of the script, leaving an intact-looking start and
+// end around syntactically broken code. Base64 gives it nothing to react to: no
+// <, no &, no CDATA terminator. new Function scopes the decoded source and runs
+// synchronously, so document.currentScript is still valid inside it.
+function embedScript(scriptText, stateJson, rootId) {
+  const b64 = toBase64Utf8(embedScriptSource(scriptText, stateJson, rootId));
+  return 'new Function(new TextDecoder().decode(Uint8Array.from(atob('
+    + JSON.stringify(b64) + '),c=>c.charCodeAt(0))))();';
+}
+
+// Provenance line shown at the top of every export. On a wiki page this
+// matters more than in a downloaded file, not less — a reader needs to know
+// whose decision this is and how old it is.
+function exportInfoBanner(tradeName, exporter) {
+  const exportedAt = new Date().toLocaleString(lang === 'de' ? 'de-DE' : 'en-GB', { dateStyle: 'medium', timeStyle: 'short' });
+  const tradeLabel = tradeName ? `<span style="color:var(--text);font-size:.95rem;font-weight:600">${esc(tradeName)}</span> · ` : '';
+  return `<div class="export-info"><div class="export-info-title">${tradeLabel}DecisionLab<span>${APP_VERSION}</span></div><div class="export-info-meta"><span><strong>${t('exportedBy')}:</strong> ${esc(exporter)}</span><span><strong>${t('exportedDate')}:</strong> ${exportedAt}</span></div></div>\n`;
+}
+
+// ── Confluence embed ──────────────────────────────────────────
+// One macro body: wrapper, scoped stylesheet, app markup, and an isolated
+// script carrying the decision. Paste into an {html-bobswift} macro with
+// sanitize=false — a sanitising macro strips the script, and because the markup
+// is an empty template rendered at load, the page would show an empty box.
+//
+// Built by concatenation rather than as a second build artifact: the pieces are
+// the same script/style/markup the HTML export already captures at load.
+
+// Confluence stores a macro body inside <![CDATA[ … ]]>, so this sequence
+// anywhere in the payload truncates the macro and corrupts the page. Split so
+// this file never contains it either.
+const CDATA_CLOSE = ']]' + '>';
+
+function buildEmbedPayload() {
+  const exporter = bearbeiter || t('promptAnonymous');
+  const rootId = newEmbedId();
+  // A decision whose text contains the CDATA terminator is escaped rather than
+  // rejected: inside the JS string literals of the baked state, `\u003e` is the
+  // same character. (In JSON that sequence can only occur inside a string.)
+  const state = JSON.stringify(buildState()).split(CDATA_CLOSE).join(']]\\u003e');
+  const markup = _bodyHtml.replace('<div class="app-header">',
+    '<div class="app-header">\n' + exportInfoBanner(decisionName, exporter));
+
+  const payload = '<div class="' + EMBED_CLASS + '" id="' + rootId + '" data-readonly lang="' + lang + '">\n'
+    + '<style>' + embedCss(_styleText) + '</style>\n'
+    + markup + '\n'
+    + '<script>' + embedScript(_scriptText, state, rootId) + '<\/script>\n'
+    + '</div>';
+
+  // Last line of defence: the sequence can also arise from minified code or a
+  // selector like `[a][b]>c`. Refusing beats silently truncating someone's page.
+  if (payload.indexOf(CDATA_CLOSE) >= 0) throw new Error(t('alertEmbedCdata'));
+  return payload;
+}
+
+// Plain text: the target is a macro body, so rich clipboard formats are
+// irrelevant and writeText is the widest-supported path. execCommand covers
+// contexts where the async API is unavailable (file://, older browsers).
+function copyPlainText(text) {
+  if (navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(text);
+  return new Promise((resolve, reject) => {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    let ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+    ta.remove();
+    if (ok) resolve(); else reject(new Error('copy unavailable'));
+  });
+}
+
+function downloadText(text, name, type) {
+  const a = Object.assign(document.createElement('a'), {
+    href: URL.createObjectURL(new Blob([text], { type })),
+    download: name,
+  });
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+// The file menu closes on any click, so confirmation goes on the toolbar
+// button that stays visible. A silent clipboard write looks like a no-op.
+function flashLabel(el, msg) {
+  if (!el) return;
+  const prev = el.textContent;
+  el.textContent = msg;
+  setTimeout(() => { el.textContent = prev; }, 2200);
+}
+
+byId('exportConfluenceBtn').onclick = () => {
+  // Assembled from the script, style and markup captured at load — which only
+  // the built file has.
+  if (typeof _scriptText === 'undefined') { alert(t('alertEmbedDevMode')); return; }
+  let payload;
+  try { payload = buildEmbedPayload(); }
+  catch (e) { alert((e && e.message) || t('alertEmbedFailed')); return; }
+
+  const fileName = (decisionName ? decisionName.replace(/[^a-z0-9äöüß\-_ ]/gi, '').trim() + ' – ' : '')
+    + 'DecisionLab (Confluence).html';
+  copyPlainText(payload)
+    .then(() => flashLabel(byId('fileMenuBtn'), t('embedCopied')))
+    .catch(() => { downloadText(payload, fileName, 'text/html'); alert(t('alertEmbedDownloaded')); });
+};
+
 // ── HTML Export ───────────────────────────────────────────────
-document.getElementById('exportHtmlBtn').onclick = () => {
+byId('exportHtmlBtn').onclick = () => {
+  // An embed has no capture preamble to re-export from, and its menu is hidden.
+  if (embedded) return;
   const tradeName = decisionName;
   const exporter = bearbeiter || t('promptAnonymous');
-  const exportedAt = new Date().toLocaleString(lang === 'de' ? 'de-DE' : 'en-GB', { dateStyle: 'medium', timeStyle: 'short' });
 
   const state = JSON.stringify(buildState());
 
-  // Use lastIndexOf so we always find the actual auto-load block at the end of the file,
-  // not an earlier occurrence of the sentinel inside the replacement template string.
-  const S = '// Auto-load saved session';
-  const E = '// END Auto-load';
-  const si = _scriptText.lastIndexOf(S);
-  const ei = _scriptText.indexOf(E, si) + E.length;
-  const newBlock = S + '\ntry {\n  const _s = localStorage.getItem(STORAGE_KEY);\n  applyState(_s ? JSON.parse(_s) : ' + state + ');\n} catch (e) { try { applyState(' + state + '); } catch (_) {} }\n' + E;
-  const bakedScript = _scriptText.slice(0, si) + newBlock + _scriptText.slice(ei);
+  const bakedScript = bakeScript(_scriptText, state, false);
 
-  const readOnlyCss = '\n/* Read-only export */\n' +
-    '[data-readonly] #criteriaInputSection,[data-readonly] .btn-remove,' +
-    '[data-readonly] .pair-buttons,[data-readonly] #solutionList,[data-readonly] #addSolutionBtn,' +
-    '[data-readonly] #proToggle,[data-readonly] .app-brand,[data-readonly] #helpBtn,' +
-    '[data-readonly] #printBtn,[data-readonly] #undoBtn,[data-readonly] #redoBtn{display:none}\n' +
-    // banner lives inside the sticky header; the lang toggle (sole remaining
-    // toolbar control) overlays the banner's top-right, merging both rows
-    '[data-readonly] .toolbar{position:absolute;top:10px;right:0;margin:0;padding:0}\n' +
-    '[data-readonly] .rating-btn{pointer-events:none}\n' +
-    '[data-readonly] #fileMenuWrap{display:none}\n' +
-    '[data-readonly] .scenario-save-row{display:none}\n' +
-    '[data-readonly] #resetFineBtn,[data-readonly] .sc-del,[data-readonly] .knockout-toggle{display:none}\n' +
-    '[data-readonly] .eco-toggle{pointer-events:none}\n' +
-    '[data-readonly] .team-load{display:none}\n' +
-    '[data-readonly] .fine-tune-input,[data-readonly] .fine-tune-reason,[data-readonly] .fine-tune-bar,[data-readonly] .anchor-input,[data-readonly] .rating-note{pointer-events:none;opacity:.5}\n' +
-    '.export-info{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px;padding:2px 80px 12px 0;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:6px}\n' +
-    '.export-info-title{font-size:1.05rem;font-weight:700;color:#fff;letter-spacing:-.01em}\n' +
-    '.export-info-title span{font-size:0.72rem;font-weight:400;color:rgba(255,255,255,.4);background:rgba(255,255,255,.08);padding:2px 8px;border-radius:20px;margin-left:8px;vertical-align:middle}\n' +
-    '.export-info-meta{font-size:0.72rem;color:rgba(255,255,255,.4);display:flex;gap:16px}\n' +
-    '.export-info-meta strong{color:rgba(255,255,255,.6)}\n';
 
-  const tradeLabel = tradeName ? `<span style="color:#fff;font-size:.95rem;font-weight:600">${esc(tradeName)}</span> · ` : '';
-  const infoBanner = `<div class="export-info"><div class="export-info-title">${tradeLabel}DecisionLab<span>v0.6</span></div><div class="export-info-meta"><span><strong>${t('exportedBy')}:</strong> ${esc(exporter)}</span><span><strong>${t('exportedDate')}:</strong> ${exportedAt}</span></div></div>\n`;
+
+  const infoBanner = exportInfoBanner(tradeName, exporter);
   const pageTitle = tradeName ? `${esc(tradeName)} – DecisionLab` : 'DecisionLab';
 
   const out = '<!DOCTYPE html>\n<html data-readonly lang="' + lang + '">\n<head>\n<meta charset="UTF-8">\n' +
     '<meta name="viewport" content="width=device-width,initial-scale=1">\n<title>' + pageTitle + '</title>\n' +
-    '<style>\n' + _styleText + readOnlyCss + '</style>\n</head>\n<body>\n' +
+    '<style>\n' + _styleText + READONLY_CSS + '</style>\n</head>\n<body>\n' +
     _bodyHtml.replace('<div class="app-header">', '<div class="app-header">\n' + infoBanner) +
     '\n<script>\n' + bakedScript + '\n<\/script>\n</body>\n</html>';
 
@@ -323,7 +625,7 @@ document.getElementById('exportHtmlBtn').onclick = () => {
 };
 
 // ── JSON Save / Load ──────────────────────────────────────────
-document.getElementById('exportBtn').onclick = () => {
+byId('exportBtn').onclick = () => {
   const data = JSON.stringify(buildState(), null, 2);
   const a = Object.assign(document.createElement('a'), {
     href: URL.createObjectURL(new Blob([data], { type: 'application/json' })),
@@ -336,7 +638,7 @@ document.getElementById('exportBtn').onclick = () => {
 // ── CSV Export ────────────────────────────────────────────────
 // Decision matrix for spreadsheets: criteria rows (weight + rating per
 // solution), then score and rank. German locale gets ';' and decimal commas.
-document.getElementById('exportCsvBtn').onclick = () => {
+byId('exportCsvBtn').onclick = () => {
   const sols = getSolutions();
   const ordered = criteriaByWeight();
   const weights = computeWeights();
@@ -377,7 +679,7 @@ document.getElementById('exportCsvBtn').onclick = () => {
   URL.revokeObjectURL(a.href);
 };
 
-document.getElementById('importInput').onchange = e => {
+byId('importInput').onchange = e => {
   const file = e.target.files[0];
   if (!file) return;
   const reader = new FileReader();
@@ -392,15 +694,17 @@ document.getElementById('importInput').onchange = e => {
 };
 
 // ── Help overlay ──────────────────────────────────────────────
-const helpOverlay = document.getElementById('helpOverlay');
-document.getElementById('helpBtn').onclick = () => helpOverlay.classList.remove('hidden');
-document.getElementById('helpClose').onclick = () => helpOverlay.classList.add('hidden');
+const helpOverlay = byId('helpOverlay');
+byId('helpBtn').onclick = () => helpOverlay.classList.remove('hidden');
+byId('helpClose').onclick = () => helpOverlay.classList.add('hidden');
 helpOverlay.addEventListener('click', e => { if (e.target === helpOverlay) helpOverlay.classList.add('hidden'); });
-document.addEventListener('keydown', e => { if (e.key === 'Escape') helpOverlay.classList.add('hidden'); });
+onGlobal('keydown', e => { if (e.key === 'Escape') helpOverlay.classList.add('hidden'); });
 
 // ── New session ───────────────────────────────────────────────
-document.getElementById('newBtn').onclick = () => {
+byId('newBtn').onclick = () => {
+  // An embed has no session to clear and must never reload the wiki page.
+  if (embedded) return;
   if (!confirm(t('confirmNewSession'))) return;
-  localStorage.removeItem(STORAGE_KEY);
+  lsRemove(STORAGE_KEY);
   location.reload();
 };

@@ -13,7 +13,7 @@
   <div class="toolbar">
     <div class="app-brand">
       <span class="app-name">DecisionLab</span>
-      <span class="app-version">v0.6</span>
+      <span class="app-version"></span>
       <span class="crumb-sep">▸</span>
       <div class="toolbar-project">
         <input id="decisionNameInput" class="project-input project-input-name" type="text" data-i18n-placeholder="decisionNamePlaceholder" placeholder="">
@@ -23,6 +23,7 @@
     </div>
     <div class="toolbar-actions">
       <button id="langToggle" class="btn-toolbar lang-toggle">DE</button>
+      <button id="themeToggle" class="btn-toolbar"></button>
       <button id="undoBtn" class="btn-toolbar" data-i18n-title="undoTitle" disabled>↶</button>
       <button id="redoBtn" class="btn-toolbar" data-i18n-title="redoTitle" disabled>↷</button>
       <button id="helpBtn" class="btn-toolbar" data-i18n="help"></button>
@@ -34,6 +35,7 @@
           <label><span data-i18n="load"></span><input type="file" id="importInput" accept=".json"></label>
           <button id="exportHtmlBtn" data-i18n="exportHtml"></button>
           <button id="exportCsvBtn" data-i18n="exportCsv"></button>
+          <button id="exportConfluenceBtn" data-i18n="exportConfluence"></button>
           <div class="file-menu-div"></div>
           <button id="newBtn" class="file-menu-danger" data-i18n="newSession"></button>
         </div>
@@ -60,6 +62,11 @@
       <div class="help-section help-data">
         <h3 data-i18n="helpDataTitle"></h3>
         <p data-i18n-html="helpDataText"></p>
+      </div>
+
+      <div class="help-section help-data">
+        <h3 data-i18n="helpViewTitle"></h3>
+        <p data-i18n-html="helpViewText"></p>
       </div>
 
       <div class="help-section help-pro">
@@ -128,7 +135,7 @@
         <div id="solutionMatrix"></div>
       </div>
     </div>
-    <div class="section">
+    <div class="section" id="rankingSection">
       <div class="section-content">
         <h2 data-i18n="ranking"></h2>
         <table>
@@ -203,8 +210,10 @@
 <!-- build:js -->
 <script src="js/lang/en.js"></script>
 <script src="js/lang/de.js"></script>
+<script src="js/dom.js"></script>
 <script src="js/i18n.js"></script>
 <script src="js/state.js"></script>
+<script src="js/version.js"></script>
 <script src="js/criteria.js"></script>
 <script src="js/solutions.js"></script>
 <script src="js/sensitivity.js"></script>

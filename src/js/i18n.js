@@ -14,38 +14,39 @@ function t(key) {
 }
 
 function applyLang() {
-  document.querySelectorAll('[data-i18n]').forEach(el => {
+  qsa('[data-i18n]').forEach(el => {
     const v = t(el.dataset.i18n);
     if (typeof v === 'string') el.textContent = v;
   });
-  document.querySelectorAll('[data-i18n-html]').forEach(el => {
+  qsa('[data-i18n-html]').forEach(el => {
     const v = t(el.dataset.i18nHtml);
     if (typeof v === 'string') el.innerHTML = v;
   });
-  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+  qsa('[data-i18n-placeholder]').forEach(el => {
     const v = t(el.dataset.i18nPlaceholder);
     if (typeof v === 'string') el.placeholder = v;
   });
-  document.querySelectorAll('[data-i18n-title]').forEach(el => {
+  qsa('[data-i18n-title]').forEach(el => {
     const v = t(el.dataset.i18nTitle);
     if (typeof v === 'string') el.title = v;
   });
   // The toggle shows the ACTIVE language; the tooltip names the switch target
-  const langBtn = document.getElementById('langToggle');
+  const langBtn = byId('langToggle');
   langBtn.textContent = lang.toUpperCase();
   langBtn.title = lang === 'en' ? 'Auf Deutsch umschalten' : 'Switch to English';
+  updateThemeLabel();
   // Language is a user preference that survives "New decision"
-  try { localStorage.setItem('dl_lang', lang); } catch (e) {}
-  document.querySelectorAll('#criteriaList input').forEach((i, idx) => i.placeholder = `${t('criterionDefault')} ${idx + 1}`);
-  document.querySelectorAll('#solutionList input:not(.sol-note)').forEach(i => i.placeholder = t('solutionPlaceholder'));
-  document.querySelectorAll('#solutionList input.sol-note').forEach(i => i.placeholder = t('solutionNotePlaceholder'));
+  lsSet('dl_lang', lang);
+  qsa('#criteriaList input').forEach((i, idx) => i.placeholder = `${t('criterionDefault')} ${idx + 1}`);
+  qsa('#solutionList input:not(.sol-note)').forEach(i => i.placeholder = t('solutionPlaceholder'));
+  qsa('#solutionList input.sol-note').forEach(i => i.placeholder = t('solutionNotePlaceholder'));
   if (comparisonStarted) renderPairs();
   renderFineTune();
   renderSolutionMatrix();
   updateSensImpact(); updateRatingImpact();
 }
 
-document.getElementById('langToggle').onclick = () => {
+byId('langToggle').onclick = () => {
   lang = lang === 'en' ? 'de' : 'en';
   applyLang();
   saveState();

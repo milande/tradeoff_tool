@@ -1,12 +1,12 @@
 // ── DOM refs ──────────────────────────────────────────────────
-const list = document.getElementById('criteriaList');
-const addBtn = document.getElementById('addBtn');
-const compareSection = document.getElementById('compareSection');
-const resultsSection = document.getElementById('resultsSection');
-const fineTuneSection = document.getElementById('fineTuneSection');
-const customBadge = document.getElementById('customBadge');
-const sensitivityTab = document.getElementById('sensitivityTab');
-const proToggle = document.getElementById('proToggle');
+const list = byId('criteriaList');
+const addBtn = byId('addBtn');
+const compareSection = byId('compareSection');
+const resultsSection = byId('resultsSection');
+const fineTuneSection = byId('fineTuneSection');
+const customBadge = byId('customBadge');
+const sensitivityTab = byId('sensitivityTab');
+const proToggle = byId('proToggle');
 
 // ── State ─────────────────────────────────────────────────────
 // Criteria and solutions are {id, name} — all data structures key by the
@@ -122,7 +122,7 @@ function findInconsistencies() {
 }
 
 function renderConsistency() {
-  const el = document.getElementById('consistencyHint');
+  const el = byId('consistencyHint');
   if (!el) return;
   const cycles = comparisonStarted ? findInconsistencies() : [];
   if (!cycles.length) { el.innerHTML = ''; el.classList.remove('visible'); return; }
@@ -186,7 +186,7 @@ function updateResults() {
       const label = total > 0 ? `${pct.toFixed(1)}%` : '—';
       return { key: c.id, html: `<td>${esc(c.name)}</td><td>${p.toFixed(1)}</td><td><div class="weight-cell"><span>${label}</span><div class="weight-bar-wrap"><div class="weight-bar" style="width:${pct}%"></div></div></div></td>` };
     });
-  animateRows(document.getElementById('tbody'), entries);
+  animateRows(byId('tbody'), entries);
   renderConsistency();
   renderFineTune();
   updateSolutionRanking();
@@ -195,8 +195,8 @@ function updateResults() {
 }
 
 function updateTabState() {
-  document.querySelector('[data-tab="solutions"]').classList.toggle('disabled', !comparisonStarted);
-  document.querySelector('[data-tab="sensitivity"]').classList.toggle('disabled', !comparisonStarted);
+  qs('[data-tab="solutions"]').classList.toggle('disabled', !comparisonStarted);
+  qs('[data-tab="sensitivity"]').classList.toggle('disabled', !comparisonStarted);
 }
 
 function checkAndStartComparison() {
@@ -259,7 +259,7 @@ function startComparison(preserveWeights = false, suppressScroll = false) {
 }
 
 function renderPairs() {
-  const container = document.getElementById('pairsContainer');
+  const container = byId('pairsContainer');
   container.innerHTML = '';
   pairs.forEach(([a, b]) => {
     const key = `${a}|${b}`;
@@ -325,7 +325,7 @@ function setCustomWeight(cid, newPct) {
 // Used while dragging so rows don't jump around under the cursor.
 function refreshFineTuneRows() {
   const w = computeWeights();
-  document.querySelectorAll('#fineTuneList .fine-tune-row').forEach(row => {
+  qsa('#fineTuneList .fine-tune-row').forEach(row => {
     const cid = row.dataset.criterion;
     const pct = (w[cid] ?? 0) * 100;
     const input = row.querySelector('.fine-tune-input');
@@ -340,7 +340,7 @@ function refreshFineTuneRows() {
 }
 
 function renderFineTune() {
-  const container = document.getElementById('fineTuneList');
+  const container = byId('fineTuneList');
   const w = computeWeights();
   container.innerHTML = '';
   criteriaByWeight().forEach(c => {
@@ -369,12 +369,12 @@ function renderFineTune() {
     });
   });
   customBadge.classList.toggle('visible', customWeights !== null);
-  document.getElementById('resetFineBtn').disabled = customWeights === null;
+  byId('resetFineBtn').disabled = customWeights === null;
 }
 
 // ── Fine-tune bar drag ────────────────────────────────────────
 (function setupFineTuneDrag() {
-  const container = document.getElementById('fineTuneList');
+  const container = byId('fineTuneList');
   let drag = null;
   function pctFrom(e, rect) {
     const x = e.touches ? e.touches[0].clientX : e.clientX;
@@ -409,7 +409,7 @@ function renderFineTune() {
 }());
 
 // ── Event handlers ────────────────────────────────────────────
-document.getElementById('resetFineBtn').onclick = () => {
+byId('resetFineBtn').onclick = () => {
   customWeights = null;
   customWeightReasons = {};
   customWeightPinned = {};

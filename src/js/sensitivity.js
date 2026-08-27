@@ -1,5 +1,12 @@
 // ── Constants & state ─────────────────────────────────────────
 const SOL_COLORS = ['#18c8ff', '#f472b6', '#c084fc', '#fb923c', '#34d399', '#fbbf24'];
+
+// Solution identity as TEXT. The literals above stay for fills — bars, dots,
+// segments — where contrast does not apply. Against a light surface they score
+// 1.7–2.7, well under AA, so anything readable uses the CSS token instead: the
+// light theme redefines it, and it therefore follows a theme switch live
+// without re-rendering. The print view defines its own light values.
+function solText(i) { return `var(--sol-${(i % SOL_COLORS.length) + 1})`; }
 let sensWeights = {};          // {critId: weight}
 let explorationRatings = {};   // {'solId|critId': 0..4}
 
@@ -78,8 +85,8 @@ function updateResetButtons() {
     const k = `${sol.id}|${c.id}`;
     return (explorationRatings[k] ?? 0) !== (ratings[k] ?? 0);
   }));
-  const wBtn = document.getElementById('resetWeightsBtn');
-  const rBtn = document.getElementById('resetRatingsBtn');
+  const wBtn = byId('resetWeightsBtn');
+  const rBtn = byId('resetRatingsBtn');
   if (wBtn) wBtn.disabled = !weightsDiffer;
   if (rBtn) rBtn.disabled = !ratingsDiffer;
 }
@@ -160,7 +167,7 @@ function computeBreakevens(cId, sols, w = sensWeights, r = explorationRatings) {
 
 function updateSensRanking() {
   const sols = getSolutions();
-  const tbody = document.getElementById('sensRankingBody');
+  const tbody = byId('sensRankingBody');
   if (!comparisonStarted || criteria.length === 0 || sols.length === 0) { tbody.innerHTML = ''; return; }
   ensureSensState();
   const ko = getKnockedOut(explorationRatings);
@@ -168,9 +175,10 @@ function updateSensRanking() {
   const entries = [
     ...ranked.map(({ sol, score }) => {
       const pct = (score / 4) * 100;
-      const color = SOL_COLORS[sols.findIndex(s => s.id === sol.id) % SOL_COLORS.length];
+      const ci = sols.findIndex(s => s.id === sol.id);
+      const color = SOL_COLORS[ci % SOL_COLORS.length];
       const note = solutionNotes[sol.id] ? `<div class="rank-note">${esc(solutionNotes[sol.id])}</div>` : '';
-      return { key: sol.id, html: `<td style="color:${color};font-weight:600"><div>${esc(sol.name)}</div>${note}</td><td>${score.toFixed(2)}</td><td><div class="weight-cell"><span>${pct.toFixed(1)}%</span><div class="weight-bar-wrap"><div class="weight-bar" style="width:${pct}%;background:${color}"></div></div></div></td>` };
+      return { key: sol.id, html: `<td style="color:${solText(ci)};font-weight:600"><div>${esc(sol.name)}</div>${note}</td><td>${score.toFixed(2)}</td><td><div class="weight-cell"><span>${pct.toFixed(1)}%</span><div class="weight-bar-wrap"><div class="weight-bar" style="width:${pct}%;background:${color}"></div></div></div></td>` };
     }),
     ...Object.entries(ko).map(([solId, failedIds]) => {
       const sol = sols.find(s => s.id === solId);
@@ -184,7 +192,7 @@ function updateSensRanking() {
 
 function updateSensImpact() {
   const sols = getSolutions();
-  const container = document.getElementById('sensImpact');
+  const container = byId('sensImpact');
 
   if (!comparisonStarted || criteria.length === 0 || sols.length < 2) {
     container.innerHTML = `<p class="hint">${t('hintNeedSolutions')}</p>`;
@@ -230,7 +238,7 @@ function updateSensImpact() {
   updateResetButtons();
 }
 
-document.getElementById('resetWeightsBtn').onclick = () => {
+byId('resetWeightsBtn').onclick = () => {
   initSensWeights();
   updateSensRanking();
   updateSensImpact(); updateRatingImpact();
@@ -241,7 +249,7 @@ document.getElementById('resetWeightsBtn').onclick = () => {
 let sensImpactDrag = null;
 
 (function setupSensImpactDrag() {
-  const container = document.getElementById('sensImpact');
+  const container = byId('sensImpact');
 
   function getT(e, rect) {
     const clientX = e.touches ? e.touches[0].clientX : e.clientX;
@@ -321,7 +329,7 @@ function computeRatingBreakevens(sol, cId, sols, weights, rObj) {
 }
 
 function updateRatingImpact() {
-  const container = document.getElementById('ratingImpactContainer');
+  const container = byId('ratingImpactContainer');
   if (!container) return;
   const sols = getSolutions();
   if (!comparisonStarted || criteria.length === 0 || sols.length < 2) {
@@ -335,7 +343,7 @@ function updateRatingImpact() {
   sols.forEach((sol, si) => {
     const solColor = SOL_COLORS[si % SOL_COLORS.length];
     const koMark = koNow[sol.id] ? ` <span class="be-ko-mark" title="${esc(t('knockedOut'))}: ${esc(koNow[sol.id].map(critName).join(', '))}">⊗</span>` : '';
-    html += `<div class="ri-sol-header" style="color:${solColor}">${esc(sol.name)}${koMark}</div>`;
+    html += `<div class="ri-sol-header" style="color:${solText(si)}">${esc(sol.name)}${koMark}</div>`;
     criteriaByWeight().forEach(c => {
       const key = `${sol.id}|${c.id}`;
       const segs = computeRatingBreakevens(sol, c.id, sols, weights);
@@ -363,7 +371,7 @@ function updateRatingImpact() {
   updateResetButtons();
 }
 
-document.getElementById('resetRatingsBtn').onclick = () => {
+byId('resetRatingsBtn').onclick = () => {
   initExplorationRatings();
   updateRatingImpact();
   updateSensImpact();
@@ -373,7 +381,7 @@ document.getElementById('resetRatingsBtn').onclick = () => {
 
 // ── Rating Impact drag ────────────────────────────────────────
 (function setupRatingImpactDrag() {
-  const container = document.getElementById('ratingImpactContainer');
+  const container = byId('ratingImpactContainer');
   let active = null;
   function getVal(e, rect) {
     const x = e.touches ? e.touches[0].clientX : e.clientX;

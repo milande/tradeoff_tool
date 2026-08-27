@@ -16,16 +16,19 @@ function minifyCSS(css) {
     .trim();
 }
 
-function minifyJS(js) {
-  // Sentinels used by HTML export — must survive intact
-  const SENTINEL_A = '// Auto-load saved session';
-  const SENTINEL_B = '// END Auto-load';
+// Comment markers the export code slices on — they must survive minification.
+// The auto-load pair bounds the block that gets the baked state; the capture
+// pair bounds the preamble an embed cuts out.
+const SENTINELS = [
+  '// Auto-load saved session',
+  '// END Auto-load',
+  '// Capture preamble',
+  '// END Capture preamble',
+];
 
+function minifyJS(js) {
   // Temporarily protect ALL occurrences of each sentinel (split/join = global replace)
-  const SLOT_A = '\x00SENTINEL_A\x00';
-  const SLOT_B = '\x00SENTINEL_B\x00';
-  js = js.split(SENTINEL_A).join(SLOT_A);
-  js = js.split(SENTINEL_B).join(SLOT_B);
+  SENTINELS.forEach((s, i) => { js = js.split(s).join('\x00S' + i + '\x00'); });
 
   // Strip // comments only at line start or after whitespace — never mid-token,
   // so strings like "http://www.w3.org/2000/svg" survive intact.
@@ -35,7 +38,8 @@ function minifyJS(js) {
     .trim();
 
   // Restore sentinels
-  return js.split(SLOT_A).join(SENTINEL_A).split(SLOT_B).join(SENTINEL_B);
+  SENTINELS.forEach((s, i) => { js = js.split('\x00S' + i + '\x00').join(s); });
+  return js;
 }
 
 function minifyHTML(html) {
@@ -50,13 +54,14 @@ function minifyHTML(html) {
 // Lets the HTML export capture the full script text and style at runtime.
 // Only works in the built dist/index.html (not in dev mode with separate scripts).
 const CAPTURE_PREAMBLE =
+`// Capture preamble\n` +
 `const _scriptEl=document.currentScript;` +
 `const _scriptText=_scriptEl.textContent;` +
 `const _styleText=document.querySelector('style').textContent;` +
 `let _bodyHtml='';` +
 `for(const node of document.body.childNodes){if(node===_scriptEl)break;` +
 `_bodyHtml+=node.nodeType===3?node.textContent:(node.outerHTML||'');}` +
-`\n`;
+`\n// END Capture preamble\n`;
 
 // ── Read & assemble ───────────────────────────────────────────
 let html = fs.readFileSync(path.join(SRC, 'index.html'), 'utf8');

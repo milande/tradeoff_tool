@@ -5,7 +5,7 @@ let scenarios = [];
 
 // ── Helpers ───────────────────────────────────────────────────
 function saveCurrentScenario() {
-  const input = document.getElementById('scenarioNameInput');
+  const input = byId('scenarioNameInput');
   const name = (input.value || '').trim() || `${t('scenarios')} ${scenarios.length + 1}`;
   scenarios.push({ id: newId('sc'), name, weights: { ...sensWeights }, ratings: { ...explorationRatings } });
   input.value = '';
@@ -21,7 +21,7 @@ function deleteScenario(id) {
 
 // ── Rendering ─────────────────────────────────────────────────
 function renderScenarios() {
-  const container = document.getElementById('scenariosContainer');
+  const container = byId('scenariosContainer');
   if (!container) return;
 
   if (!comparisonStarted || criteria.length === 0) {
@@ -86,11 +86,12 @@ function renderScenarios() {
 
   // ── Solution rows ────────────────────────────────────────────
   sortedSols.forEach(sol => {
-    const color = SOL_COLORS[sols.findIndex(s => s.id === sol.id) % SOL_COLORS.length];
+    const ci = sols.findIndex(s => s.id === sol.id);
+    const color = SOL_COLORS[ci % SOL_COLORS.length];
     const isKO = !!colData[0].ko[sol.id];
 
     html += `<tr class="sc-s-row${isKO ? ' sc-ko' : ''}">`;
-    html += `<td class="sc-label sc-sol-name" style="color:${color}">${esc(sol.name)}</td>`;
+    html += `<td class="sc-label sc-sol-name" style="color:${solText(ci)}">${esc(sol.name)}</td>`;
     cols.forEach((col, ci) => {
       const d = colData[ci];
       const r = d.rankings[sol.id];
@@ -134,8 +135,8 @@ function renderScenarios() {
 }
 
 // ── Event handlers ────────────────────────────────────────────
-document.getElementById('saveScenarioBtn').onclick = saveCurrentScenario;
-document.getElementById('scenarioNameInput').addEventListener('keydown', e => {
+byId('saveScenarioBtn').onclick = saveCurrentScenario;
+byId('scenarioNameInput').addEventListener('keydown', e => {
   if (e.key === 'Enter') saveCurrentScenario();
 });
 

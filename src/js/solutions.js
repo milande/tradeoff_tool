@@ -1,8 +1,8 @@
 // ── DOM refs & state ──────────────────────────────────────────
 // All maps key by stable ids: ratings/ratingNotes 'solId|critId',
 // criteriaAnchors 'critId|value', knockoutCriteria/solutionNotes by id.
-const solutionList = document.getElementById('solutionList');
-const addSolutionBtn = document.getElementById('addSolutionBtn');
+const solutionList = byId('solutionList');
+const addSolutionBtn = byId('addSolutionBtn');
 let ratings = {};
 let ratingNotes = {};
 let criteriaAnchors = {};
@@ -51,7 +51,7 @@ function getSolutions() {
 
 // ── Matrix rendering ──────────────────────────────────────────
 function renderSolutionMatrix() {
-  const container = document.getElementById('solutionMatrix');
+  const container = byId('solutionMatrix');
   const sols = getSolutions();
   container.innerHTML = '';
 
@@ -210,7 +210,7 @@ function scoreSolutions(weights, ratingsObj = ratings) {
 
 function updateSolutionRanking() {
   const sols = getSolutions();
-  const tbody = document.getElementById('solutionRankingBody');
+  const tbody = byId('solutionRankingBody');
   if (!comparisonStarted || criteria.length === 0 || sols.length === 0) { tbody.innerHTML = ''; return; }
   const ko = getKnockedOut();
   const ranked = scoreSolutions(computeWeights()).filter(({ sol }) => !ko[sol.id]);
@@ -256,48 +256,53 @@ function computeVdi(ratingsObj = ratings, weightsObj = null) {
 }
 
 // s-diagram: x = We, y = Wt, ideal at (1,1), balanced solutions on the diagonal.
-function vdiDiagramSvg(data, ko, sols, light = false) {
+function vdiDiagramSvg(data, ko, sols) {
   const padL = 40, padR = 72, padT = 30, padB = 40;
   const plot = 240;
   const W = padL + plot + padR, H = padT + plot + padB;
-  const axis = light ? '#999' : 'rgba(255,255,255,.3)';
-  const grid = light ? '#e5e5e5' : 'rgba(255,255,255,.08)';
-  const text = light ? '#777' : 'rgba(255,255,255,.45)';
+  // Themed through the foreground channel rather than a light/dark flag. The
+  // diagram is inline SVG in the page, so it follows whatever surrounds it —
+  // including a live theme switch — and the print document, which defines the
+  // same tokens with light values. A presentation attribute cannot hold var(),
+  // so these are applied through style=.
+  const axis = 'stroke:rgba(var(--fg-rgb),.3)';
+  const grid = 'stroke:rgba(var(--fg-rgb),.08)';
+  const text = 'fill:rgba(var(--fg-rgb),.45)';
   const X = v => padL + v * plot;
   const Y = v => padT + (1 - v) * plot;
   let svg = `<svg class="vdi-svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg">`;
   for (let i = 0; i <= 4; i++) {
     const v = i / 4;
-    svg += `<line x1="${X(0)}" y1="${Y(v)}" x2="${X(1)}" y2="${Y(v)}" stroke="${grid}" stroke-width="1"/>`;
-    svg += `<line x1="${X(v)}" y1="${Y(0)}" x2="${X(v)}" y2="${Y(1)}" stroke="${grid}" stroke-width="1"/>`;
+    svg += `<line x1="${X(0)}" y1="${Y(v)}" x2="${X(1)}" y2="${Y(v)}" style="${grid}" stroke-width="1"/>`;
+    svg += `<line x1="${X(v)}" y1="${Y(0)}" x2="${X(v)}" y2="${Y(1)}" style="${grid}" stroke-width="1"/>`;
     if (i % 2 === 0) {
-      svg += `<text x="${X(v)}" y="${Y(0) + 16}" fill="${text}" font-size="10" text-anchor="middle">${v.toFixed(1)}</text>`;
-      svg += `<text x="${X(0) - 8}" y="${Y(v) + 3}" fill="${text}" font-size="10" text-anchor="end">${v.toFixed(1)}</text>`;
+      svg += `<text x="${X(v)}" y="${Y(0) + 16}" style="${text}" font-size="10" text-anchor="middle">${v.toFixed(1)}</text>`;
+      svg += `<text x="${X(0) - 8}" y="${Y(v) + 3}" style="${text}" font-size="10" text-anchor="end">${v.toFixed(1)}</text>`;
     }
   }
-  svg += `<line x1="${X(0)}" y1="${Y(0)}" x2="${X(1)}" y2="${Y(1)}" stroke="${axis}" stroke-width="1" stroke-dasharray="4 3"/>`;
-  svg += `<circle cx="${X(1)}" cy="${Y(1)}" r="3" fill="none" stroke="${axis}"/>`;
-  svg += `<text x="${X(1) + 8}" y="${Y(1) + 3}" fill="${text}" font-size="10">1/1</text>`;
+  svg += `<line x1="${X(0)}" y1="${Y(0)}" x2="${X(1)}" y2="${Y(1)}" style="${axis}" stroke-width="1" stroke-dasharray="4 3"/>`;
+  svg += `<circle cx="${X(1)}" cy="${Y(1)}" r="3" style="fill:none;${axis}"/>`;
+  svg += `<text x="${X(1) + 8}" y="${Y(1) + 3}" style="${text}" font-size="10">1/1</text>`;
   // axis titles: Wt in the upper-left corner (left-anchored, clear of the tick
   // numbers which sit to the left of the axis); We at the end of the x-axis (right).
-  svg += `<text x="-6" y="30" fill="${text}" font-size="11" text-anchor="start">Wt ↑</text>`;
-  svg += `<text x="${X(1)}" y="${Y(0) + 34}" fill="${text}" font-size="11" text-anchor="end">We →</text>`;
+  svg += `<text x="-6" y="30" style="${text}" font-size="11" text-anchor="start">Wt ↑</text>`;
+  svg += `<text x="${X(1)}" y="${Y(0) + 34}" style="${text}" font-size="11" text-anchor="end">We →</text>`;
   data.forEach(({ sol, wt, we }) => {
-    const color = SOL_COLORS[sols.findIndex(x => x.id === sol.id) % SOL_COLORS.length];
+    const c = solText(sols.findIndex(x => x.id === sol.id));
     const isKO = !!ko[sol.id];
-    svg += `<circle cx="${X(we)}" cy="${Y(wt)}" r="5" fill="${isKO ? 'none' : color}" stroke="${color}" stroke-width="2"${isKO ? ' stroke-dasharray="2 2"' : ''}/>`;
+    svg += `<circle cx="${X(we)}" cy="${Y(wt)}" r="5" style="fill:${isKO ? 'none' : c};stroke:${c}" stroke-width="2"${isKO ? ' stroke-dasharray="2 2"' : ''}/>`;
     const label = `${esc(sol.name)}${isKO ? ' ⊗' : ''}`;
     // labels flip to the left of the point near the right edge so they never clip
-    if (we > 0.78) svg += `<text x="${X(we) - 9}" y="${Y(wt) + 3}" fill="${color}" font-size="10" text-anchor="end">${label}</text>`;
-    else svg += `<text x="${X(we) + 9}" y="${Y(wt) + 3}" fill="${color}" font-size="10">${label}</text>`;
+    if (we > 0.78) svg += `<text x="${X(we) - 9}" y="${Y(wt) + 3}" style="fill:${c}" font-size="10" text-anchor="end">${label}</text>`;
+    else svg += `<text x="${X(we) + 9}" y="${Y(wt) + 3}" style="fill:${c}" font-size="10">${label}</text>`;
   });
   svg += '</svg>';
   return `<div class="vdi-diagram">${svg}</div>`;
 }
 
 function renderVdi() {
-  const section = document.getElementById('vdiSection');
-  const container = document.getElementById('vdiContainer');
+  const section = byId('vdiSection');
+  const container = byId('vdiContainer');
   if (!section || !container) return;
   const sols = getSolutions();
   const data = comparisonStarted && proMode && sols.length ? computeVdi() : null;
@@ -307,9 +312,9 @@ function renderVdi() {
   let html = `<table class="vdi-table"><thead><tr><th>${t('thSolution')}</th>` +
     `<th title="${t('vdiWt')}">Wt</th><th title="${t('vdiWe')}">We</th><th title="${t('vdiS')}">s</th></tr></thead><tbody>`;
   [...data].sort((a, b) => b.s - a.s).forEach(({ sol, wt, we, s }) => {
-    const color = SOL_COLORS[sols.findIndex(x => x.id === sol.id) % SOL_COLORS.length];
+    const ci = sols.findIndex(x => x.id === sol.id);
     const isKO = !!ko[sol.id];
-    html += `<tr${isKO ? ' class="vdi-ko"' : ''}><td style="color:${color};font-weight:600">${esc(sol.name)}${isKO ? ' ⊗' : ''}</td>` +
+    html += `<tr${isKO ? ' class="vdi-ko"' : ''}><td style="color:${solText(ci)};font-weight:600">${esc(sol.name)}${isKO ? ' ⊗' : ''}</td>` +
       `<td>${wt.toFixed(2)}</td><td>${we.toFixed(2)}</td><td><strong>${s.toFixed(2)}</strong></td></tr>`;
   });
   html += '</tbody></table>';
@@ -349,7 +354,7 @@ function computeRobustness() {
 }
 
 function renderRobustness() {
-  const el = document.getElementById('robustnessHint');
+  const el = byId('robustnessHint');
   if (!el) return;
   el.title = t('robustnessBasis');
   const r = computeRobustness();

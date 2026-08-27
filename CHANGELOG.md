@@ -1,5 +1,40 @@
 # DecisionLab — Changelog
 
+## v0.7 (2026-08-27)
+
+### Confluence embed
+- New **⧉ Copy for Confluence** action (File ▾) copies a macro body that renders the **live tool** — read-only, data baked in — inside a Confluence Server/DC page
+- Requires the Appfire / Bob Swift *HTML for Confluence* app with **Allow Javascript** enabled (a global setting, not a macro parameter) and a CSP permitting `unsafe-eval`; see the README for setup and troubleshooting
+- Two embeds on one page render independently, and nothing a viewer does is stored or shared
+- The README's previous claim that the HTML export was "embeddable in Confluence" was wrong and has been corrected
+
+### Light / dark theme
+- New **◐** toggle cycles Auto / Light / Dark. Auto follows the system preference, and inside a Confluence page the surrounding page's theme, switching live
+- Exports have no theme control by design: they follow the reader's browser or wiki page, not the author's choice
+- The whole stylesheet moved to tokens (~330 colour literals). Every value is contrast-checked; the light theme meets WCAG AA against its surfaces
+- Solution colours gained light-theme values. The dark palette scored 1.7–2.7 against white — this also fixes the **print view**, which had been rendering those colours on paper all along
+
+### Results first in exports
+- In an export, each tab leads with its result: the ranking in Solutions, the criteria weights in Criteria, with the working detail below. The live tool is unchanged
+- When weights have been fine-tuned, the **adjusted** weights lead — they are what produced the ranking, while the Criteria Weights table shows the pairwise derivation
+- The print view is reordered to match: ranking, robustness verdict, weights, then the derivation
+
+### Update check
+- The version badge becomes a link when a newer release exists. Checked at most once a day, silent on every failure, and **never from an export**
+- `APP_VERSION` is now the single source for the version string
+
+### Fixes
+- Read-only exports hid no editing controls at all in the embed: one comment inside a selector invalidated the whole rule (regression in the scoping work)
+- Input text stayed white in the light theme — `color:white`, a keyword the colour codemod did not look for
+- The VDI s-diagram was drawn with fixed light-on-dark colours in every theme; it now follows the surrounding theme, and its labels match the table beside them
+- The export banner stayed white on a light page
+- Faded text (hints, notes, secondary labels) read ~30% weaker on light than dark; each tier now carries its own per-theme value
+
+### Internals
+- `src/js/dom.js` — instance-scoped element lookups, so an embed resolves its own DOM
+- `src/js/version.js` — `APP_VERSION`, release check, version badge
+- Test suite: 109 → 221 checks
+
 ## v0.6 (2026-07-07)
 
 ### Header & Navigation Redesign
