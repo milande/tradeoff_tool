@@ -33,6 +33,7 @@
 <label><span data-i18n="load"></span><input type="file" id="importInput" accept=".json"></label>
 <button id="exportHtmlBtn" data-i18n="exportHtml"></button>
 <button id="exportCsvBtn" data-i18n="exportCsv"></button>
+<button id="exportConfluenceBtn" data-i18n="exportConfluence"></button>
 <div class="file-menu-div"></div>
 <button id="newBtn" class="file-menu-danger" data-i18n="newSession"></button>
 </div>
@@ -192,6 +193,11 @@ const _scriptEl=document.currentScript;const _scriptText=_scriptEl.textContent;c
 const EN = {
 help: '? Help', print: '⎙ Print', newSession: '✕ New decision', exportHtml: '↓ Export HTML', save: '↓ Save (JSON)', load: '↑ Load',
 exportCsv: '↓ Export CSV', csvRank: 'Rank', fileMenu: 'File ▾',
+exportConfluence: '⧉ Copy for Confluence', embedCopied: '✓ Copied',
+alertEmbedDevMode: 'The Confluence block is assembled from the built file. Run `node build.js` and use dist/index.html.',
+alertEmbedCdata: 'Cannot build the Confluence block: the content contains "]]" followed by ">", which would truncate the macro and corrupt the page. Remove that sequence from your decision text and try again.',
+alertEmbedDownloaded: 'Clipboard unavailable — the block was downloaded instead. Open the file and paste its contents into the macro.',
+alertEmbedFailed: 'Could not build the Confluence block.',
 undoTitle: 'Undo (Ctrl+Z)', redoTitle: 'Redo (Ctrl+Shift+Z)',
 tabCriteria: 'Criteria', tabSolutions: 'Solutions', tabSensitivity: 'Sensitivity',
 step1: 'Criteria',
@@ -276,6 +282,11 @@ scenarioLoadHint: 'Click to load into sensitivity bars',
 const DE = {
 help: '? Hilfe', print: '⎙ Drucken', newSession: '✕ Neue Entscheidung', exportHtml: '↓ HTML exportieren', save: '↓ Speichern (JSON)', load: '↑ Laden',
 exportCsv: '↓ CSV exportieren', csvRank: 'Rang', fileMenu: 'Datei ▾',
+exportConfluence: '⧉ Für Confluence kopieren', embedCopied: '✓ Kopiert',
+alertEmbedDevMode: 'Der Confluence-Block wird aus der gebauten Datei erzeugt. Bitte `node build.js` ausführen und dist/index.html verwenden.',
+alertEmbedCdata: 'Confluence-Block kann nicht erzeugt werden: Der Inhalt enthält "]]" gefolgt von ">". Das würde das Makro abschneiden und die Seite beschädigen. Bitte diese Zeichenfolge aus dem Entscheidungstext entfernen.',
+alertEmbedDownloaded: 'Zwischenablage nicht verfügbar — der Block wurde stattdessen heruntergeladen. Datei öffnen und den Inhalt ins Makro einfügen.',
+alertEmbedFailed: 'Confluence-Block konnte nicht erzeugt werden.',
 undoTitle: 'Rückgängig (Strg+Z)', redoTitle: 'Wiederholen (Strg+Umschalt+Z)',
 tabCriteria: 'Kriterien', tabSolutions: 'Lösungen', tabSensitivity: 'Sensitivität',
 step1: 'Kriterien',
@@ -2128,7 +2139,8 @@ const READONLY_CSS = '\n/* Read-only export */\n' +
 '.export-info-title span{font-size:0.72rem;font-weight:400;color:rgba(255,255,255,.4);background:rgba(255,255,255,.08);padding:2px 8px;border-radius:20px;margin-left:8px;vertical-align:middle}\n' +
 '.export-info-meta{font-size:0.72rem;color:rgba(255,255,255,.4);display:flex;gap:16px}\n' +
 '.export-info-meta strong{color:rgba(255,255,255,.6)}\n';
-const EMBED_SCOPE = '.dl-embed';
+const EMBED_CLASS = 'dl-embed';
+const EMBED_SCOPE = '.' + EMBED_CLASS;
 const EMBED_ROOT_HOOKS = ['.pro-on', '[data-readonly]'];
 function splitSelectorList(list) {
 const out = [];
@@ -2227,15 +2239,73 @@ return '(function(){\n'
 + bakeScript(stripCapturePreamble(scriptText), stateJson, true)
 + '\n})();';
 }
+function exportInfoBanner(tradeName, exporter) {
+const exportedAt = new Date().toLocaleString(lang === 'de' ? 'de-DE' : 'en-GB', { dateStyle: 'medium', timeStyle: 'short' });
+const tradeLabel = tradeName ? `<span style="color:#fff;font-size:.95rem;font-weight:600">${esc(tradeName)}</span> · ` : '';
+return `<div class="export-info"><div class="export-info-title">${tradeLabel}DecisionLab<span>v0.6</span></div><div class="export-info-meta"><span><strong>${t('exportedBy')}:</strong> ${esc(exporter)}</span><span><strong>${t('exportedDate')}:</strong> ${exportedAt}</span></div></div>\n`;
+}
+const CDATA_CLOSE = ']]' + '>';
+function buildEmbedPayload() {
+const exporter = bearbeiter || t('promptAnonymous');
+const rootId = newEmbedId();
+const state = JSON.stringify(buildState()).split(CDATA_CLOSE).join(']]\\u003e');
+const markup = _bodyHtml.replace('<div class="app-header">',
+'<div class="app-header">\n' + exportInfoBanner(decisionName, exporter));
+const payload = '<div class="' + EMBED_CLASS + '" id="' + rootId + '" data-readonly lang="' + lang + '">\n'
++ '<style>' + embedCss(_styleText) + '</style>\n'
++ markup + '\n'
++ '<script>' + embedScript(_scriptText, state, rootId) + '<\/script>\n'
++ '</div>';
+if (payload.indexOf(CDATA_CLOSE) >= 0) throw new Error(t('alertEmbedCdata'));
+return payload;
+}
+function copyPlainText(text) {
+if (navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(text);
+return new Promise((resolve, reject) => {
+const ta = document.createElement('textarea');
+ta.value = text;
+ta.style.position = 'fixed';
+ta.style.opacity = '0';
+document.body.appendChild(ta);
+ta.select();
+let ok = false;
+try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+ta.remove();
+if (ok) resolve(); else reject(new Error('copy unavailable'));
+});
+}
+function downloadText(text, name, type) {
+const a = Object.assign(document.createElement('a'), {
+href: URL.createObjectURL(new Blob([text], { type })),
+download: name,
+});
+a.click();
+URL.revokeObjectURL(a.href);
+}
+function flashLabel(el, msg) {
+if (!el) return;
+const prev = el.textContent;
+el.textContent = msg;
+setTimeout(() => { el.textContent = prev; }, 2200);
+}
+byId('exportConfluenceBtn').onclick = () => {
+if (typeof _scriptText === 'undefined') { alert(t('alertEmbedDevMode')); return; }
+let payload;
+try { payload = buildEmbedPayload(); }
+catch (e) { alert((e && e.message) || t('alertEmbedFailed')); return; }
+const fileName = (decisionName ? decisionName.replace(/[^a-z0-9äöüß\-_ ]/gi, '').trim() + ' – ' : '')
++ 'DecisionLab (Confluence).html';
+copyPlainText(payload)
+.then(() => flashLabel(byId('fileMenuBtn'), t('embedCopied')))
+.catch(() => { downloadText(payload, fileName, 'text/html'); alert(t('alertEmbedDownloaded')); });
+};
 byId('exportHtmlBtn').onclick = () => {
 if (embedded) return;
 const tradeName = decisionName;
 const exporter = bearbeiter || t('promptAnonymous');
-const exportedAt = new Date().toLocaleString(lang === 'de' ? 'de-DE' : 'en-GB', { dateStyle: 'medium', timeStyle: 'short' });
 const state = JSON.stringify(buildState());
 const bakedScript = bakeScript(_scriptText, state, false);
-const tradeLabel = tradeName ? `<span style="color:#fff;font-size:.95rem;font-weight:600">${esc(tradeName)}</span> · ` : '';
-const infoBanner = `<div class="export-info"><div class="export-info-title">${tradeLabel}DecisionLab<span>v0.6</span></div><div class="export-info-meta"><span><strong>${t('exportedBy')}:</strong> ${esc(exporter)}</span><span><strong>${t('exportedDate')}:</strong> ${exportedAt}</span></div></div>\n`;
+const infoBanner = exportInfoBanner(tradeName, exporter);
 const pageTitle = tradeName ? `${esc(tradeName)} – DecisionLab` : 'DecisionLab';
 const out = '<!DOCTYPE html>\n<html data-readonly lang="' + lang + '">\n<head>\n<meta charset="UTF-8">\n' +
 '<meta name="viewport" content="width=device-width,initial-scale=1">\n<title>' + pageTitle + '</title>\n' +

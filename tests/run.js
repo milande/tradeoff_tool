@@ -29,7 +29,7 @@ function mkEl() {
     set onclick(f){ this._onclick = f; }, get onclick(){ return this._onclick; },
     set oninput(f){ this._oninput = f; }, get oninput(){ return this._oninput; },
     click(){ if (this._onclick) this._onclick({}); },
-    focus(){}, remove(){}, animate(){ return { cancel(){} }; }, scrollIntoView(){},
+    focus(){}, select(){}, remove(){}, animate(){ return { cancel(){} }; }, scrollIntoView(){},
   };
 }
 const elCache = {};
@@ -48,9 +48,16 @@ global.localStorage = {
   setItem: (k, v) => { store[k] = v; },
   removeItem: k => { delete store[k]; },
 };
+global.lastCopied = null;
+// Node ships a read-only `navigator` global; a plain assignment is dropped.
+Object.defineProperty(global, 'navigator', {
+  value: { clipboard: { writeText(t){ global.lastCopied = t; return Promise.resolve(); } } },
+  configurable: true, writable: true,
+});
 global.location = { reload(){ this.reloaded = true; } };
 global.requestAnimationFrame = f => f();
-global.alert = () => {}; global.confirm = () => true; global.prompt = () => '';
+global.alertMsg = null;
+global.alert = m => { global.alertMsg = m; }; global.confirm = () => true; global.prompt = () => '';
 global.Blob = class { constructor(parts){ this.parts = parts; } };
 global.lastBlob = null;
 global.URL = { createObjectURL(b){ global.lastBlob = b; return 'blob:x'; }, revokeObjectURL(){} };
@@ -568,6 +575,54 @@ all += `
   check('pro-on toggles on the app root, not the host page body', proSpy.classList.last === 'pro-on:true');
   proMode = savedPro; appRootEl = savedRootEl; applyProMode();
 
+  // ══ 9e. Confluence embed payload ══════════════════════════════
+  console.log('— Confluence embed payload —');
+  decisionName = 'Server choice'; bearbeiter = 'Milan';
+  const pay = buildEmbedPayload();
+  check('embed payload: a fragment, not a document',
+    !pay.includes('<!DOCTYPE') && !pay.includes('<html') && !pay.includes('<head') && !pay.includes('<body'));
+  check('embed payload: one wrapper carrying id, read-only marker and language',
+    pay.split('class="dl-embed"').length - 1 === 1
+      && pay.indexOf('<div class="dl-embed" id="dl-') === 0
+      && pay.includes('data-readonly lang="en">')
+      && pay.slice(-6) === '</div>');
+  check('embed payload: scoped stylesheet inlined',
+    pay.includes('<style>.dl-embed CSS{}') && pay.includes('.dl-embed .help-overlay{display:none}'));
+  check('embed payload: app markup with the provenance banner',
+    pay.includes('BODY') && pay.includes('export-info-title') && pay.includes('Server choice') && pay.includes('Milan'));
+  check('embed payload: isolated script carrying the baked decision',
+    pay.includes('<script>(function(){') && pay.includes('embedded = true')
+      && pay.includes('"decisionName":"Server choice"'));
+  check('embed payload: CDATA-safe', !pay.includes(']]' + '>'));
+
+  // A decision containing the CDATA terminator is escaped, not rejected: inside
+  // the baked JS string literals > is the same character.
+  decisionName = 'Odd ]]' + '> name';
+  const payEsc = buildEmbedPayload();
+  check('embed payload: CDATA terminator in user text is escaped, not rejected',
+    !payEsc.includes(']]' + '>') && payEsc.includes('u003e') && payEsc.includes('Odd ]]'));
+  decisionName = 'Server choice';
+
+  globalThis.lastCopied = null;
+  byId('exportConfluenceBtn')._onclick();
+  check('menu action copies the whole payload as plain text',
+    lastCopied !== null && lastCopied.indexOf('<div class="dl-embed"') === 0 && lastCopied.slice(-6) === '</div>');
+
+  const fakeBtn = { textContent: 'File' };
+  flashLabel(fakeBtn, t('embedCopied'));
+  check('confirmation lands on the toolbar button (the menu closes on click)',
+    fakeBtn.textContent === t('embedCopied'));
+
+  // Dev mode has no captured script/style/markup to assemble from.
+  const savedCapture = globalThis._scriptText;
+  delete globalThis._scriptText;
+  globalThis.lastCopied = null; globalThis.alertMsg = null;
+  byId('exportConfluenceBtn')._onclick();
+  check('dev mode refuses with a clear message instead of throwing',
+    lastCopied === null && alertMsg === t('alertEmbedDevMode'));
+  globalThis._scriptText = savedCapture;
+  globalThis.alertMsg = null;
+
   // ══ 10. New session ═══════════════════════════════════════════
   console.log('— New session —');
   document.getElementById('newBtn')._onclick();
@@ -648,6 +703,8 @@ check('dist: scenario functions inlined', dist.includes('function loadScenario')
   check('dist: embed script reaches storage only through the guarded facade',
     es.includes('embedded = true') && (es.match(/localStorage/g) || []).length === 3);
 }
+check('dist: Confluence menu entry and handler present',
+  dist.includes('exportConfluenceBtn') && dist.includes('function buildEmbedPayload'));
 check('dist: capture-preamble sentinels survive minification',
   dist.includes('// Capture preamble') && dist.includes('// END Capture preamble'));
 // Keyboard shortcuts and close-on-outside-click must be reroutable; pointer

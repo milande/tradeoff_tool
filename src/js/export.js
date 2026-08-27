@@ -297,7 +297,8 @@ const READONLY_CSS = '\n/* Read-only export */\n' +
 //   - rules describing the document root (:root, html, body) BECOME the wrapper
 //   - root hooks that live ON the wrapper in an embed merge with it
 //   - everything else nests inside it
-const EMBED_SCOPE = '.dl-embed';
+const EMBED_CLASS = 'dl-embed';
+const EMBED_SCOPE = '.' + EMBED_CLASS;
 // `pro-on` is toggled onto the app root and `data-readonly` marks an export;
 // in an embed both sit on the wrapper, so they merge rather than nest.
 const EMBED_ROOT_HOOKS = ['.pro-on', '[data-readonly]'];
@@ -447,13 +448,109 @@ function embedScript(scriptText, stateJson, rootId) {
     + '\n})();';
 }
 
+// Provenance line shown at the top of every export. On a wiki page this
+// matters more than in a downloaded file, not less — a reader needs to know
+// whose decision this is and how old it is.
+function exportInfoBanner(tradeName, exporter) {
+  const exportedAt = new Date().toLocaleString(lang === 'de' ? 'de-DE' : 'en-GB', { dateStyle: 'medium', timeStyle: 'short' });
+  const tradeLabel = tradeName ? `<span style="color:#fff;font-size:.95rem;font-weight:600">${esc(tradeName)}</span> · ` : '';
+  return `<div class="export-info"><div class="export-info-title">${tradeLabel}DecisionLab<span>v0.6</span></div><div class="export-info-meta"><span><strong>${t('exportedBy')}:</strong> ${esc(exporter)}</span><span><strong>${t('exportedDate')}:</strong> ${exportedAt}</span></div></div>\n`;
+}
+
+// ── Confluence embed ──────────────────────────────────────────
+// One macro body: wrapper, scoped stylesheet, app markup, and an isolated
+// script carrying the decision. Paste into an {html-bobswift} macro with
+// sanitize=false — a sanitising macro strips the script, and because the markup
+// is an empty template rendered at load, the page would show an empty box.
+//
+// Built by concatenation rather than as a second build artifact: the pieces are
+// the same script/style/markup the HTML export already captures at load.
+
+// Confluence stores a macro body inside <![CDATA[ … ]]>, so this sequence
+// anywhere in the payload truncates the macro and corrupts the page. Split so
+// this file never contains it either.
+const CDATA_CLOSE = ']]' + '>';
+
+function buildEmbedPayload() {
+  const exporter = bearbeiter || t('promptAnonymous');
+  const rootId = newEmbedId();
+  // A decision whose text contains the CDATA terminator is escaped rather than
+  // rejected: inside the JS string literals of the baked state, `\u003e` is the
+  // same character. (In JSON that sequence can only occur inside a string.)
+  const state = JSON.stringify(buildState()).split(CDATA_CLOSE).join(']]\\u003e');
+  const markup = _bodyHtml.replace('<div class="app-header">',
+    '<div class="app-header">\n' + exportInfoBanner(decisionName, exporter));
+
+  const payload = '<div class="' + EMBED_CLASS + '" id="' + rootId + '" data-readonly lang="' + lang + '">\n'
+    + '<style>' + embedCss(_styleText) + '</style>\n'
+    + markup + '\n'
+    + '<script>' + embedScript(_scriptText, state, rootId) + '<\/script>\n'
+    + '</div>';
+
+  // Last line of defence: the sequence can also arise from minified code or a
+  // selector like `[a][b]>c`. Refusing beats silently truncating someone's page.
+  if (payload.indexOf(CDATA_CLOSE) >= 0) throw new Error(t('alertEmbedCdata'));
+  return payload;
+}
+
+// Plain text: the target is a macro body, so rich clipboard formats are
+// irrelevant and writeText is the widest-supported path. execCommand covers
+// contexts where the async API is unavailable (file://, older browsers).
+function copyPlainText(text) {
+  if (navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(text);
+  return new Promise((resolve, reject) => {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    let ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+    ta.remove();
+    if (ok) resolve(); else reject(new Error('copy unavailable'));
+  });
+}
+
+function downloadText(text, name, type) {
+  const a = Object.assign(document.createElement('a'), {
+    href: URL.createObjectURL(new Blob([text], { type })),
+    download: name,
+  });
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+// The file menu closes on any click, so confirmation goes on the toolbar
+// button that stays visible. A silent clipboard write looks like a no-op.
+function flashLabel(el, msg) {
+  if (!el) return;
+  const prev = el.textContent;
+  el.textContent = msg;
+  setTimeout(() => { el.textContent = prev; }, 2200);
+}
+
+byId('exportConfluenceBtn').onclick = () => {
+  // Assembled from the script, style and markup captured at load — which only
+  // the built file has.
+  if (typeof _scriptText === 'undefined') { alert(t('alertEmbedDevMode')); return; }
+  let payload;
+  try { payload = buildEmbedPayload(); }
+  catch (e) { alert((e && e.message) || t('alertEmbedFailed')); return; }
+
+  const fileName = (decisionName ? decisionName.replace(/[^a-z0-9äöüß\-_ ]/gi, '').trim() + ' – ' : '')
+    + 'DecisionLab (Confluence).html';
+  copyPlainText(payload)
+    .then(() => flashLabel(byId('fileMenuBtn'), t('embedCopied')))
+    .catch(() => { downloadText(payload, fileName, 'text/html'); alert(t('alertEmbedDownloaded')); });
+};
+
 // ── HTML Export ───────────────────────────────────────────────
 byId('exportHtmlBtn').onclick = () => {
   // An embed has no capture preamble to re-export from, and its menu is hidden.
   if (embedded) return;
   const tradeName = decisionName;
   const exporter = bearbeiter || t('promptAnonymous');
-  const exportedAt = new Date().toLocaleString(lang === 'de' ? 'de-DE' : 'en-GB', { dateStyle: 'medium', timeStyle: 'short' });
 
   const state = JSON.stringify(buildState());
 
@@ -461,8 +558,7 @@ byId('exportHtmlBtn').onclick = () => {
 
 
 
-  const tradeLabel = tradeName ? `<span style="color:#fff;font-size:.95rem;font-weight:600">${esc(tradeName)}</span> · ` : '';
-  const infoBanner = `<div class="export-info"><div class="export-info-title">${tradeLabel}DecisionLab<span>v0.6</span></div><div class="export-info-meta"><span><strong>${t('exportedBy')}:</strong> ${esc(exporter)}</span><span><strong>${t('exportedDate')}:</strong> ${exportedAt}</span></div></div>\n`;
+  const infoBanner = exportInfoBanner(tradeName, exporter);
   const pageTitle = tradeName ? `${esc(tradeName)} – DecisionLab` : 'DecisionLab';
 
   const out = '<!DOCTYPE html>\n<html data-readonly lang="' + lang + '">\n<head>\n<meta charset="UTF-8">\n' +

@@ -1,6 +1,11 @@
 const DE = {
   help: '? Hilfe', print: '⎙ Drucken', newSession: '✕ Neue Entscheidung', exportHtml: '↓ HTML exportieren', save: '↓ Speichern (JSON)', load: '↑ Laden',
   exportCsv: '↓ CSV exportieren', csvRank: 'Rang', fileMenu: 'Datei ▾',
+  exportConfluence: '⧉ Für Confluence kopieren', embedCopied: '✓ Kopiert',
+  alertEmbedDevMode: 'Der Confluence-Block wird aus der gebauten Datei erzeugt. Bitte `node build.js` ausführen und dist/index.html verwenden.',
+  alertEmbedCdata: 'Confluence-Block kann nicht erzeugt werden: Der Inhalt enthält "]]" gefolgt von ">". Das würde das Makro abschneiden und die Seite beschädigen. Bitte diese Zeichenfolge aus dem Entscheidungstext entfernen.',
+  alertEmbedDownloaded: 'Zwischenablage nicht verfügbar — der Block wurde stattdessen heruntergeladen. Datei öffnen und den Inhalt ins Makro einfügen.',
+  alertEmbedFailed: 'Confluence-Block konnte nicht erzeugt werden.',
   undoTitle: 'Rückgängig (Strg+Z)', redoTitle: 'Wiederholen (Strg+Umschalt+Z)',
   tabCriteria: 'Kriterien', tabSolutions: 'Lösungen', tabSensitivity: 'Sensitivität',
   step1: 'Kriterien',

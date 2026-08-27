@@ -1,6 +1,11 @@
 const EN = {
   help: '? Help', print: '⎙ Print', newSession: '✕ New decision', exportHtml: '↓ Export HTML', save: '↓ Save (JSON)', load: '↑ Load',
   exportCsv: '↓ Export CSV', csvRank: 'Rank', fileMenu: 'File ▾',
+  exportConfluence: '⧉ Copy for Confluence', embedCopied: '✓ Copied',
+  alertEmbedDevMode: 'The Confluence block is assembled from the built file. Run `node build.js` and use dist/index.html.',
+  alertEmbedCdata: 'Cannot build the Confluence block: the content contains "]]" followed by ">", which would truncate the macro and corrupt the page. Remove that sequence from your decision text and try again.',
+  alertEmbedDownloaded: 'Clipboard unavailable — the block was downloaded instead. Open the file and paste its contents into the macro.',
+  alertEmbedFailed: 'Could not build the Confluence block.',
   undoTitle: 'Undo (Ctrl+Z)', redoTitle: 'Redo (Ctrl+Shift+Z)',
   tabCriteria: 'Criteria', tabSolutions: 'Solutions', tabSensitivity: 'Sensitivity',
   step1: 'Criteria',
