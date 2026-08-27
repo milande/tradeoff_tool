@@ -528,6 +528,22 @@ all += `
     sc('/* note */ .x{content:""}') === '.dl-embed .x{content:""}');
   check('scope: top-level commas only (:not lists survive)',
     sc('.a:not(.b,.c),.d{color:red}') === '.dl-embed .a:not(.b,.c),.dl-embed .d{color:red}');
+  // A comment that follows whitespace used to be absorbed into the next
+  // selector. One invalid selector invalidates its whole comma-separated rule,
+  // so the entire read-only block was dropped and every editing control it
+  // hides went live in the embed.
+  check('scope: comment after leading whitespace does not reach the selector',
+    sc(' /* note */ .x{color:red}') === '.dl-embed .x{color:red}');
+  check('scope: comments stripped before, between and after rules',
+    sc('/* a */.x{color:red}/* b */.y{color:blue}/* c */')
+      === '.dl-embed .x{color:red}.dl-embed .y{color:blue}');
+  check('scope: an unterminated comment ends the sheet, as in a browser',
+    sc('.x{color:red}/* oops .y{color:blue}') === '.dl-embed .x{color:red}');
+  check('scope: no emitted selector ever carries a comment',
+    !sc('/* a */ .x, /* b */ .y{color:red}').includes('/*'));
+  // const declarations do not escape a direct eval — hand it to the static checks.
+  globalThis.READONLY_CSS = READONLY_CSS;
+
   check('embedCss: read-only rules scoped and extras appended',
     embedCss('body{color:#fff}').includes('.dl-embed[data-readonly] #printBtn')
       && embedCss('body{color:#fff}').includes('.dl-embed .help-overlay{display:none}')
@@ -782,19 +798,48 @@ check('dist: capture-preamble sentinels survive minification',
 {
   const rawCss = fs.readFileSync(path.join(__dirname, '..', 'src', 'styles.css'), 'utf8');
   const distCss = dist.match(/<style>([\s\S]*?)<\/style>/)[1];
-  const leaks = [];
-  for (const [label, source] of [['src/styles.css', rawCss], ['dist minified', distCss]]) {
+  const leaks = [], malformed = [];
+  // READONLY_CSS is included deliberately: it is the only sheet that opens with
+  // a comment, which is what broke the whole read-only block once.
+  for (const [label, source] of [['src/styles.css', rawCss], ['dist minified', distCss], ['READONLY_CSS', READONLY_CSS]]) {
     const scoped = scopeCss(source, '.dl-embed', ['.pro-on', '[data-readonly]']);
     scoped.replace(/(?:^|[{}])([^{}@]+)\{/g, (m, sel) => {
       sel.split(',').forEach(one => {
-        if (one.trim() && one.trim().indexOf('.dl-embed') !== 0) leaks.push(label + ': ' + one.trim());
+        const s = one.trim();
+        if (!s) return;
+        if (s.indexOf('.dl-embed') !== 0) leaks.push(label + ': ' + s);
+        // Starting with .dl-embed is not enough — a selector carrying a comment
+        // or a newline is invalid, and one invalid selector kills its whole rule.
+        if (s.includes('/*') || s.includes('*/') || s.includes('\n')) malformed.push(label + ': ' + s.slice(0, 60));
       });
       return m;
     });
   }
   check('embed scoping: no rule from the real stylesheet escapes the wrapper',
     leaks.length === 0, leaks.slice(0, 5).join(' | '));
+  check('embed scoping: every emitted selector is well formed',
+    malformed.length === 0, malformed.slice(0, 5).join(' | '));
 }
+// Every editing control the read-only block hides, asserted one by one against
+// a generated payload. Asserting the rule merely exists is not enough: it did,
+// with an invalid first selector that made the browser discard all of it.
+{
+  const scoped = scopeCss(READONLY_CSS, '.dl-embed', ['.pro-on', '[data-readonly]']);
+  const controls = ['#criteriaInputSection', '.btn-remove', '.pair-buttons', '#solutionList',
+    '#addSolutionBtn', '#proToggle', '.app-brand', '#helpBtn', '#printBtn', '#undoBtn', '#redoBtn',
+    '#fileMenuWrap', '.scenario-save-row', '#resetFineBtn', '.knockout-toggle', '.team-load'];
+  const live = controls.filter(c => !scoped.includes('.dl-embed[data-readonly] ' + c));
+  check('read-only: every editing control is hidden in an embed',
+    live.length === 0, 'still visible: ' + live.join(', '));
+}
+// stripCssComments does not track strings, which is safe only while the sheet
+// has no url() and no non-empty content:. Guard the assumption.
+{
+  const sheet = fs.readFileSync(path.join(__dirname, '..', 'src', 'styles.css'), 'utf8');
+  check('stylesheet has no url() or non-empty content: to confuse comment stripping',
+    !/url\(/.test(sheet) && !/content:\s*['"][^'"]/.test(sheet));
+}
+
 // The specific leakers that made this necessary.
 {
   const scoped = scopeCss(fs.readFileSync(path.join(__dirname, '..', 'src', 'styles.css'), 'utf8'), '.dl-embed', ['.pro-on', '[data-readonly]']);

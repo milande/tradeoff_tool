@@ -2170,16 +2170,23 @@ return scope + hook + sel.slice(hook.length);
 }
 return scope + ' ' + sel;
 }
+function stripCssComments(css) {
+let out = '', i = 0;
+while (i < css.length) {
+const start = css.indexOf('/*', i);
+if (start < 0) { out += css.slice(i); break; }
+out += css.slice(i, start);
+const end = css.indexOf('*/', start + 2);
+i = end < 0 ? css.length : end + 2;
+}
+return out;
+}
 function scopeCss(css, scope, rootHooks) {
 scope = scope || EMBED_SCOPE;
 rootHooks = rootHooks || EMBED_ROOT_HOOKS;
+css = stripCssComments(css);
 let out = '', i = 0;
 while (i < css.length) {
-if (css.slice(i, i + 2) === '/*') {
-const e = css.indexOf('*/', i + 2);
-i = e < 0 ? css.length : e + 2;
-continue;
-}
 const open = css.indexOf('{', i);
 if (open < 0) break;
 const prelude = css.slice(i, open).trim();

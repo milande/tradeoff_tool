@@ -338,16 +338,32 @@ function scopeSelector(sel, scope, rootHooks) {
   return scope + ' ' + sel;
 }
 
+// Comments are removed up front rather than at each scan position. A comment
+// that follows whitespace — READONLY_CSS opens with '\n/* Read-only export */\n'
+// — would otherwise be absorbed into the selector that follows it, and a single
+// invalid selector invalidates its whole comma-separated rule, silently
+// unhiding every control that rule covered.
+// Scans rather than regex-replaces so an unterminated comment cannot eat the
+// sheet. It does not track strings: safe while the sheet has no url() and no
+// non-empty content:, which a test guards.
+function stripCssComments(css) {
+  let out = '', i = 0;
+  while (i < css.length) {
+    const start = css.indexOf('/*', i);
+    if (start < 0) { out += css.slice(i); break; }
+    out += css.slice(i, start);
+    const end = css.indexOf('*/', start + 2);
+    i = end < 0 ? css.length : end + 2;
+  }
+  return out;
+}
+
 function scopeCss(css, scope, rootHooks) {
   scope = scope || EMBED_SCOPE;
   rootHooks = rootHooks || EMBED_ROOT_HOOKS;
+  css = stripCssComments(css);
   let out = '', i = 0;
   while (i < css.length) {
-    if (css.slice(i, i + 2) === '/*') {           // drop comments
-      const e = css.indexOf('*/', i + 2);
-      i = e < 0 ? css.length : e + 2;
-      continue;
-    }
     const open = css.indexOf('{', i);
     if (open < 0) break;
     const prelude = css.slice(i, open).trim();
