@@ -63,6 +63,7 @@ src/
     lang/
       en.js               ← English strings
       de.js               ← German strings
+    dom.js                ← app root, byId/qs/qsa, onGlobal (instance-scoped lookups)
     i18n.js               ← STRINGS object, t(), applyLang()
     state.js              ← saveState(), applyState()
     criteria.js           ← pairwise comparison, weights

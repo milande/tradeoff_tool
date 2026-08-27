@@ -78,8 +78,8 @@ function updateResetButtons() {
     const k = `${sol.id}|${c.id}`;
     return (explorationRatings[k] ?? 0) !== (ratings[k] ?? 0);
   }));
-  const wBtn = document.getElementById('resetWeightsBtn');
-  const rBtn = document.getElementById('resetRatingsBtn');
+  const wBtn = byId('resetWeightsBtn');
+  const rBtn = byId('resetRatingsBtn');
   if (wBtn) wBtn.disabled = !weightsDiffer;
   if (rBtn) rBtn.disabled = !ratingsDiffer;
 }
@@ -160,7 +160,7 @@ function computeBreakevens(cId, sols, w = sensWeights, r = explorationRatings) {
 
 function updateSensRanking() {
   const sols = getSolutions();
-  const tbody = document.getElementById('sensRankingBody');
+  const tbody = byId('sensRankingBody');
   if (!comparisonStarted || criteria.length === 0 || sols.length === 0) { tbody.innerHTML = ''; return; }
   ensureSensState();
   const ko = getKnockedOut(explorationRatings);
@@ -184,7 +184,7 @@ function updateSensRanking() {
 
 function updateSensImpact() {
   const sols = getSolutions();
-  const container = document.getElementById('sensImpact');
+  const container = byId('sensImpact');
 
   if (!comparisonStarted || criteria.length === 0 || sols.length < 2) {
     container.innerHTML = `<p class="hint">${t('hintNeedSolutions')}</p>`;
@@ -230,7 +230,7 @@ function updateSensImpact() {
   updateResetButtons();
 }
 
-document.getElementById('resetWeightsBtn').onclick = () => {
+byId('resetWeightsBtn').onclick = () => {
   initSensWeights();
   updateSensRanking();
   updateSensImpact(); updateRatingImpact();
@@ -241,7 +241,7 @@ document.getElementById('resetWeightsBtn').onclick = () => {
 let sensImpactDrag = null;
 
 (function setupSensImpactDrag() {
-  const container = document.getElementById('sensImpact');
+  const container = byId('sensImpact');
 
   function getT(e, rect) {
     const clientX = e.touches ? e.touches[0].clientX : e.clientX;
@@ -321,7 +321,7 @@ function computeRatingBreakevens(sol, cId, sols, weights, rObj) {
 }
 
 function updateRatingImpact() {
-  const container = document.getElementById('ratingImpactContainer');
+  const container = byId('ratingImpactContainer');
   if (!container) return;
   const sols = getSolutions();
   if (!comparisonStarted || criteria.length === 0 || sols.length < 2) {
@@ -363,7 +363,7 @@ function updateRatingImpact() {
   updateResetButtons();
 }
 
-document.getElementById('resetRatingsBtn').onclick = () => {
+byId('resetRatingsBtn').onclick = () => {
   initExplorationRatings();
   updateRatingImpact();
   updateSensImpact();
@@ -373,7 +373,7 @@ document.getElementById('resetRatingsBtn').onclick = () => {
 
 // ── Rating Impact drag ────────────────────────────────────────
 (function setupRatingImpactDrag() {
-  const container = document.getElementById('ratingImpactContainer');
+  const container = byId('ratingImpactContainer');
   let active = null;
   function getVal(e, rect) {
     const x = e.touches ? e.touches[0].clientX : e.clientX;

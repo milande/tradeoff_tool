@@ -109,7 +109,7 @@ function recordHistory(json) {
 
 function restoreFromHistory(json) {
   historyLock = true;
-  const activeTab = (document.querySelector('.tab-btn.active') || {}).dataset?.tab;
+  const activeTab = (qs('.tab-btn.active') || {}).dataset?.tab;
   try { applyState(JSON.parse(json)); } finally { historyLock = false; }
   lsSet(STORAGE_KEY, json);
   // The next change must never collapse into (and destroy) the checkpoint
@@ -118,7 +118,7 @@ function restoreFromHistory(json) {
   lastHistorySig = null;
   // applyState resets to the criteria tab — return to where the user was
   if (activeTab && activeTab !== 'criteria') {
-    const btn = document.querySelector(`.tab-btn[data-tab="${activeTab}"]`);
+    const btn = qs(`.tab-btn[data-tab="${activeTab}"]`);
     if (btn && !btn.classList.contains('disabled') && btn.onclick) btn.onclick();
   }
   updateHistoryButtons();
@@ -138,7 +138,7 @@ function redoState() {
 }
 
 function updateHistoryButtons() {
-  const u = document.getElementById('undoBtn'), r = document.getElementById('redoBtn');
+  const u = byId('undoBtn'), r = byId('redoBtn');
   if (u) u.disabled = undoStack.length < 2;
   if (r) r.disabled = redoStack.length === 0;
 }
@@ -160,8 +160,8 @@ function applyState(state) {
   knockoutCriteria = state.knockoutCriteria || {};
   economicCriteria = state.economicCriteria || {};
   solutionNotes = state.solutionNotes || {};
-  document.getElementById('decisionNameInput').value = decisionName;
-  document.getElementById('bearbeiterInput').value = bearbeiter;
+  byId('decisionNameInput').value = decisionName;
+  byId('bearbeiterInput').value = bearbeiter;
   pairStates = state.pairStates || {};
   customWeights = state.customWeights || null;
   customWeightReasons = state.customWeightReasons || {};
@@ -192,10 +192,10 @@ function applyState(state) {
   updateSensRanking(); updateSensImpact(); updateRatingImpact();
   updateTabState();
 
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-  document.querySelector('[data-tab="criteria"]').classList.add('active');
-  document.getElementById('tab-criteria').classList.add('active');
+  qsa('.tab-btn').forEach(b => b.classList.remove('active'));
+  qsa('.tab-content').forEach(t => t.classList.remove('active'));
+  qs('[data-tab="criteria"]').classList.add('active');
+  byId('tab-criteria').classList.add('active');
   applyLang();
   return true;
 }

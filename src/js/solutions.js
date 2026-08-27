@@ -1,8 +1,8 @@
 // ── DOM refs & state ──────────────────────────────────────────
 // All maps key by stable ids: ratings/ratingNotes 'solId|critId',
 // criteriaAnchors 'critId|value', knockoutCriteria/solutionNotes by id.
-const solutionList = document.getElementById('solutionList');
-const addSolutionBtn = document.getElementById('addSolutionBtn');
+const solutionList = byId('solutionList');
+const addSolutionBtn = byId('addSolutionBtn');
 let ratings = {};
 let ratingNotes = {};
 let criteriaAnchors = {};
@@ -51,7 +51,7 @@ function getSolutions() {
 
 // ── Matrix rendering ──────────────────────────────────────────
 function renderSolutionMatrix() {
-  const container = document.getElementById('solutionMatrix');
+  const container = byId('solutionMatrix');
   const sols = getSolutions();
   container.innerHTML = '';
 
@@ -210,7 +210,7 @@ function scoreSolutions(weights, ratingsObj = ratings) {
 
 function updateSolutionRanking() {
   const sols = getSolutions();
-  const tbody = document.getElementById('solutionRankingBody');
+  const tbody = byId('solutionRankingBody');
   if (!comparisonStarted || criteria.length === 0 || sols.length === 0) { tbody.innerHTML = ''; return; }
   const ko = getKnockedOut();
   const ranked = scoreSolutions(computeWeights()).filter(({ sol }) => !ko[sol.id]);
@@ -296,8 +296,8 @@ function vdiDiagramSvg(data, ko, sols, light = false) {
 }
 
 function renderVdi() {
-  const section = document.getElementById('vdiSection');
-  const container = document.getElementById('vdiContainer');
+  const section = byId('vdiSection');
+  const container = byId('vdiContainer');
   if (!section || !container) return;
   const sols = getSolutions();
   const data = comparisonStarted && proMode && sols.length ? computeVdi() : null;
@@ -349,7 +349,7 @@ function computeRobustness() {
 }
 
 function renderRobustness() {
-  const el = document.getElementById('robustnessHint');
+  const el = byId('robustnessHint');
   if (!el) return;
   el.title = t('robustnessBasis');
   const r = computeRobustness();

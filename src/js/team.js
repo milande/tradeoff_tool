@@ -44,13 +44,13 @@ function teamMeanRatings() {
 
 // ── Rendering ─────────────────────────────────────────────────
 function renderTeam() {
-  const section = document.getElementById('teamSection');
-  const container = document.getElementById('teamContainer');
+  const section = byId('teamSection');
+  const container = byId('teamContainer');
   if (!section || !container) return;
   const sols = getSolutions();
   const active = comparisonStarted && proMode && criteria.length > 0 && sols.length > 0;
   section.style.display = active ? '' : 'none';
-  const exploreBtn = document.getElementById('teamExploreBtn');
+  const exploreBtn = byId('teamExploreBtn');
   if (exploreBtn) exploreBtn.style.display = raters.length ? '' : 'none';
   if (!active) { container.innerHTML = ''; return; }
   if (!raters.length) {
@@ -124,7 +124,7 @@ function renderTeam() {
 }
 
 // ── Event handlers ────────────────────────────────────────────
-document.getElementById('raterInput').onchange = e => {
+byId('raterInput').onchange = e => {
   [...e.target.files].forEach(file => {
     const reader = new FileReader();
     reader.onload = ev => {
@@ -137,11 +137,11 @@ document.getElementById('raterInput').onchange = e => {
   e.target.value = '';
 };
 
-document.getElementById('teamExploreBtn').onclick = () => {
+byId('teamExploreBtn').onclick = () => {
   if (!raters.length) return;
   explorationRatings = teamMeanRatings();
   updateSensImpact(); updateSensRanking(); updateRatingImpact();
   saveState();
-  const btn = document.querySelector('.tab-btn[data-tab="sensitivity"]');
+  const btn = qs('.tab-btn[data-tab="sensitivity"]');
   if (btn && !btn.classList.contains('disabled') && btn.onclick) btn.onclick();
 };

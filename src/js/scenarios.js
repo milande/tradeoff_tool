@@ -5,7 +5,7 @@ let scenarios = [];
 
 // ── Helpers ───────────────────────────────────────────────────
 function saveCurrentScenario() {
-  const input = document.getElementById('scenarioNameInput');
+  const input = byId('scenarioNameInput');
   const name = (input.value || '').trim() || `${t('scenarios')} ${scenarios.length + 1}`;
   scenarios.push({ id: newId('sc'), name, weights: { ...sensWeights }, ratings: { ...explorationRatings } });
   input.value = '';
@@ -21,7 +21,7 @@ function deleteScenario(id) {
 
 // ── Rendering ─────────────────────────────────────────────────
 function renderScenarios() {
-  const container = document.getElementById('scenariosContainer');
+  const container = byId('scenariosContainer');
   if (!container) return;
 
   if (!comparisonStarted || criteria.length === 0) {
@@ -134,8 +134,8 @@ function renderScenarios() {
 }
 
 // ── Event handlers ────────────────────────────────────────────
-document.getElementById('saveScenarioBtn').onclick = saveCurrentScenario;
-document.getElementById('scenarioNameInput').addEventListener('keydown', e => {
+byId('saveScenarioBtn').onclick = saveCurrentScenario;
+byId('scenarioNameInput').addEventListener('keydown', e => {
   if (e.key === 'Enter') saveCurrentScenario();
 });
 

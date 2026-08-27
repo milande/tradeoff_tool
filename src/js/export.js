@@ -258,7 +258,7 @@ ${proMode && sols.length >= 2 ? `<h2>${t('criterionImpact')}</h2>${sensHtml}<h2>
 }
 
 // ── Print ─────────────────────────────────────────────────────
-document.getElementById('printBtn').onclick = () => {
+byId('printBtn').onclick = () => {
   const win = window.open('', '_blank', 'width=860,height=700');
   win.document.write(generatePrintView(decisionName, bearbeiter || t('promptAnonymous')));
   win.document.close();
@@ -412,8 +412,45 @@ function bakeScript(scriptText, stateJson, embed) {
   return scriptText.slice(0, si) + bakedAutoLoad(stateJson, embed) + scriptText.slice(ei);
 }
 
+// ── Assembling an embed script ────────────────────────────────
+const CAPTURE_START = '// Capture preamble';
+const CAPTURE_END = '// END Capture preamble';
+
+// The capture preamble lets a built file re-export itself: it grabs the script
+// text, the stylesheet and the body markup at load. Inside a Confluence page
+// those reads would take the HOST page's first <style> and its body instead of
+// ours, and an embed cannot re-export itself anyway — so it is cut out.
+function stripCapturePreamble(scriptText) {
+  const si = scriptText.indexOf(CAPTURE_START);
+  if (si < 0) return scriptText;
+  const ei = scriptText.indexOf(CAPTURE_END, si) + CAPTURE_END.length;
+  return scriptText.slice(0, si) + scriptText.slice(ei);
+}
+
+// Each embed gets its own wrapper id so two on one page stay apart.
+function newEmbedId() {
+  return 'dl-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+}
+
+// A complete embed script. The IIFE keeps every binding — `lang`, `ratings`,
+// `t`, `esc`, … — out of the wiki page's scope, where they would collide with
+// Confluence's own code and, fatally, with a second embed redeclaring them.
+// `_embedRoot` is read by dom.js as it initialises, so every lookup from then
+// on resolves inside this instance's wrapper. currentScript is preferred, so
+// even two copies of the same export work; the id is the fallback for a macro
+// rendered after parse, when currentScript is null.
+function embedScript(scriptText, stateJson, rootId) {
+  return '(function(){\n'
+    + 'var _embedRoot=(document.currentScript&&document.currentScript.closest('
+    + JSON.stringify(EMBED_SCOPE) + '))||document.getElementById(' + JSON.stringify(rootId) + ');\n'
+    + bakeScript(stripCapturePreamble(scriptText), stateJson, true)
+    + '\n})();';
+}
+
 // ── HTML Export ───────────────────────────────────────────────
-document.getElementById('exportHtmlBtn').onclick = () => {
+byId('exportHtmlBtn').onclick = () => {
+  // An embed has no capture preamble to re-export from, and its menu is hidden.
+  if (embedded) return;
   const tradeName = decisionName;
   const exporter = bearbeiter || t('promptAnonymous');
   const exportedAt = new Date().toLocaleString(lang === 'de' ? 'de-DE' : 'en-GB', { dateStyle: 'medium', timeStyle: 'short' });
@@ -443,7 +480,7 @@ document.getElementById('exportHtmlBtn').onclick = () => {
 };
 
 // ── JSON Save / Load ──────────────────────────────────────────
-document.getElementById('exportBtn').onclick = () => {
+byId('exportBtn').onclick = () => {
   const data = JSON.stringify(buildState(), null, 2);
   const a = Object.assign(document.createElement('a'), {
     href: URL.createObjectURL(new Blob([data], { type: 'application/json' })),
@@ -456,7 +493,7 @@ document.getElementById('exportBtn').onclick = () => {
 // ── CSV Export ────────────────────────────────────────────────
 // Decision matrix for spreadsheets: criteria rows (weight + rating per
 // solution), then score and rank. German locale gets ';' and decimal commas.
-document.getElementById('exportCsvBtn').onclick = () => {
+byId('exportCsvBtn').onclick = () => {
   const sols = getSolutions();
   const ordered = criteriaByWeight();
   const weights = computeWeights();
@@ -497,7 +534,7 @@ document.getElementById('exportCsvBtn').onclick = () => {
   URL.revokeObjectURL(a.href);
 };
 
-document.getElementById('importInput').onchange = e => {
+byId('importInput').onchange = e => {
   const file = e.target.files[0];
   if (!file) return;
   const reader = new FileReader();
@@ -512,14 +549,16 @@ document.getElementById('importInput').onchange = e => {
 };
 
 // ── Help overlay ──────────────────────────────────────────────
-const helpOverlay = document.getElementById('helpOverlay');
-document.getElementById('helpBtn').onclick = () => helpOverlay.classList.remove('hidden');
-document.getElementById('helpClose').onclick = () => helpOverlay.classList.add('hidden');
+const helpOverlay = byId('helpOverlay');
+byId('helpBtn').onclick = () => helpOverlay.classList.remove('hidden');
+byId('helpClose').onclick = () => helpOverlay.classList.add('hidden');
 helpOverlay.addEventListener('click', e => { if (e.target === helpOverlay) helpOverlay.classList.add('hidden'); });
-document.addEventListener('keydown', e => { if (e.key === 'Escape') helpOverlay.classList.add('hidden'); });
+onGlobal('keydown', e => { if (e.key === 'Escape') helpOverlay.classList.add('hidden'); });
 
 // ── New session ───────────────────────────────────────────────
-document.getElementById('newBtn').onclick = () => {
+byId('newBtn').onclick = () => {
+  // An embed has no session to clear and must never reload the wiki page.
+  if (embedded) return;
   if (!confirm(t('confirmNewSession'))) return;
   lsRemove(STORAGE_KEY);
   location.reload();

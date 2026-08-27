@@ -55,7 +55,7 @@ global.Blob = class { constructor(parts){ this.parts = parts; } };
 global.lastBlob = null;
 global.URL = { createObjectURL(b){ global.lastBlob = b; return 'blob:x'; }, revokeObjectURL(){} };
 
-const files = ['lang/en.js','lang/de.js','i18n.js','state.js','criteria.js','solutions.js','sensitivity.js','scenarios.js','team.js','export.js','main.js'];
+const files = ['lang/en.js','lang/de.js','dom.js','i18n.js','state.js','criteria.js','solutions.js','sensitivity.js','scenarios.js','team.js','export.js','main.js'];
 let all = files.map(f => fs.readFileSync(path.join(SRC, f), 'utf8')).join('\n');
 
 all += `
@@ -526,6 +526,48 @@ all += `
       && embedCss('body{color:#fff}').includes('.dl-embed .help-overlay{display:none}')
       && embedCss('body{color:#fff}').includes('.dl-embed .app-header{position:relative}'));
 
+  // ══ 9d. Embed scope isolation ═════════════════════════════════
+  // The macro injects our script into the wiki page's own scope, so bindings
+  // and element lookups must stay inside the instance.
+  console.log('— Embed scope isolation —');
+  const fakeScript = '// Capture preamble\\nconst _scriptText=1;const _styleText=2;let _bodyHtml=3;\\n// END Capture preamble\\nAPP\\n// Auto-load saved session\\nOLD\\n// END Auto-load\\nTAIL';
+  check('strip: capture preamble cut out by its sentinels',
+    stripCapturePreamble('HEAD;// Capture preamble\\nJUNK\\n// END Capture preamble\\nTAIL;') === 'HEAD;\\nTAIL;');
+  check('strip: a script without a preamble is returned untouched',
+    stripCapturePreamble('PLAIN') === 'PLAIN');
+
+  const es = embedScript(fakeScript, '{"version":2}', 'dl-test1');
+  check('embed script: wrapped in an IIFE, nothing reaches page scope',
+    es.indexOf('(function(){') === 0 && es.slice(-5) === '})();');
+  check('embed script: binds to its own wrapper (currentScript, id fallback)',
+    es.includes('_embedRoot') && es.includes('.dl-embed') && es.includes('dl-test1'));
+  check('embed script: capture-preamble artefacts gone',
+    !es.includes('_scriptText') && !es.includes('_styleText') && !es.includes('_bodyHtml'));
+  check('embed script: baked state, no storage access (with #25)',
+    es.includes('embedded = true') && !es.includes('localStorage') && !es.includes('OLD'));
+  check('embed ids are unique per export', newEmbedId() !== newEmbedId());
+
+  // Element lookups must resolve inside the instance root rather than the page.
+  const savedRoot = appRoot, savedRootEl = appRootEl;
+  const fakeRoot = { asked: [], querySelector(sel) { this.asked.push(sel); return 'FOUND'; },
+                     querySelectorAll(sel) { this.asked.push(sel); return ['ALL']; } };
+  appRoot = fakeRoot; appRootEl = fakeRoot;
+  check('lookups resolve inside the instance root, not the whole page',
+    byId('criteriaList') === 'FOUND' && fakeRoot.asked[0] === '#criteriaList'
+      && qs('.tab-btn') === 'FOUND' && qsa('.tab-btn')[0] === 'ALL');
+  check('app-wide listeners bind to the wrapper when embedded, not document',
+    globalTarget() === fakeRoot);
+  appRoot = savedRoot;
+  check('standalone still binds app-wide listeners to document', globalTarget() === document);
+
+  // pro-on must land on the app root; on a wiki page document.body is Confluence's.
+  const proSpy = { classList: { last: null, toggle(c, v) { this.last = c + ':' + v; }, contains() { return false; } } };
+  appRootEl = proSpy;
+  const savedPro = proMode;
+  proMode = true; applyProMode();
+  check('pro-on toggles on the app root, not the host page body', proSpy.classList.last === 'pro-on:true');
+  proMode = savedPro; appRootEl = savedRootEl; applyProMode();
+
   // ══ 10. New session ═══════════════════════════════════════════
   console.log('— New session —');
   document.getElementById('newBtn')._onclick();
@@ -588,6 +630,61 @@ check('dist: scenario functions inlined', dist.includes('function loadScenario')
 // Tripwire: every storage access must go through lsGet/lsSet/lsRemove, which are
 // the only three raw references left. A new direct call would let an embed write
 // to the shared origin and clobber every other embedded decision.
+// ── Embed scope isolation over the REAL bundle ────────────────
+{
+  const script = dist.match(/<script>([\s\S]*)<\/script>/)[1];
+  const es = embedScript(script, '{"version":2}', 'dl-real');
+  let ok = false, err = '';
+  try { new Function(es); ok = true; } catch (e) { err = e.message; }
+  check('dist: embed script parses against the minified bundle', ok, err);
+  // The preamble BLOCK is gone. References to its globals survive inside the
+  // HTML-export handler, which an embed guards and hides rather than removes.
+  // The sentinel itself still appears once, as export.js's own string literal.
+  check('dist: embed script carries no capture-preamble block',
+    !es.includes('_scriptEl=document.currentScript')
+      && es.split('// Capture preamble').length - 1 === 1);
+  // Storage stays reachable only through the facade, which the baked
+  // `embedded = true` short-circuits before anything can call it.
+  check('dist: embed script reaches storage only through the guarded facade',
+    es.includes('embedded = true') && (es.match(/localStorage/g) || []).length === 3);
+}
+check('dist: capture-preamble sentinels survive minification',
+  dist.includes('// Capture preamble') && dist.includes('// END Capture preamble'));
+// Keyboard shortcuts and close-on-outside-click must be reroutable; pointer
+// tracking during a drag must stay on document or a drag leaving the element
+// would stall mid-gesture.
+{
+  const mainSrc = fs.readFileSync(path.join(SRC, 'main.js'), 'utf8');
+  const exportSrc = fs.readFileSync(path.join(SRC, 'export.js'), 'utf8');
+  const uiListeners = (mainSrc + exportSrc).match(/document\.addEventListener\((['"])(keydown|click)\1/g) || [];
+  check('UI listeners go through onGlobal, not document', uiListeners.length === 0,
+    'still direct: ' + uiListeners.join(', '));
+  const dragSrc = fs.readFileSync(path.join(SRC, 'sensitivity.js'), 'utf8');
+  check('drag pointer tracking deliberately stays on document',
+    /document\.addEventListener\(['"]mousemove/.test(dragSrc) && /document\.addEventListener\(['"]touchmove/.test(dragSrc));
+}
+// No source file may reach past the instance root for an element.
+{
+  const strays = [];
+  for (const f of files) {
+    if (f === 'dom.js') continue;
+    // Blank out string literals first: export.js legitimately EMITS a
+    // document.getElementById call inside the embed prologue it generates.
+    // Blank comments then string/template literals: export.js legitimately
+    // EMITS a document.getElementById call inside the embed prologue it builds,
+    // and apostrophes in prose comments would otherwise desync the scan.
+    const src = fs.readFileSync(path.join(SRC, f), 'utf8')
+      .replace(/\/\*[\s\S]*?\*\//g, '')
+      .replace(/(^|[^:'"`])\/\/[^\n]*/g, '$1')
+      .replace(/`(?:\\.|[^`\\])*`/g, '``')
+      .replace(/'(?:\\.|[^'\\\n])*'|"(?:\\.|[^"\\\n])*"/g, "''");
+    (src.match(/document\.(getElementById|querySelectorAll|querySelector)\(/g) || [])
+      .forEach(m => strays.push(f + ': ' + m));
+  }
+  check('no source file looks elements up on the document directly',
+    strays.length === 0, strays.slice(0, 5).join(' | '));
+}
+
 // ── Embed scoping over the REAL stylesheet ────────────────────
 // Enumerates every selector the transform emits and proves none can match
 // outside the wrapper — the whole point of the embed CSS work.

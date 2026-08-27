@@ -186,7 +186,9 @@
 </div>
 </div>
 <p class="app-credit"><span data-i18n="credit"></span> · <a class="app-credit-link" href="https://github.com/milande/tradeoff_tool/" target="_blank" rel="noopener">Source &amp; build on GitHub</a></p>
-<script>const _scriptEl=document.currentScript;const _scriptText=_scriptEl.textContent;const _styleText=document.querySelector('style').textContent;let _bodyHtml='';for(const node of document.body.childNodes){if(node===_scriptEl)break;_bodyHtml+=node.nodeType===3?node.textContent:(node.outerHTML||'');}
+<script>// Capture preamble
+const _scriptEl=document.currentScript;const _scriptText=_scriptEl.textContent;const _styleText=document.querySelector('style').textContent;let _bodyHtml='';for(const node of document.body.childNodes){if(node===_scriptEl)break;_bodyHtml+=node.nodeType===3?node.textContent:(node.outerHTML||'');}
+// END Capture preamble
 const EN = {
 help: '? Help', print: '⎙ Print', newSession: '✕ New decision', exportHtml: '↓ Export HTML', save: '↓ Save (JSON)', load: '↑ Load',
 exportCsv: '↓ Export CSV', csvRank: 'Rank', fileMenu: 'File ▾',
@@ -355,6 +357,15 @@ scenarioHint: 'Verschiedene Gewichtskonfigurationen speichern und vergleichen, w
 scenarioNoData: 'Mindestens ein Szenario speichern, um den Vergleich zu sehen.',
 scenarioLoadHint: 'Klicken, um in Sensitivitätsbars zu laden',
 };
+let appRoot = (typeof _embedRoot !== 'undefined' && _embedRoot) ? _embedRoot : document;
+let appRootEl = (typeof _embedRoot !== 'undefined' && _embedRoot) ? _embedRoot : document.body;
+function byId(id) {
+return appRoot.getElementById ? appRoot.getElementById(id) : appRoot.querySelector('#' + id);
+}
+function qs(sel) { return appRoot.querySelector(sel); }
+function qsa(sel) { return appRoot.querySelectorAll(sel); }
+function globalTarget() { return appRoot === document ? document : appRootEl; }
+function onGlobal(type, handler, opts) { globalTarget().addEventListener(type, handler, opts); }
 let lang = 'en';
 const STRINGS = { en: EN, de: DE };
 function esc(s) {
@@ -366,35 +377,35 @@ const v = (s && s[key] !== undefined) ? s[key] : STRINGS.en[key];
 return v !== undefined ? v : key;
 }
 function applyLang() {
-document.querySelectorAll('[data-i18n]').forEach(el => {
+qsa('[data-i18n]').forEach(el => {
 const v = t(el.dataset.i18n);
 if (typeof v === 'string') el.textContent = v;
 });
-document.querySelectorAll('[data-i18n-html]').forEach(el => {
+qsa('[data-i18n-html]').forEach(el => {
 const v = t(el.dataset.i18nHtml);
 if (typeof v === 'string') el.innerHTML = v;
 });
-document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+qsa('[data-i18n-placeholder]').forEach(el => {
 const v = t(el.dataset.i18nPlaceholder);
 if (typeof v === 'string') el.placeholder = v;
 });
-document.querySelectorAll('[data-i18n-title]').forEach(el => {
+qsa('[data-i18n-title]').forEach(el => {
 const v = t(el.dataset.i18nTitle);
 if (typeof v === 'string') el.title = v;
 });
-const langBtn = document.getElementById('langToggle');
+const langBtn = byId('langToggle');
 langBtn.textContent = lang.toUpperCase();
 langBtn.title = lang === 'en' ? 'Auf Deutsch umschalten' : 'Switch to English';
 lsSet('dl_lang', lang);
-document.querySelectorAll('#criteriaList input').forEach((i, idx) => i.placeholder = `${t('criterionDefault')} ${idx + 1}`);
-document.querySelectorAll('#solutionList input:not(.sol-note)').forEach(i => i.placeholder = t('solutionPlaceholder'));
-document.querySelectorAll('#solutionList input.sol-note').forEach(i => i.placeholder = t('solutionNotePlaceholder'));
+qsa('#criteriaList input').forEach((i, idx) => i.placeholder = `${t('criterionDefault')} ${idx + 1}`);
+qsa('#solutionList input:not(.sol-note)').forEach(i => i.placeholder = t('solutionPlaceholder'));
+qsa('#solutionList input.sol-note').forEach(i => i.placeholder = t('solutionNotePlaceholder'));
 if (comparisonStarted) renderPairs();
 renderFineTune();
 renderSolutionMatrix();
 updateSensImpact(); updateRatingImpact();
 }
-document.getElementById('langToggle').onclick = () => {
+byId('langToggle').onclick = () => {
 lang = lang === 'en' ? 'de' : 'en';
 applyLang();
 saveState();
@@ -484,13 +495,13 @@ updateHistoryButtons();
 }
 function restoreFromHistory(json) {
 historyLock = true;
-const activeTab = (document.querySelector('.tab-btn.active') || {}).dataset?.tab;
+const activeTab = (qs('.tab-btn.active') || {}).dataset?.tab;
 try { applyState(JSON.parse(json)); } finally { historyLock = false; }
 lsSet(STORAGE_KEY, json);
 lastHistoryTime = 0;
 lastHistorySig = null;
 if (activeTab && activeTab !== 'criteria') {
-const btn = document.querySelector(`.tab-btn[data-tab="${activeTab}"]`);
+const btn = qs(`.tab-btn[data-tab="${activeTab}"]`);
 if (btn && !btn.classList.contains('disabled') && btn.onclick) btn.onclick();
 }
 updateHistoryButtons();
@@ -507,7 +518,7 @@ undoStack.push(json);
 restoreFromHistory(json);
 }
 function updateHistoryButtons() {
-const u = document.getElementById('undoBtn'), r = document.getElementById('redoBtn');
+const u = byId('undoBtn'), r = byId('redoBtn');
 if (u) u.disabled = undoStack.length < 2;
 if (r) r.disabled = redoStack.length === 0;
 }
@@ -524,8 +535,8 @@ criteriaAnchors = state.criteriaAnchors || {};
 knockoutCriteria = state.knockoutCriteria || {};
 economicCriteria = state.economicCriteria || {};
 solutionNotes = state.solutionNotes || {};
-document.getElementById('decisionNameInput').value = decisionName;
-document.getElementById('bearbeiterInput').value = bearbeiter;
+byId('decisionNameInput').value = decisionName;
+byId('bearbeiterInput').value = bearbeiter;
 pairStates = state.pairStates || {};
 customWeights = state.customWeights || null;
 customWeightReasons = state.customWeightReasons || {};
@@ -553,21 +564,21 @@ initExplorationRatings();
 if (state.explorationRatings) explorationRatings = { ...state.explorationRatings };
 updateSensRanking(); updateSensImpact(); updateRatingImpact();
 updateTabState();
-document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-document.querySelector('[data-tab="criteria"]').classList.add('active');
-document.getElementById('tab-criteria').classList.add('active');
+qsa('.tab-btn').forEach(b => b.classList.remove('active'));
+qsa('.tab-content').forEach(t => t.classList.remove('active'));
+qs('[data-tab="criteria"]').classList.add('active');
+byId('tab-criteria').classList.add('active');
 applyLang();
 return true;
 }
-const list = document.getElementById('criteriaList');
-const addBtn = document.getElementById('addBtn');
-const compareSection = document.getElementById('compareSection');
-const resultsSection = document.getElementById('resultsSection');
-const fineTuneSection = document.getElementById('fineTuneSection');
-const customBadge = document.getElementById('customBadge');
-const sensitivityTab = document.getElementById('sensitivityTab');
-const proToggle = document.getElementById('proToggle');
+const list = byId('criteriaList');
+const addBtn = byId('addBtn');
+const compareSection = byId('compareSection');
+const resultsSection = byId('resultsSection');
+const fineTuneSection = byId('fineTuneSection');
+const customBadge = byId('customBadge');
+const sensitivityTab = byId('sensitivityTab');
+const proToggle = byId('proToggle');
 let decisionName = '', bearbeiter = '';
 let criteria = [];
 let pairs = [];
@@ -659,7 +670,7 @@ else if (beats(b, a) && beats(a, c) && beats(c, b)) cycles.push([b, a, c]);
 return cycles;
 }
 function renderConsistency() {
-const el = document.getElementById('consistencyHint');
+const el = byId('consistencyHint');
 if (!el) return;
 const cycles = comparisonStarted ? findInconsistencies() : [];
 if (!cycles.length) { el.innerHTML = ''; el.classList.remove('visible'); return; }
@@ -718,7 +729,7 @@ const pct = total > 0 ? 100 * p / total : 0;
 const label = total > 0 ? `${pct.toFixed(1)}%` : '—';
 return { key: c.id, html: `<td>${esc(c.name)}</td><td>${p.toFixed(1)}</td><td><div class="weight-cell"><span>${label}</span><div class="weight-bar-wrap"><div class="weight-bar" style="width:${pct}%"></div></div></div></td>` };
 });
-animateRows(document.getElementById('tbody'), entries);
+animateRows(byId('tbody'), entries);
 renderConsistency();
 renderFineTune();
 updateSolutionRanking();
@@ -726,8 +737,8 @@ updateSensRanking();
 updateSensImpact(); updateRatingImpact();
 }
 function updateTabState() {
-document.querySelector('[data-tab="solutions"]').classList.toggle('disabled', !comparisonStarted);
-document.querySelector('[data-tab="sensitivity"]').classList.toggle('disabled', !comparisonStarted);
+qs('[data-tab="solutions"]').classList.toggle('disabled', !comparisonStarted);
+qs('[data-tab="sensitivity"]').classList.toggle('disabled', !comparisonStarted);
 }
 function checkAndStartComparison() {
 const current = getCriteria();
@@ -781,7 +792,7 @@ renderSolutionMatrix();
 if (!suppressScroll && !wasStarted) compareSection.scrollIntoView({ behavior: 'smooth' });
 }
 function renderPairs() {
-const container = document.getElementById('pairsContainer');
+const container = byId('pairsContainer');
 container.innerHTML = '';
 pairs.forEach(([a, b]) => {
 const key = `${a}|${b}`;
@@ -836,7 +847,7 @@ criteria.forEach(c => customWeights[c.id] = (next[c.id] ?? 0) / 100);
 }
 function refreshFineTuneRows() {
 const w = computeWeights();
-document.querySelectorAll('#fineTuneList .fine-tune-row').forEach(row => {
+qsa('#fineTuneList .fine-tune-row').forEach(row => {
 const cid = row.dataset.criterion;
 const pct = (w[cid] ?? 0) * 100;
 const input = row.querySelector('.fine-tune-input');
@@ -850,7 +861,7 @@ if (fill) fill.style.width = pct + '%';
 customBadge.classList.toggle('visible', customWeights !== null);
 }
 function renderFineTune() {
-const container = document.getElementById('fineTuneList');
+const container = byId('fineTuneList');
 const w = computeWeights();
 container.innerHTML = '';
 criteriaByWeight().forEach(c => {
@@ -879,10 +890,10 @@ saveState();
 });
 });
 customBadge.classList.toggle('visible', customWeights !== null);
-document.getElementById('resetFineBtn').disabled = customWeights === null;
+byId('resetFineBtn').disabled = customWeights === null;
 }
 (function setupFineTuneDrag() {
-const container = document.getElementById('fineTuneList');
+const container = byId('fineTuneList');
 let drag = null;
 function pctFrom(e, rect) {
 const x = e.touches ? e.touches[0].clientX : e.clientX;
@@ -915,7 +926,7 @@ container.addEventListener('touchstart', onDown, { passive: false });
 document.addEventListener('touchmove', onMove, { passive: false });
 document.addEventListener('touchend', onUp);
 }());
-document.getElementById('resetFineBtn').onclick = () => {
+byId('resetFineBtn').onclick = () => {
 customWeights = null;
 customWeightReasons = {};
 customWeightPinned = {};
@@ -926,8 +937,8 @@ updateSensImpact(); updateRatingImpact();
 };
 addBtn.onclick = () => { addCriterionInput(); checkAndStartComparison(); };
 for (let i = 0; i < 3; i++) addCriterionInput();
-const solutionList = document.getElementById('solutionList');
-const addSolutionBtn = document.getElementById('addSolutionBtn');
+const solutionList = byId('solutionList');
+const addSolutionBtn = byId('addSolutionBtn');
 let ratings = {};
 let ratingNotes = {};
 let criteriaAnchors = {};
@@ -971,7 +982,7 @@ return [...solutionList.querySelectorAll('input:not(.sol-note)')]
 .filter(s => s.name);
 }
 function renderSolutionMatrix() {
-const container = document.getElementById('solutionMatrix');
+const container = byId('solutionMatrix');
 const sols = getSolutions();
 container.innerHTML = '';
 if (!comparisonStarted || criteria.length === 0) {
@@ -1118,7 +1129,7 @@ return { sol, score };
 }
 function updateSolutionRanking() {
 const sols = getSolutions();
-const tbody = document.getElementById('solutionRankingBody');
+const tbody = byId('solutionRankingBody');
 if (!comparisonStarted || criteria.length === 0 || sols.length === 0) { tbody.innerHTML = ''; return; }
 const ko = getKnockedOut();
 const ranked = scoreSolutions(computeWeights()).filter(({ sol }) => !ko[sol.id]);
@@ -1193,8 +1204,8 @@ svg += '</svg>';
 return `<div class="vdi-diagram">${svg}</div>`;
 }
 function renderVdi() {
-const section = document.getElementById('vdiSection');
-const container = document.getElementById('vdiContainer');
+const section = byId('vdiSection');
+const container = byId('vdiContainer');
 if (!section || !container) return;
 const sols = getSolutions();
 const data = comparisonStarted && proMode && sols.length ? computeVdi() : null;
@@ -1238,7 +1249,7 @@ if (!best || delta < best.delta) best = { crit: c, cur, bp, challenger, delta };
 return best ? { stable: false, winner, ...best } : { stable: true, winner };
 }
 function renderRobustness() {
-const el = document.getElementById('robustnessHint');
+const el = byId('robustnessHint');
 if (!el) return;
 el.title = t('robustnessBasis');
 const r = computeRobustness();
@@ -1314,8 +1325,8 @@ const ratingsDiffer = getSolutions().some(sol => criteria.some(c => {
 const k = `${sol.id}|${c.id}`;
 return (explorationRatings[k] ?? 0) !== (ratings[k] ?? 0);
 }));
-const wBtn = document.getElementById('resetWeightsBtn');
-const rBtn = document.getElementById('resetRatingsBtn');
+const wBtn = byId('resetWeightsBtn');
+const rBtn = byId('resetRatingsBtn');
 if (wBtn) wBtn.disabled = !weightsDiffer;
 if (rBtn) rBtn.disabled = !ratingsDiffer;
 }
@@ -1385,7 +1396,7 @@ return merged;
 }
 function updateSensRanking() {
 const sols = getSolutions();
-const tbody = document.getElementById('sensRankingBody');
+const tbody = byId('sensRankingBody');
 if (!comparisonStarted || criteria.length === 0 || sols.length === 0) { tbody.innerHTML = ''; return; }
 ensureSensState();
 const ko = getKnockedOut(explorationRatings);
@@ -1408,7 +1419,7 @@ animateRows(tbody, entries);
 }
 function updateSensImpact() {
 const sols = getSolutions();
-const container = document.getElementById('sensImpact');
+const container = byId('sensImpact');
 if (!comparisonStarted || criteria.length === 0 || sols.length < 2) {
 container.innerHTML = `<p class="hint">${t('hintNeedSolutions')}</p>`;
 return;
@@ -1446,7 +1457,7 @@ html += `</div></div>`;
 container.innerHTML = html;
 updateResetButtons();
 }
-document.getElementById('resetWeightsBtn').onclick = () => {
+byId('resetWeightsBtn').onclick = () => {
 initSensWeights();
 updateSensRanking();
 updateSensImpact(); updateRatingImpact();
@@ -1454,7 +1465,7 @@ saveState();
 };
 let sensImpactDrag = null;
 (function setupSensImpactDrag() {
-const container = document.getElementById('sensImpact');
+const container = byId('sensImpact');
 function getT(e, rect) {
 const clientX = e.touches ? e.touches[0].clientX : e.clientX;
 return Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
@@ -1525,7 +1536,7 @@ return acc;
 }, []);
 }
 function updateRatingImpact() {
-const container = document.getElementById('ratingImpactContainer');
+const container = byId('ratingImpactContainer');
 if (!container) return;
 const sols = getSolutions();
 if (!comparisonStarted || criteria.length === 0 || sols.length < 2) {
@@ -1565,7 +1576,7 @@ html += `</div></div></div>`;
 container.innerHTML = html;
 updateResetButtons();
 }
-document.getElementById('resetRatingsBtn').onclick = () => {
+byId('resetRatingsBtn').onclick = () => {
 initExplorationRatings();
 updateRatingImpact();
 updateSensImpact();
@@ -1573,7 +1584,7 @@ updateSensRanking();
 saveState();
 };
 (function setupRatingImpactDrag() {
-const container = document.getElementById('ratingImpactContainer');
+const container = byId('ratingImpactContainer');
 let active = null;
 function getVal(e, rect) {
 const x = e.touches ? e.touches[0].clientX : e.clientX;
@@ -1606,7 +1617,7 @@ document.addEventListener('touchend', onUp);
 }());
 let scenarios = [];
 function saveCurrentScenario() {
-const input = document.getElementById('scenarioNameInput');
+const input = byId('scenarioNameInput');
 const name = (input.value || '').trim() || `${t('scenarios')} ${scenarios.length + 1}`;
 scenarios.push({ id: newId('sc'), name, weights: { ...sensWeights }, ratings: { ...explorationRatings } });
 input.value = '';
@@ -1619,7 +1630,7 @@ renderScenarios();
 saveState();
 }
 function renderScenarios() {
-const container = document.getElementById('scenariosContainer');
+const container = byId('scenariosContainer');
 if (!container) return;
 if (!comparisonStarted || criteria.length === 0) {
 container.innerHTML = `<p class="hint">${t('hintAddCriteria')}</p>`;
@@ -1715,8 +1726,8 @@ html += '</tr>';
 html += '</tbody></table></div>';
 container.innerHTML = html;
 }
-document.getElementById('saveScenarioBtn').onclick = saveCurrentScenario;
-document.getElementById('scenarioNameInput').addEventListener('keydown', e => {
+byId('saveScenarioBtn').onclick = saveCurrentScenario;
+byId('scenarioNameInput').addEventListener('keydown', e => {
 if (e.key === 'Enter') saveCurrentScenario();
 });
 function loadScenario(id) {
@@ -1766,13 +1777,13 @@ mean[k] = cols.reduce((s, col) => s + (col.ratings[k] ?? 0), 0) / cols.length;
 return mean;
 }
 function renderTeam() {
-const section = document.getElementById('teamSection');
-const container = document.getElementById('teamContainer');
+const section = byId('teamSection');
+const container = byId('teamContainer');
 if (!section || !container) return;
 const sols = getSolutions();
 const active = comparisonStarted && proMode && criteria.length > 0 && sols.length > 0;
 section.style.display = active ? '' : 'none';
-const exploreBtn = document.getElementById('teamExploreBtn');
+const exploreBtn = byId('teamExploreBtn');
 if (exploreBtn) exploreBtn.style.display = raters.length ? '' : 'none';
 if (!active) { container.innerHTML = ''; return; }
 if (!raters.length) {
@@ -1834,7 +1845,7 @@ html += '</tr>';
 html += '</tbody></table></div>';
 container.innerHTML = html;
 }
-document.getElementById('raterInput').onchange = e => {
+byId('raterInput').onchange = e => {
 [...e.target.files].forEach(file => {
 const reader = new FileReader();
 reader.onload = ev => {
@@ -1846,12 +1857,12 @@ reader.readAsText(file);
 });
 e.target.value = '';
 };
-document.getElementById('teamExploreBtn').onclick = () => {
+byId('teamExploreBtn').onclick = () => {
 if (!raters.length) return;
 explorationRatings = teamMeanRatings();
 updateSensImpact(); updateSensRanking(); updateRatingImpact();
 saveState();
-const btn = document.querySelector('.tab-btn[data-tab="sensitivity"]');
+const btn = qs('.tab-btn[data-tab="sensitivity"]');
 if (btn && !btn.classList.contains('disabled') && btn.onclick) btn.onclick();
 };
 function generatePrintView(tradeName = '', exporter = '') {
@@ -2092,7 +2103,7 @@ ${proMode && sols.length >= 2 ? `<h2>${t('criterionImpact')}</h2>${sensHtml}<h2>
 </body>
 </html>`;
 }
-document.getElementById('printBtn').onclick = () => {
+byId('printBtn').onclick = () => {
 const win = window.open('', '_blank', 'width=860,height=700');
 win.document.write(generatePrintView(decisionName, bearbeiter || t('promptAnonymous')));
 win.document.close();
@@ -2198,7 +2209,26 @@ const si = scriptText.lastIndexOf(AUTOLOAD_START);
 const ei = scriptText.indexOf(AUTOLOAD_END, si) + AUTOLOAD_END.length;
 return scriptText.slice(0, si) + bakedAutoLoad(stateJson, embed) + scriptText.slice(ei);
 }
-document.getElementById('exportHtmlBtn').onclick = () => {
+const CAPTURE_START = '// Capture preamble';
+const CAPTURE_END = '// END Capture preamble';
+function stripCapturePreamble(scriptText) {
+const si = scriptText.indexOf(CAPTURE_START);
+if (si < 0) return scriptText;
+const ei = scriptText.indexOf(CAPTURE_END, si) + CAPTURE_END.length;
+return scriptText.slice(0, si) + scriptText.slice(ei);
+}
+function newEmbedId() {
+return 'dl-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+}
+function embedScript(scriptText, stateJson, rootId) {
+return '(function(){\n'
++ 'var _embedRoot=(document.currentScript&&document.currentScript.closest('
++ JSON.stringify(EMBED_SCOPE) + '))||document.getElementById(' + JSON.stringify(rootId) + ');\n'
++ bakeScript(stripCapturePreamble(scriptText), stateJson, true)
++ '\n})();';
+}
+byId('exportHtmlBtn').onclick = () => {
+if (embedded) return;
 const tradeName = decisionName;
 const exporter = bearbeiter || t('promptAnonymous');
 const exportedAt = new Date().toLocaleString(lang === 'de' ? 'de-DE' : 'en-GB', { dateStyle: 'medium', timeStyle: 'short' });
@@ -2219,7 +2249,7 @@ download: (decisionName ? decisionName.replace(/[^a-z0-9äöüß\-_ ]/gi, '').tr
 a.click();
 URL.revokeObjectURL(a.href);
 };
-document.getElementById('exportBtn').onclick = () => {
+byId('exportBtn').onclick = () => {
 const data = JSON.stringify(buildState(), null, 2);
 const a = Object.assign(document.createElement('a'), {
 href: URL.createObjectURL(new Blob([data], { type: 'application/json' })),
@@ -2228,7 +2258,7 @@ download: (decisionName ? decisionName.replace(/[^a-z0-9äöüß\-_ ]/gi, '').tr
 a.click();
 URL.revokeObjectURL(a.href);
 };
-document.getElementById('exportCsvBtn').onclick = () => {
+byId('exportCsvBtn').onclick = () => {
 const sols = getSolutions();
 const ordered = criteriaByWeight();
 const weights = computeWeights();
@@ -2266,7 +2296,7 @@ download: (decisionName ? decisionName.replace(/[^a-z0-9äöüß\-_ ]/gi, '').tr
 a.click();
 URL.revokeObjectURL(a.href);
 };
-document.getElementById('importInput').onchange = e => {
+byId('importInput').onchange = e => {
 const file = e.target.files[0];
 if (!file) return;
 const reader = new FileReader();
@@ -2279,70 +2309,71 @@ catch { alert(t('alertInvalidFile')); }
 reader.readAsText(file);
 e.target.value = '';
 };
-const helpOverlay = document.getElementById('helpOverlay');
-document.getElementById('helpBtn').onclick = () => helpOverlay.classList.remove('hidden');
-document.getElementById('helpClose').onclick = () => helpOverlay.classList.add('hidden');
+const helpOverlay = byId('helpOverlay');
+byId('helpBtn').onclick = () => helpOverlay.classList.remove('hidden');
+byId('helpClose').onclick = () => helpOverlay.classList.add('hidden');
 helpOverlay.addEventListener('click', e => { if (e.target === helpOverlay) helpOverlay.classList.add('hidden'); });
-document.addEventListener('keydown', e => { if (e.key === 'Escape') helpOverlay.classList.add('hidden'); });
-document.getElementById('newBtn').onclick = () => {
+onGlobal('keydown', e => { if (e.key === 'Escape') helpOverlay.classList.add('hidden'); });
+byId('newBtn').onclick = () => {
+if (embedded) return;
 if (!confirm(t('confirmNewSession'))) return;
 lsRemove(STORAGE_KEY);
 location.reload();
 };
 function applyProMode() {
 proToggle.classList.toggle('active', proMode);
-document.body.classList.toggle('pro-on', proMode);
+appRootEl.classList.toggle('pro-on', proMode);
 sensitivityTab.style.display = proMode ? '' : 'none';
 if (comparisonStarted) {
 fineTuneSection.classList.toggle('active', proMode);
 }
 if (!proMode && sensitivityTab.classList.contains('active')) {
-document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-document.querySelector('.tab-btn[data-tab="criteria"]').classList.add('active');
-document.getElementById('tab-criteria').classList.add('active');
+qsa('.tab-btn').forEach(b => b.classList.remove('active'));
+qsa('.tab-content').forEach(t => t.classList.remove('active'));
+qs('.tab-btn[data-tab="criteria"]').classList.add('active');
+byId('tab-criteria').classList.add('active');
 }
 if (comparisonStarted) renderSolutionMatrix();
 }
-document.getElementById('decisionNameInput').oninput = e => { decisionName = e.target.value; saveState(); };
-document.getElementById('bearbeiterInput').oninput = e => { bearbeiter = e.target.value; saveState(); };
+byId('decisionNameInput').oninput = e => { decisionName = e.target.value; saveState(); };
+byId('bearbeiterInput').oninput = e => { bearbeiter = e.target.value; saveState(); };
 proToggle.onclick = () => {
 proMode = !proMode;
 applyProMode();
 saveState();
 };
-document.querySelectorAll('.tab-btn').forEach(btn => {
+qsa('.tab-btn').forEach(btn => {
 btn.onclick = () => {
 if (btn.classList.contains('disabled')) return;
-document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+qsa('.tab-btn').forEach(b => b.classList.remove('active'));
+qsa('.tab-content').forEach(t => t.classList.remove('active'));
 btn.classList.add('active');
-document.getElementById(`tab-${btn.dataset.tab}`).classList.add('active');
+byId(`tab-${btn.dataset.tab}`).classList.add('active');
 if (btn.dataset.tab === 'solutions') renderSolutionMatrix();
 if (btn.dataset.tab === 'sensitivity') { updateSensRanking(); updateSensImpact(); updateRatingImpact(); }
-if (typeof window.scrollTo === 'function') window.scrollTo(0, 0);
+if (!embedded && typeof window.scrollTo === 'function') window.scrollTo(0, 0);
 };
 });
 updateTabState();
 (function setupFileMenu() {
-const menu = document.getElementById('fileMenu');
-document.getElementById('fileMenuBtn').onclick = e => {
+const menu = byId('fileMenu');
+byId('fileMenuBtn').onclick = e => {
 e.stopPropagation();
 menu.classList.toggle('hidden');
 };
 menu.addEventListener('click', e => {
 if (e.target.closest('button, label')) menu.classList.add('hidden');
 });
-document.addEventListener('click', e => {
+onGlobal('click', e => {
 if (!e.target.closest('#fileMenuWrap')) menu.classList.add('hidden');
 });
-document.addEventListener('keydown', e => {
+onGlobal('keydown', e => {
 if (e.key === 'Escape') menu.classList.add('hidden');
 });
 }());
-document.getElementById('undoBtn').onclick = () => undoState();
-document.getElementById('redoBtn').onclick = () => redoState();
-document.addEventListener('keydown', e => {
+byId('undoBtn').onclick = () => undoState();
+byId('redoBtn').onclick = () => redoState();
+onGlobal('keydown', e => {
 const tag = ((e.target && e.target.tagName) || '').toLowerCase();
 if (tag === 'input' || tag === 'textarea') return;
 if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && !e.shiftKey) { e.preventDefault(); undoState(); }
@@ -2354,8 +2385,8 @@ try {
 const saved = lsGet(STORAGE_KEY);
 if (!saved || !applyState(JSON.parse(saved))) {
 decisionName = ''; bearbeiter = '';
-document.getElementById('decisionNameInput').value = '';
-document.getElementById('bearbeiterInput').value = '';
+byId('decisionNameInput').value = '';
+byId('bearbeiterInput').value = '';
 lang = lsGet('dl_lang') || lang;
 applyProMode();
 applyLang();
