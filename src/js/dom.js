@@ -35,11 +35,14 @@ let theme = 'auto';
 function hostTheme() {
   const el = document.documentElement;
   if (themeRoot === el || !el || !el.getAttribute) return null;
-  const hint = [el.getAttribute('data-color-mode'), el.getAttribute('data-theme'),
-    el.getAttribute('data-mode'), el.className].filter(Boolean).join(' ').toLowerCase();
-  if (hint.indexOf('dark') >= 0) return 'dark';
-  if (hint.indexOf('light') >= 0) return 'light';
-  return null;
+  // `data-color-mode` is the documented signal in Confluence DC 9+, and the only
+  // one worth reading. Its sibling `data-theme` names both schemes at once
+  // ("light:light dark:dark"), so folding the attributes together and matching
+  // substrings found "dark" on every page and pinned every embed to dark.
+  // Match exactly: anything else, "auto" included, falls through to the
+  // browser's prefers-color-scheme.
+  const mode = String(el.getAttribute('data-color-mode') || '').trim().toLowerCase();
+  return mode === 'dark' || mode === 'light' ? mode : null;
 }
 
 function applyTheme() {
@@ -66,7 +69,7 @@ function watchTheme() {
   }
   if (typeof MutationObserver === 'function' && themeRoot !== document.documentElement && document.documentElement) {
     new MutationObserver(applyTheme).observe(document.documentElement,
-      { attributes: true, attributeFilter: ['data-color-mode', 'data-theme', 'data-mode', 'class'] });
+      { attributes: true, attributeFilter: ['data-color-mode'] });
   }
 }
 

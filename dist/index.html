@@ -393,11 +393,8 @@ let theme = 'auto';
 function hostTheme() {
 const el = document.documentElement;
 if (themeRoot === el || !el || !el.getAttribute) return null;
-const hint = [el.getAttribute('data-color-mode'), el.getAttribute('data-theme'),
-el.getAttribute('data-mode'), el.className].filter(Boolean).join(' ').toLowerCase();
-if (hint.indexOf('dark') >= 0) return 'dark';
-if (hint.indexOf('light') >= 0) return 'light';
-return null;
+const mode = String(el.getAttribute('data-color-mode') || '').trim().toLowerCase();
+return mode === 'dark' || mode === 'light' ? mode : null;
 }
 function applyTheme() {
 if (!themeRoot || !themeRoot.setAttribute) return;
@@ -419,7 +416,7 @@ if (mq && mq.addEventListener) mq.addEventListener('change', applyTheme);
 }
 if (typeof MutationObserver === 'function' && themeRoot !== document.documentElement && document.documentElement) {
 new MutationObserver(applyTheme).observe(document.documentElement,
-{ attributes: true, attributeFilter: ['data-color-mode', 'data-theme', 'data-mode', 'class'] });
+{ attributes: true, attributeFilter: ['data-color-mode'] });
 }
 }
 function byId(id) {

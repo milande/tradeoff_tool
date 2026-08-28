@@ -802,6 +802,20 @@ all += `
   check('theme: host light is followed too', fakeThemeRoot.getAttribute('data-theme') === 'light');
   theme = 'dark'; applyTheme();
   check('theme: an explicit choice overrides the host', fakeThemeRoot.getAttribute('data-theme') === 'dark');
+  // Confluence DC publishes both attributes: data-color-mode carries the mode,
+  // while data-theme names both schemes ("light:light dark:dark"). Folding them
+  // together and matching substrings found "dark" on every page.
+  theme = 'auto';
+  document.documentElement.setAttribute('data-theme', 'light:light dark:dark');
+  document.documentElement.setAttribute('data-color-mode', 'light');
+  check('theme: the host colour mode wins over the theme-name attribute',
+    hostTheme() === 'light');
+  document.documentElement.setAttribute('data-color-mode', 'dark');
+  check('theme: host dark is read exactly', hostTheme() === 'dark');
+  document.documentElement.setAttribute('data-color-mode', 'auto');
+  check('theme: an auto host falls through to the browser preference', hostTheme() === null);
+  document.documentElement.removeAttribute('data-theme');
+  theme = 'dark';
   document.documentElement.removeAttribute('data-color-mode');
   // Owning the document, we would otherwise read back the attribute we set.
   themeRoot = document.documentElement;
