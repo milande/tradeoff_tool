@@ -246,7 +246,7 @@ helpSolutionsText: 'Add the options you\'re deciding between. Optionally add a s
 helpDataTitle: '↓ / ↑ Data',
 helpDataText: 'Your session auto-saves in the browser. <strong>↓ HTML</strong> exports a fully self-contained file with your data baked in — open it anywhere or share it. <strong>↓ JSON</strong> exports just the data for re-importing. <strong>↓ CSV</strong> exports the decision matrix for spreadsheets. <strong>↑ Load</strong> loads a JSON file. <strong>New</strong> clears everything. <strong>↶ ↷</strong> undo/redo any change (Ctrl+Z / Ctrl+Shift+Z).',
 helpConfluenceTitle: '⧉ Confluence',
-helpConfluenceText: 'Puts the live tool — read-only, with your decision baked in — inside a Confluence page.<br><br><strong>What you need.</strong> Confluence <strong>Server / Data Center</strong> with the Appfire (Bob Swift) <em>HTML for Confluence</em> app. The macro is called <strong>html-bobswift</strong>. Its <em>Allow Javascript</em> setting must be switched on — that is a global admin setting, not a macro option, and without it the block renders as an empty box. Confluence <strong>Cloud</strong> has no HTML macro, so this route does not exist there.<br><br><strong>How.</strong> Turn on <strong>⚡ Pro</strong> first if the embed should include Sensitivity, VDI, scenarios or team ratings — the export carries whatever is active. Then <strong>File ▾ → ⧉ Copy for Confluence</strong>, add an <strong>html-bobswift</strong> macro to your page, and paste into its body.<br><br><strong>What readers get.</strong> They can switch tabs, read the results and drag the sensitivity bars; nothing they do is saved or visible to anyone else, and the surrounding page is untouched. The embed is a <em>snapshot</em>: change the decision and you re-export and re-paste.',
+helpConfluenceText: 'Puts the live tool — read-only, with your decision baked in — inside a Confluence page.<br><br><strong>What you need.</strong> Confluence <strong>Server / Data Center</strong> with the Appfire (Bob Swift) <em>HTML for Confluence</em> app. The macro is called <strong>html-bobswift</strong>. Its <em>Allow Javascript</em> setting must be switched on — that is a global admin setting, not a macro option, and without it the block renders as an empty box. Confluence <strong>Cloud</strong> has no HTML macro, so this route does not exist there.<br><br><strong>How.</strong> Turn on <strong>⚡ Pro</strong> first if the embed should include Sensitivity, VDI, scenarios or team ratings — the export carries whatever is active. Then <strong>File ▾ → ⧉ Copy for Confluence</strong>, add an <strong>html-bobswift</strong> macro to your page, and paste into its body.<br><br><strong>What readers get.</strong> They can switch tabs, read the results and drag the sensitivity bars; nothing they do is saved or visible to anyone else, and the surrounding page is untouched. The embed is a <em>snapshot</em>: change the decision and you re-export and re-paste.<br><br><strong>Exporting the page.</strong> The block carries a static report alongside the live tool. Wherever scripts run, the tool replaces it; wherever they do not — a page export to HTML or Word, a PDF, an instance with <em>Allow Javascript</em> off — the report is what the reader gets: ranking, weights, adjustments, comparisons and the sensitivity breakevens, written out as text.',
 helpViewTitle: '◐ Appearance & updates',
 helpViewText: 'The <strong>◐</strong> button cycles the theme: <em>Auto</em> follows your system — and, inside a Confluence page, the page around it — or pick <em>Light</em> or <em>Dark</em>. <strong>EN / DE</strong> switches language. Both are remembered between sessions. Exports have no theme control: they follow whatever the reader\'s browser or wiki page uses.<br><br>The version badge beside the app name becomes a link when a newer release is available. The tool asks GitHub at most once a day and stays silent if it cannot reach it; exports never check at all.',
 helpProTitle: '⚡ Pro Mode',
@@ -256,6 +256,8 @@ printCriteriaComparisons: 'Criteria Comparisons', printCriteriaWeights: 'Criteri
 printWeightAdjustments: 'Weight Adjustments', printSolutionRanking: 'Solution Ranking',
 printThCriterion: 'Criterion', printThWeight: 'Weight', printThPairwise: 'Pairwise',
 printThAdjusted: 'Adjusted', printThReason: 'Reason', printThSolution: 'Solution', printThScore: 'Score',
+printThCurrent: 'Now', printThLeads: 'Leads at',
+printStaticNote: 'Static summary — the interactive version needs JavaScript.',
 solutionNotePlaceholder: 'Description of solution…',
 ratingNotePlaceholder: 'Reason for this rating…',
 anchorDefaults: ['Not suitable', 'Poor', 'Acceptable', 'Good', 'Excellent'],
@@ -342,7 +344,7 @@ helpSolutionsText: 'Füge die Optionen hinzu, zwischen denen du entscheidest. Op
 helpDataTitle: '↓ / ↑ Daten',
 helpDataText: 'Ihre Sitzung wird automatisch im Browser gespeichert. <strong>↓ HTML</strong> exportiert eine vollständig eigenständige Datei mit Ihren Daten — überall zu öffnen und zu teilen. <strong>↓ JSON</strong> exportiert nur die Daten zum Wiedereinlesen. <strong>↓ CSV</strong> exportiert die Entscheidungsmatrix für Tabellenkalkulationen. <strong>↑ Laden</strong> lädt eine JSON-Datei. <strong>Neu</strong> löscht alles. <strong>↶ ↷</strong> machen Änderungen rückgängig bzw. wieder her (Strg+Z / Strg+Umschalt+Z).',
 helpConfluenceTitle: '⧉ Confluence',
-helpConfluenceText: 'Bettet das Werkzeug — schreibgeschützt und mit Ihrer Entscheidung — direkt in eine Confluence-Seite ein.<br><br><strong>Voraussetzungen.</strong> Confluence <strong>Server / Data Center</strong> mit der App <em>HTML for Confluence</em> von Appfire (Bob Swift). Das Makro heißt <strong>html-bobswift</strong>. Dessen Einstellung <em>Allow Javascript</em> muss aktiviert sein — eine globale Administrator-Einstellung, keine Makro-Option; ohne sie bleibt der Block leer. Confluence <strong>Cloud</strong> hat kein HTML-Makro, dort ist dieser Weg nicht möglich.<br><br><strong>Vorgehen.</strong> Zuerst <strong>⚡ Pro</strong> einschalten, wenn Sensitivität, VDI, Szenarien oder Team-Bewertungen enthalten sein sollen — exportiert wird, was gerade aktiv ist. Dann <strong>Datei ▾ → ⧉ Für Confluence kopieren</strong>, ein <strong>html-bobswift</strong>-Makro auf der Seite einfügen und den Block in dessen Rumpf einsetzen.<br><br><strong>Für Lesende.</strong> Tabs wechseln, Ergebnisse lesen und die Sensitivitätsbalken ziehen ist möglich; nichts davon wird gespeichert oder für andere sichtbar, und die umgebende Seite bleibt unverändert. Die Einbettung ist eine <em>Momentaufnahme</em>: Nach Änderungen erneut exportieren und einfügen.',
+helpConfluenceText: 'Bettet das Werkzeug — schreibgeschützt und mit Ihrer Entscheidung — direkt in eine Confluence-Seite ein.<br><br><strong>Voraussetzungen.</strong> Confluence <strong>Server / Data Center</strong> mit der App <em>HTML for Confluence</em> von Appfire (Bob Swift). Das Makro heißt <strong>html-bobswift</strong>. Dessen Einstellung <em>Allow Javascript</em> muss aktiviert sein — eine globale Administrator-Einstellung, keine Makro-Option; ohne sie bleibt der Block leer. Confluence <strong>Cloud</strong> hat kein HTML-Makro, dort ist dieser Weg nicht möglich.<br><br><strong>Vorgehen.</strong> Zuerst <strong>⚡ Pro</strong> einschalten, wenn Sensitivität, VDI, Szenarien oder Team-Bewertungen enthalten sein sollen — exportiert wird, was gerade aktiv ist. Dann <strong>Datei ▾ → ⧉ Für Confluence kopieren</strong>, ein <strong>html-bobswift</strong>-Makro auf der Seite einfügen und den Block in dessen Rumpf einsetzen.<br><br><strong>Für Lesende.</strong> Tabs wechseln, Ergebnisse lesen und die Sensitivitätsbalken ziehen ist möglich; nichts davon wird gespeichert oder für andere sichtbar, und die umgebende Seite bleibt unverändert. Die Einbettung ist eine <em>Momentaufnahme</em>: Nach Änderungen erneut exportieren und einfügen.<br><br><strong>Seitenexport.</strong> Der Block enthält neben dem lebenden Werkzeug einen statischen Bericht. Wo Skripte laufen, ersetzt das Werkzeug ihn; wo nicht — Seitenexport nach HTML oder Word, PDF, Instanzen ohne <em>Allow Javascript</em> — bleibt der Bericht: Ranking, Gewichte, Anpassungen, Vergleiche und die Sensitivitäts-Wechselpunkte, als Text ausgeschrieben.',
 helpViewTitle: '◐ Darstellung & Updates',
 helpViewText: 'Die Schaltfläche <strong>◐</strong> wechselt das Design: <em>Auto</em> folgt Ihrem System — und innerhalb einer Confluence-Seite deren Design — oder wählen Sie <em>Hell</em> bzw. <em>Dunkel</em>. <strong>EN / DE</strong> wechselt die Sprache. Beides wird gespeichert. Exporte haben keine Designauswahl: Sie folgen dem Browser bzw. der Wiki-Seite der lesenden Person.<br><br>Das Versions-Abzeichen neben dem App-Namen wird zum Link, sobald eine neuere Version vorliegt. Das Werkzeug fragt GitHub höchstens einmal täglich und bleibt still, wenn es nicht erreichbar ist; Exporte prüfen nie.',
 helpProTitle: '⚡ Pro-Modus',
@@ -352,6 +354,8 @@ printCriteriaComparisons: 'Kriterienvergleich', printCriteriaWeights: 'Kriterien
 printWeightAdjustments: 'Gewichtsanpassungen', printSolutionRanking: 'Lösungsranking',
 printThCriterion: 'Kriterium', printThWeight: 'Gewicht', printThPairwise: 'Paarweise',
 printThAdjusted: 'Angepasst', printThReason: 'Begründung', printThSolution: 'Lösung', printThScore: 'Wertung',
+printThCurrent: 'Aktuell', printThLeads: 'Führend bei',
+printStaticNote: 'Statische Zusammenfassung — die interaktive Fassung benötigt JavaScript.',
 solutionNotePlaceholder: 'Beschreibung der Lösung…',
 ratingNotePlaceholder: 'Begründung für diese Bewertung…',
 anchorDefaults: ['Ungeeignet', 'Schlecht', 'Akzeptabel', 'Gut', 'Hervorragend'],
@@ -640,7 +644,7 @@ byId('tab-criteria').classList.add('active');
 applyLang();
 return true;
 }
-const APP_VERSION = 'v0.7.1';
+const APP_VERSION = 'v0.7.2';
 const RELEASES_API = 'https://api.github.com/repos/milande/tradeoff_tool/releases/latest';
 const RELEASES_PAGE = 'https://github.com/milande/tradeoff_tool/releases';
 const UPDATE_KEY = 'dl_update';
@@ -1995,7 +1999,12 @@ saveState();
 const btn = qs('.tab-btn[data-tab="sensitivity"]');
 if (btn && !btn.classList.contains('disabled') && btn.onclick) btn.onclick();
 };
-function generatePrintView(tradeName = '', exporter = '') {
+const GLYPH_CELLS = 12;
+function glyphBar(pct) {
+const n = Math.max(0, Math.min(GLYPH_CELLS, Math.round(parseFloat(pct) / 100 * GLYPH_CELLS)));
+return '\u2588'.repeat(n) + '\u2591'.repeat(GLYPH_CELLS - n);
+}
+function generatePrintView(tradeName = '', exporter = '', flat = false) {
 const criteria = getCriteria();
 const weights = computeWeights();
 const scores = computeScores();
@@ -2005,13 +2014,19 @@ const koSols = getKnockedOut();
 const ranked = scoreSolutions(weights);
 const rankedOrdered = [...ranked.filter(r => !koSols[r.sol]), ...ranked.filter(r => koSols[r.sol])];
 const CYAN = '#18c8ff';
+const bar = (pct, fill, ink) => flat
+? `<span class="glyph-bar"${ink ? ` style="color:${ink}"` : ''}>${glyphBar(pct)}</span>`
+: `<div class="bar-wrap"><div class="bar" style="width:${pct}%;background:${fill}"></div></div>`;
+const dot = color => flat
+? `<span class="legend-dot-glyph" style="color:${color}">\u25cf</span>`
+: `<span class="legend-dot" style="background:${color}"></span>`;
 const pairwiseWeights = {};
 criteria.forEach(c => pairwiseWeights[c.id] = totalPts > 0 ? scores[c.id] / totalPts : 1 / criteria.length);
 const criteriaRows = [...criteria]
 .sort((a, b) => scores[b.id] - scores[a.id])
 .map(c => {
 const pct = totalPts > 0 ? (100 * scores[c.id] / totalPts).toFixed(1) : '0.0';
-return `<tr><td>${esc(c.name)}</td><td>${pct}%</td><td><div class="bar-wrap"><div class="bar" style="width:${pct}%;background:${CYAN}"></div></div></td></tr>`;
+return `<tr><td>${esc(c.name)}</td><td>${pct}%</td><td>${bar(pct, CYAN)}</td></tr>`;
 }).join('');
 const orderedCriteria = criteriaByWeight();
 const fineTuneRows = customWeights ? orderedCriteria.map(c => {
@@ -2043,7 +2058,7 @@ const note = solutionNotes[sol.id] ? `<div style="font-size:0.72rem;color:#888;f
 const koReason = isKO ? `<div style="font-size:0.65rem;color:#c00;font-style:italic;margin-top:2px">${t('knockedOut')}: ${esc(koSols[sol.id].map(critName).join(', '))}</div>` : '';
 const strike = isKO ? 'text-decoration:line-through;' : '';
 const rowStyle = isKO ? ' style="opacity:.55"' : '';
-return `<tr${rowStyle}><td style="color:${solText(ci)};font-weight:600"><div style="${strike}">${esc(sol.name)}</div>${note}${koReason}</td><td style="${strike}">${score.toFixed(2)}</td><td><div class="bar-inline"><div class="bar-wrap"><div class="bar" style="width:${pct}%;background:${color}"></div></div><span class="bar-pct">${pct}%</span></div></td>${ratingCells}</tr>`;
+return `<tr${rowStyle}><td style="color:${solText(ci)};font-weight:600"><div style="${strike}">${esc(sol.name)}</div>${note}${koReason}</td><td style="${strike}">${score.toFixed(2)}</td><td>${flat ? `${bar(pct, color, solText(ci))} <span class="bar-pct">${pct}%</span>` : `<div class="bar-inline">${bar(pct, color)}<span class="bar-pct">${pct}%</span></div>`}</td>${ratingCells}</tr>`;
 }).join('');
 const pairListRows = pairs.map(([idA, idB]) => {
 const state = pairStates[`${idA}|${idB}`] ?? 0;
@@ -2058,12 +2073,30 @@ const koNow = getKnockedOut(explorationRatings);
 return '<div class="legend">' + solList.map((sol, i) => {
 const failed = koNow[sol.id];
 const name = failed ? `<span style="text-decoration:line-through;opacity:.6">${esc(sol.name)}</span> <span style="color:#c00;font-size:.75rem">⊗ ${esc(failed.map(critName).join(', '))}</span>` : esc(sol.name);
-return `<span class="legend-item"><span class="legend-dot" style="background:${SOL_COLORS[i % SOL_COLORS.length]}"></span>${name}</span>`;
+return `<span class="legend-item">${dot(flat ? solText(i) : SOL_COLORS[i % SOL_COLORS.length])}${name}</span>`;
 }).join('') + '</div>';
 }
 const koExp = getKnockedOut(explorationRatings);
+function flatSpans(segs, key, label, cur) {
+let mark = segs.findIndex(seg => cur < seg.to - 1e-9);
+if (mark < 0) mark = segs.length - 1;
+return segs.map((seg, i) => {
+const ws = Array.isArray(seg[key]) ? seg[key] : [seg[key]];
+const names = ws.map(x => esc(x.name) + (koExp[x.id] ? ' \u2297' : '')).join(' / ');
+return `${label(seg.from)}\u2013${label(seg.to)} ${names}${i === mark ? ' \u25c0' : ''}`;
+}).join(' \u00b7 ');
+}
 let sensHtml = '';
-if (proMode && sols.length >= 2) {
+if (proMode && sols.length >= 2 && flat) {
+sensHtml += printLegend(sols);
+sensHtml += `<table><thead><tr><th>${t('printThCriterion')}</th><th>${t('printThCurrent')}</th><th>${t('printThLeads')}</th></tr></thead><tbody>`;
+orderedCriteria.forEach(c => {
+const cur = sensWeights[c.id] ?? 0;
+sensHtml += `<tr><td>${esc(c.name)}</td><td>${Math.round(cur * 100)}%</td>`
++ `<td>${flatSpans(computeBreakevens(c.id, sols), 'sol', v => Math.round(v * 100) + '%', cur)}</td></tr>`;
+});
+sensHtml += '</tbody></table>';
+} else if (proMode && sols.length >= 2) {
 sensHtml += printLegend(sols);
 orderedCriteria.forEach(c => {
 const segs = computeBreakevens(c.id, sols);
@@ -2086,7 +2119,19 @@ sensHtml += `</div></div>`;
 });
 }
 let ratingHtml = '';
-if (proMode && sols.length >= 2) {
+if (proMode && sols.length >= 2 && flat) {
+ratingHtml += `<table><thead><tr><th>${t('printThSolution')} / ${t('printThCriterion')}</th><th>${t('printThCurrent')}</th><th>${t('printThLeads')}</th></tr></thead><tbody>`;
+sols.forEach((sol, si) => {
+ratingHtml += `<tr><td colspan="3" style="color:${solText(si)};font-weight:600;padding-top:10px">${esc(sol.name)}</td></tr>`;
+orderedCriteria.forEach(c => {
+const cur = (explorationRatings[`${sol.id}|${c.id}`] ?? 0) / 4;
+const segs = computeRatingBreakevens(sol, c.id, sols, sensWeights);
+ratingHtml += `<tr><td style="padding-left:18px">${esc(c.name)}</td><td>${(cur * 4).toFixed(0)}</td>`
++ `<td>${flatSpans(segs, 'winner', v => (v * 4).toFixed(1), cur)}</td></tr>`;
+});
+});
+ratingHtml += '</tbody></table>';
+} else if (proMode && sols.length >= 2) {
 ratingHtml += printLegend(sols);
 sols.forEach((sol, si) => {
 const solColor = SOL_COLORS[si % SOL_COLORS.length];
@@ -2119,7 +2164,7 @@ const isKO = !!koSols[sol.id];
 const ci = sols.findIndex(x => x.id === sol.id);
 vdiHtml += `<tr${isKO ? ' style="opacity:.55"' : ''}><td style="color:${solText(ci)};font-weight:600${isKO ? ';text-decoration:line-through' : ''}">${esc(sol.name)}${isKO ? ' ⊗' : ''}</td><td style="text-align:right">${wt.toFixed(2)}</td><td style="text-align:right">${we.toFixed(2)}</td><td style="text-align:right;font-weight:600">${s.toFixed(2)}</td></tr>`;
 });
-vdiHtml += '</tbody></table>' + vdiDiagramSvg(vdiData, koSols, sols);
+vdiHtml += '</tbody></table>' + (flat ? '' : vdiDiagramSvg(vdiData, koSols, sols));
 }
 let teamHtml = '';
 if (proMode && raters.length && sols.length) {
@@ -2195,6 +2240,9 @@ th{font-weight:600;color:#aaa;font-size:0.73rem;text-transform:uppercase;letter-
 .bar-wrap{height:5px;background:#f0f0f0;border-radius:4px;overflow:hidden;width:120px}
 .bar{height:100%;border-radius:4px}
 .bar-pct{font-size:0.78rem;color:#666;white-space:nowrap}
+.glyph-bar{font-family:"DejaVu Sans Mono",Consolas,"Courier New",monospace;font-size:0.8rem;white-space:nowrap;letter-spacing:-.5px}
+.legend-dot-glyph{font-size:0.9rem;line-height:1;flex-shrink:0}
+.static-note{font-size:0.7rem;color:#aaa;margin-top:18px}
 .legend{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:14px}
 .legend-item{display:flex;align-items:center;gap:6px;font-size:0.82rem}
 .legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
@@ -2237,6 +2285,7 @@ ${teamHtml}
 ${pairs.length ? `<h2>${t('printCriteriaComparisons')}</h2><table><tbody>${pairListRows}</tbody></table>` : ''}
 ${knockoutHtml}${anchorsHtml}
 ${proMode && sols.length >= 2 ? `<h2>${t('criterionImpact')}</h2>${sensHtml}<h2>${t('ratingImpact')}</h2>${ratingHtml}` : ''}
+${flat ? `<p class="static-note">${t('printStaticNote')}</p>` : ''}
 </body>
 </html>`;
 }
@@ -2363,6 +2412,16 @@ if (si < 0) return scriptText;
 const ei = scriptText.indexOf(CAPTURE_END, si) + CAPTURE_END.length;
 return scriptText.slice(0, si) + scriptText.slice(ei);
 }
+const STATIC_CLASS = 'dl-static';
+const LIVE_CLASS = 'dl-live';
+function hideStaticScript() {
+return '(function(){var d=document.currentScript&&document.currentScript.previousElementSibling;'
++ 'if(d&&d.className===' + JSON.stringify(STATIC_CLASS) + ')d.style.display="none";})();';
+}
+function innerOf(doc, tag) {
+const open = '<' + tag + '>', close = '</' + tag + '>';
+return doc.slice(doc.indexOf(open) + open.length, doc.indexOf(close));
+}
 function newEmbedId() {
 return 'dl-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 }
@@ -2370,8 +2429,18 @@ function embedScriptSource(scriptText, stateJson, rootId) {
 return '(function(){\n'
 + 'var _embedRoot=(document.currentScript&&document.currentScript.closest('
 + JSON.stringify(EMBED_SCOPE) + '))||document.getElementById(' + JSON.stringify(rootId) + ');\n'
++ 'var _dlStatic=_embedRoot&&_embedRoot.querySelector(' + JSON.stringify('.' + STATIC_CLASS) + ');\n'
++ 'var _dlLive=_embedRoot&&_embedRoot.querySelector(' + JSON.stringify('.' + LIVE_CLASS) + ');\n'
++ 'if(_dlLive){_dlLive.removeAttribute("hidden");_dlLive.style.display="";}\n'
++ 'try{\n'
 + bakeScript(stripCapturePreamble(scriptText), stateJson, true)
-+ '\n})();';
++ '\nif(_dlStatic)_dlStatic.remove();\n'
++ '}catch(_e){\n'
++ 'if(_dlLive)_dlLive.style.display="none";\n'
++ 'if(_dlStatic)_dlStatic.style.display="";\n'
++ 'throw _e;\n'
++ '}\n'
++ '})();';
 }
 function toBase64Utf8(str) {
 const bytes = new TextEncoder().encode(str);
@@ -2398,9 +2467,14 @@ const rootId = newEmbedId();
 const state = JSON.stringify(buildState()).split(CDATA_CLOSE).join(']]\\u003e');
 const markup = _bodyHtml.replace('<div class="app-header">',
 '<div class="app-header">\n' + exportInfoBanner(decisionName, exporter));
+const staticDoc = generatePrintView(decisionName, exporter, true);
+const staticCss = scopeCss(innerOf(staticDoc, 'style'), EMBED_SCOPE + ' .' + STATIC_CLASS, []);
 const payload = '<div class="' + EMBED_CLASS + '" id="' + rootId + '" data-readonly lang="' + lang + '">\n'
 + '<style>' + embedCss(_styleText) + '</style>\n'
-+ markup + '\n'
++ '<style>' + staticCss + '</style>\n'
++ '<div class="' + STATIC_CLASS + '">' + innerOf(staticDoc, 'body') + '</div>\n'
++ '<script>' + hideStaticScript() + '<\/script>\n'
++ '<div class="' + LIVE_CLASS + '" hidden style="display:none">\n' + markup + '\n</div>\n'
 + '<script>' + embedScript(_scriptText, state, rootId) + '<\/script>\n'
 + '</div>';
 if (payload.indexOf(CDATA_CLOSE) >= 0) throw new Error(t('alertEmbedCdata'));

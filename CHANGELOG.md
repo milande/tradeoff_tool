@@ -1,5 +1,15 @@
 # DecisionLab — Changelog
 
+## v0.7.2 (2026-08-28)
+
+### Confluence page exports keep the decision
+- Exporting a wiki page that carries an embed — **Scroll Documents** into HTML or Word, PDF, or any other server-side renderer — used to produce an empty box. The embed's markup is a template the app fills in at load, and a server renders it with no script running, so the exported document carried 61 characters of visible text
+- The macro body now carries **both halves**: a static report and the app template. The script only ever runs in a browser — exactly where the live tool is the better half — so it reveals the template, renders, and deletes the report. A renderer without scripts keeps the report and never sees the template
+- The report is written for a converter rather than a browser, against what a Word export actually survives: bars are drawn with block glyphs (background shading and empty nested divs are dropped), the sensitivity and rating breakevens are tabulated as spans with the current setting marked (absolutely positioned tracks collapse), and the VDI s-diagram gives way to the Wt/We/s table that carries the same numbers (inline SVG is reduced to loose labels). Colour is never the sole carrier of a meaning
+- Same benefit where scripts are blocked outright: with *Allow Javascript* off, or a CSP that forbids `unsafe-eval`, the page now shows the report instead of an empty box. If the app throws while starting, the report comes back
+- The static report appears in the payload only; the print view and the standalone HTML export are byte-for-byte unchanged
+- Cost: ~20–24 KB of payload, depending on how much the report has to say — a Pro decision with four criteria and four solutions goes from ~197 KB to ~221 KB
+
 ## v0.7.1 (2026-08-27)
 
 ### Help

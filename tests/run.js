@@ -8,7 +8,7 @@ const fs = require('fs');
 const path = require('path');
 const SRC = path.join(__dirname, '..', 'src', 'js');
 const DIST = path.join(__dirname, '..', 'dist', 'index.html');
-const VERSION = 'v0.7.1';
+const VERSION = 'v0.7.2';
 
 let pass = 0, fail = 0;
 function check(name, cond, extra = '') {
@@ -460,6 +460,40 @@ all += `
         && svg.indexOf('#') === -1 && svg.indexOf('rgba(255,255,255') === -1);
   }
   check('print: team section with rater + disagreement highlight', pv.includes(t('teamTitle')) && pv.includes('Anna') && pv.includes('#fef3c7'));
+
+  // ── Flat rendering ──────────────────────────────────────────
+  // A Confluence page export (Scroll Documents into HTML or Word) converts the
+  // stored markup with a server-side renderer that drops background colour,
+  // collapses empty nested divs and reduces inline SVG to loose labels. Flat
+  // mode carries the same report through it: every value that a bar, a track or
+  // a diagram encodes is also written as text.
+  const pvFlat = generatePrintView('Server choice', 'Milan', true);
+  // The two modes share one stylesheet — what differs is the markup that uses
+  // it, so these read the body rather than the whole document.
+  const bodyOf = doc => doc.slice(doc.indexOf('<body>'), doc.indexOf('</body>'));
+  const flatBody = bodyOf(pvFlat), stdBody = bodyOf(pv);
+  check('flat print: same sections as the standard report',
+    [t('printSolutionRanking'), t('printCriteriaWeights'), t('printScoreDefinitions'),
+     t('criterionImpact'), t('ratingImpact'), t('vdiTitle')].every(h => pvFlat.includes(h)));
+  check('flat print: nothing a converter drops — no CSS bars, tracks or SVG',
+    !flatBody.includes('bar-wrap') && !flatBody.includes('be-track') && !flatBody.includes('<svg')
+      && flatBody.indexOf('position:absolute') === -1 && flatBody.indexOf('style="left:') === -1);
+  check('flat print: bars are drawn with text glyphs instead',
+    flatBody.includes('glyph-bar') && flatBody.includes('\u2588'));
+  check('flat print: breakeven spans are tabulated, marker included',
+    pvFlat.includes(t('printThLeads')) && pvFlat.includes('\u25c0'));
+  check('flat print: says it is a snapshot of something interactive',
+    pvFlat.includes(t('printStaticNote')));
+  check('standard print keeps the bars, tracks and diagram it can draw',
+    stdBody.includes('bar-wrap') && stdBody.includes('be-track') && stdBody.includes('<svg')
+      && !stdBody.includes('glyph-bar') && !stdBody.includes(t('printStaticNote')));
+  // Glyph bars are the only carrier of a magnitude a converter keeps, so the
+  // ends must be exact rather than approximately full or empty.
+  check('glyph bar: full, empty and clamped',
+    glyphBar(100) === '\u2588'.repeat(12) && glyphBar(0) === '\u2591'.repeat(12)
+      && glyphBar(50) === '\u2588'.repeat(6) + '\u2591'.repeat(6)
+      && glyphBar(-5) === glyphBar(0) && glyphBar(140) === glyphBar(100)
+      && glyphBar('80.0') === '\u2588'.repeat(10) + '\u2591'.repeat(2));
   check('JSON export carries raters', Array.isArray(json.raters) && json.raters.length === 1 && json.raters[0].name === 'Anna');
   proMode = false;
   const pvStd = generatePrintView('Server choice', 'Milan');
@@ -603,6 +637,14 @@ all += `
     !wrapped.includes('<') && !wrapped.includes('&') && !wrapped.includes(']]' + '>'));
   check('embed script: shipped form is a self-scoping new Function call',
     wrapped.indexOf('new Function(') === 0 && wrapped.slice(-4) === ')();');
+  check('embed script: reveals the app template and drops the static report',
+    es.includes('.dl-static') && es.includes('.dl-live')
+      && es.includes('removeAttribute("hidden")') && es.includes('_dlStatic.remove()')
+      && es.indexOf('_dlStatic.remove()') > es.indexOf('APP'));
+  // An app that fails to start would otherwise leave an empty box on the page.
+  check('embed script: a failed start puts the static report back',
+    es.includes('catch(_e)') && es.indexOf('_dlStatic.style.display=""') > es.indexOf('catch(_e)')
+      && es.includes('throw _e'));
   check('embed script: base64 round-trips to exactly the source',
     decodeEmbed(wrapped) === es);
   // btoa is Latin-1 only; the app carries umlauts and symbols.
@@ -647,6 +689,35 @@ all += `
     pay.includes('<style>.dl-embed CSS{}') && pay.includes('.dl-embed .help-overlay{display:none}'));
   check('embed payload: app markup with the provenance banner',
     pay.includes('BODY') && pay.includes('export-info-title') && pay.includes('Server choice') && pay.includes('Milan'));
+
+  // ── Both halves ─────────────────────────────────────────────
+  // A Confluence page export renders the stored page server-side, where no
+  // script runs and the app template — filled in at load — is 61 characters of
+  // visible text. The payload therefore carries a static report as well, and
+  // the script, which by definition only runs in a browser, swaps one for the
+  // other.
+  const iStatic = pay.indexOf('<div class="dl-static">');
+  const iLive = pay.indexOf('<div class="dl-live"');
+  check('embed payload: the static report comes first, the app template after',
+    iStatic > 0 && iLive > iStatic);
+  check('embed payload: the app template is hidden until a script reveals it',
+    pay.slice(iLive, iLive + 60).includes('hidden') && pay.slice(iLive, iLive + 60).includes('display:none'));
+  const staticHalf = pay.slice(iStatic, iLive);
+  check('embed payload: the static report is a real report, not a placeholder',
+    staticHalf.includes(t('printSolutionRanking')) && staticHalf.includes(t('printCriteriaWeights'))
+      && staticHalf.includes('Server choice') && staticHalf.includes('glyph-bar'));
+  check('embed payload: the static report is flat — nothing a converter drops',
+    !staticHalf.includes('bar-wrap') && !staticHalf.includes('<svg') && !staticHalf.includes('be-track'));
+  // Both sheets describe table, h2 and th; the report's own rules must win
+  // wherever they overlap, whichever <style> the browser reads first.
+  check('embed payload: the report sheet outranks the app sheet',
+    pay.includes('<style>.dl-embed .dl-static') && pay.includes('.dl-embed .dl-static table{'));
+  // Hiding the report at the end of a ~200 KB payload is too late: the browser
+  // may paint it and then snap to the app.
+  check('embed payload: the report is hidden the moment the parser passes it',
+    pay.indexOf(hideStaticScript(), iStatic) > iStatic
+      && pay.indexOf(hideStaticScript()) < iLive
+      && hideStaticScript().indexOf('<') === -1);
   check('embed payload: isolated script carrying the baked decision',
     pay.includes('<script>new Function(')
       && decodeEmbed(pay).includes('embedded = true')
@@ -654,8 +725,9 @@ all += `
   check('embed payload: CDATA-safe', !pay.includes(']]' + '>'));
   // The only markup left in the payload is the wrapper, the stylesheet and the
   // app template — all of which a filter is expected to leave alone.
-  check('embed payload: no markup inside the script element',
-    pay.slice(pay.indexOf('<script>'), pay.indexOf('</scr' + 'ipt>')).indexOf('<', 8) === -1);
+  check('embed payload: no markup inside either script element',
+    pay.split('<script>').slice(1)
+      .every(part => part.slice(0, part.indexOf('</scr' + 'ipt>')).indexOf('<') === -1));
 
   // A decision containing the CDATA terminator is escaped, not rejected: inside
   // the baked JS string literals > is the same character.
