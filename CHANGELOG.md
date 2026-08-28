@@ -1,5 +1,10 @@
 # DecisionLab — Changelog
 
+## v0.7.1 (2026-08-27)
+
+### Fixed
+- **The Confluence embed ignored the page's theme** and stayed dark whatever the wiki was set to. The host theme was detected by substring-matching several attributes together; Confluence DC 9 publishes `data-color-mode` (the mode) beside `data-theme`, which names both schemes at once (`light:light dark:dark`), so "dark" matched on every page. The mode attribute is now read exactly, and anything else — including `auto` — falls back to the reader's browser preference. The embed also follows a live theme switch on the host page
+
 ## v0.7 (2026-08-27)
 
 ### Confluence embed

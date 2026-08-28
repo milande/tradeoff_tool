@@ -8,7 +8,7 @@ const fs = require('fs');
 const path = require('path');
 const SRC = path.join(__dirname, '..', 'src', 'js');
 const DIST = path.join(__dirname, '..', 'dist', 'index.html');
-const VERSION = 'v0.7';
+const VERSION = 'v0.7.1';
 
 let pass = 0, fail = 0;
 function check(name, cond, extra = '') {
