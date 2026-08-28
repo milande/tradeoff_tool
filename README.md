@@ -183,6 +183,7 @@ Related: colour is themed through tokens rather than literals, because the same 
 
 ## Versions
 
+- **v0.7.1** — Fix: the Confluence embed now follows the page's light/dark theme, and switches with it
 - **v0.7** — Confluence embed (`⧉ Copy for Confluence`); light/dark theme with automatic switching in exports; results shown first in exports; release-update check on the version badge
 - **v0.6** — VDI 2225 value analysis (Pro): technical/economic criteria, Wt/We/s, s-diagram in app, print, and CSV; Team Ratings (Pro): merge teammates' JSON exports, disagreement view, team-average ranking
 - **v0.5** — consistency check, robustness verdict, undo/redo, CSV export, draggable fine-tune bars with pinned values, must-have marking in sensitivity bars; stable IDs (renames keep all data; save format v2, old files incompatible); HTML-escaped user input everywhere; in-repo test suite (`npm test`)

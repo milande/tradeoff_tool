@@ -130,6 +130,8 @@ body{margin:0;font-family:Inter,Arial,sans-serif;background:var(--bg);color:var(
 .help-solutions h3{color:var(--c-solutions)}
 .help-data{background:rgba(var(--fg-rgb),.04);border:1px solid rgba(var(--fg-rgb),.1)}
 .help-data h3{color:var(--text-muted)}
+.help-confluence{background:rgba(var(--c-orange-rgb),.08);border:1px solid rgba(var(--c-orange-rgb),.18)}
+.help-confluence h3{color:var(--c-orange)}
 .help-pro{background:rgba(var(--c-pro-rgb),.06);border:1px solid rgba(var(--c-pro-rgb),.2)}
 .help-pro h3{color:var(--c-pro)}
 
