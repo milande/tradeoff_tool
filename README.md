@@ -128,7 +128,7 @@ Puts the **live tool** — read-only, with the decision baked in — inside a Co
 
 ### Prerequisites
 
-Both are silent when missing: you get an empty box, not an error.
+Neither of the last two announces itself when missing. Since v0.7.2 the block degrades to a static report rather than an empty box, so *"the report renders but nothing is interactive"* is what both look like.
 
 1. **The Appfire / Bob Swift *HTML for Confluence* app.** The macro is `html-bobswift` (renamed from `HTML` in app release 5.7.0 — instances using *Macro Security for Confluence* need entries for **both** names).
 2. **JavaScript must be allowed.** This is a global toggle, not a macro parameter: Confluence admin → *HTML for Confluence*, or Bob Swift Configuration → HTML → **Allow Javascript**.
@@ -153,16 +153,20 @@ Confluence **Cloud** has no HTML macro at all, so this route does not exist ther
 - The rest of the page is untouched — its tables, headings and form fields keep their own styling.
 - Two embeds on one page render independently.
 - The embed is a **snapshot**, not a live link: changing the decision means re-exporting and re-pasting.
+- **Exporting the wiki page** (Scroll Documents into HTML or Word, PDF, or any other server-side renderer) keeps the decision: readers of the exported document get a static report — ranking, weights, adjustments, VDI, comparisons, knockouts, score definitions and the sensitivity breakevens — instead of an empty box. See [both halves](#why-the-embed-is-built-the-way-it-is).
 
 ### Troubleshooting
 
 | Symptom | Cause |
 |---|---|
-| Empty box, nothing renders | *Allow Javascript* is off, or the CSP blocks `unsafe-eval` |
+| The static report renders, but no tabs and nothing interactive | The script did not run: *Allow Javascript* is off, or the CSP blocks `unsafe-eval` |
+| Empty box, nothing renders at all | You are on a pre-v0.7.2 build and the script did not run |
 | Styling and blank tabs, but no content | A content filter stripped the script — you are on a pre-v0.7 build |
 | The whole page turns dark, or its tables restyle | CSS scoping failed; please open an issue |
 | Page content truncated after the macro | A `]]>` reached the payload — the export should refuse first |
 | Export refuses, mentioning `]]` and `>` | Your decision text contains the CDATA terminator; remove it |
+| A page export (Scroll, PDF) shows the report, not the tool | Working as intended — nothing but a browser runs the script |
+| A page export shows nothing where the embed was | You are on a pre-v0.7.2 build; re-export and re-paste |
 
 ---
 
@@ -174,6 +178,8 @@ Three decisions look like over-engineering unless you have watched them fail. Th
 
 **Embeds never touch `localStorage`.** Every embed on an instance shares one origin and one storage key, so any read or write would make embedded pages show — or overwrite — each other's decisions. All storage goes through one facade gated on a single flag; a test fails if a direct call reappears.
 
+**The payload carries the decision twice.** A page export renders the stored markup on a server, where no script runs — and the embed's markup is an empty template the app fills in at load, so an exported page used to carry 61 characters of visible text: the decision vanished from the document. The payload therefore ships a static report *and* the app template. The script only ever runs in a browser, which is exactly the condition under which the live tool is the better half, so it reveals the template, renders, and deletes the report. A renderer without scripts keeps the report and never sees the template; if the app fails to start, the report comes back. The report is written for a converter rather than a browser — bars are block glyphs, breakeven tracks are tabulated, the s-diagram is dropped in favour of the Wt/We/s table it plots, and colour never carries a meaning that is not also written out — because a Word converter drops background shading, collapses empty nested divs and reduces inline SVG to loose labels. Cost: ~20–24 KB on the payload, depending on how much the report has to say.
+
 **The stylesheet is scoped to a wrapper.** The macro injects CSS into the wiki page itself. Unscoped, `input[type=text]` restyles Confluence's own editor fields and `table`/`th`/`td` every table on the page.
 
 Related: colour is themed through tokens rather than literals, because the same alpha reads about 30% weaker on light than on dark — see `--fg-a*` and `--dim-*` in `src/styles.css`.
@@ -183,6 +189,7 @@ Related: colour is themed through tokens rather than literals, because the same 
 
 ## Versions
 
+- **v0.7.2** — Confluence page exports (Scroll Documents HTML/Word, PDF) keep the decision: the embed carries a static report that the live tool replaces wherever scripts run
 - **v0.7.1** — Fix: the Confluence embed now follows the page's light/dark theme, and switches with it
 - **v0.7** — Confluence embed (`⧉ Copy for Confluence`); light/dark theme with automatic switching in exports; results shown first in exports; release-update check on the version badge
 - **v0.6** — VDI 2225 value analysis (Pro): technical/economic criteria, Wt/We/s, s-diagram in app, print, and CSV; Team Ratings (Pro): merge teammates' JSON exports, disagreement view, team-average ranking
@@ -197,7 +204,6 @@ Related: colour is themed through tokens rather than literals, because the same 
 ## Roadmap
 
 - Multiple decisions in parallel (decision list with open/duplicate/delete)
-- Static Confluence fallback — a JavaScript-free report fragment, for instances that disallow scripts in the HTML macro or forbid `unsafe-eval`
 
 ---
 

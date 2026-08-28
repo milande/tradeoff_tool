@@ -1,4 +1,17 @@
-function generatePrintView(tradeName = '', exporter = '') {
+// A bar drawn with block glyphs. A server-side page exporter — Confluence
+// "Scroll Documents" into HTML or Word — drops background colour and collapses
+// empty nested divs, so a CSS bar arrives as nothing at all. Glyphs are text,
+// and text survives every converter.
+const GLYPH_CELLS = 12;
+function glyphBar(pct) {
+  const n = Math.max(0, Math.min(GLYPH_CELLS, Math.round(parseFloat(pct) / 100 * GLYPH_CELLS)));
+  return '\u2588'.repeat(n) + '\u2591'.repeat(GLYPH_CELLS - n);
+}
+
+// `flat` renders the same report without anything a converter cannot carry:
+// no CSS bars, no absolutely positioned tracks, no inline SVG. Colour stays,
+// but only ever alongside the value it repeats — never as the sole carrier.
+function generatePrintView(tradeName = '', exporter = '', flat = false) {
   const criteria = getCriteria();
   const weights = computeWeights();
   const scores = computeScores();
@@ -10,6 +23,13 @@ function generatePrintView(tradeName = '', exporter = '') {
   const rankedOrdered = [...ranked.filter(r => !koSols[r.sol]), ...ranked.filter(r => koSols[r.sol])];
   const CYAN = '#18c8ff';
 
+  const bar = (pct, fill, ink) => flat
+    ? `<span class="glyph-bar"${ink ? ` style="color:${ink}"` : ''}>${glyphBar(pct)}</span>`
+    : `<div class="bar-wrap"><div class="bar" style="width:${pct}%;background:${fill}"></div></div>`;
+  const dot = color => flat
+    ? `<span class="legend-dot-glyph" style="color:${color}">\u25cf</span>`
+    : `<span class="legend-dot" style="background:${color}"></span>`;
+
   const pairwiseWeights = {};
   criteria.forEach(c => pairwiseWeights[c.id] = totalPts > 0 ? scores[c.id] / totalPts : 1 / criteria.length);
 
@@ -17,7 +37,7 @@ function generatePrintView(tradeName = '', exporter = '') {
     .sort((a, b) => scores[b.id] - scores[a.id])
     .map(c => {
       const pct = totalPts > 0 ? (100 * scores[c.id] / totalPts).toFixed(1) : '0.0';
-      return `<tr><td>${esc(c.name)}</td><td>${pct}%</td><td><div class="bar-wrap"><div class="bar" style="width:${pct}%;background:${CYAN}"></div></div></td></tr>`;
+      return `<tr><td>${esc(c.name)}</td><td>${pct}%</td><td>${bar(pct, CYAN)}</td></tr>`;
     }).join('');
 
   const orderedCriteria = criteriaByWeight();
@@ -52,7 +72,7 @@ function generatePrintView(tradeName = '', exporter = '') {
     // Strike only name and score — the KO reason and notes must stay readable
     const strike = isKO ? 'text-decoration:line-through;' : '';
     const rowStyle = isKO ? ' style="opacity:.55"' : '';
-    return `<tr${rowStyle}><td style="color:${solText(ci)};font-weight:600"><div style="${strike}">${esc(sol.name)}</div>${note}${koReason}</td><td style="${strike}">${score.toFixed(2)}</td><td><div class="bar-inline"><div class="bar-wrap"><div class="bar" style="width:${pct}%;background:${color}"></div></div><span class="bar-pct">${pct}%</span></div></td>${ratingCells}</tr>`;
+    return `<tr${rowStyle}><td style="color:${solText(ci)};font-weight:600"><div style="${strike}">${esc(sol.name)}</div>${note}${koReason}</td><td style="${strike}">${score.toFixed(2)}</td><td>${flat ? `${bar(pct, color, solText(ci))} <span class="bar-pct">${pct}%</span>` : `<div class="bar-inline">${bar(pct, color)}<span class="bar-pct">${pct}%</span></div>`}</td>${ratingCells}</tr>`;
   }).join('');
 
   const pairListRows = pairs.map(([idA, idB]) => {
@@ -69,13 +89,38 @@ function generatePrintView(tradeName = '', exporter = '') {
     return '<div class="legend">' + solList.map((sol, i) => {
       const failed = koNow[sol.id];
       const name = failed ? `<span style="text-decoration:line-through;opacity:.6">${esc(sol.name)}</span> <span style="color:#c00;font-size:.75rem">⊗ ${esc(failed.map(critName).join(', '))}</span>` : esc(sol.name);
-      return `<span class="legend-item"><span class="legend-dot" style="background:${SOL_COLORS[i % SOL_COLORS.length]}"></span>${name}</span>`;
+      return `<span class="legend-item">${dot(flat ? solText(i) : SOL_COLORS[i % SOL_COLORS.length])}${name}</span>`;
     }).join('') + '</div>';
   }
 
   const koExp = getKnockedOut(explorationRatings);
+
+  // The flat rendering of one breakeven track. The track itself is a row of
+  // absolutely positioned divs, which a converter collapses into a heap of
+  // stray percentages, so the same reading is written out as text:
+  // "0-34% Dog \u00b7 34-100% Rabbit \u25c0" \u2014 the arrow marking the span the
+  // current setting falls in, which is what the marker on the track shows.
+  function flatSpans(segs, key, label, cur) {
+    let mark = segs.findIndex(seg => cur < seg.to - 1e-9);
+    if (mark < 0) mark = segs.length - 1;
+    return segs.map((seg, i) => {
+      const ws = Array.isArray(seg[key]) ? seg[key] : [seg[key]];
+      const names = ws.map(x => esc(x.name) + (koExp[x.id] ? ' \u2297' : '')).join(' / ');
+      return `${label(seg.from)}\u2013${label(seg.to)} ${names}${i === mark ? ' \u25c0' : ''}`;
+    }).join(' \u00b7 ');
+  }
+
   let sensHtml = '';
-  if (proMode && sols.length >= 2) {
+  if (proMode && sols.length >= 2 && flat) {
+    sensHtml += printLegend(sols);
+    sensHtml += `<table><thead><tr><th>${t('printThCriterion')}</th><th>${t('printThCurrent')}</th><th>${t('printThLeads')}</th></tr></thead><tbody>`;
+    orderedCriteria.forEach(c => {
+      const cur = sensWeights[c.id] ?? 0;
+      sensHtml += `<tr><td>${esc(c.name)}</td><td>${Math.round(cur * 100)}%</td>`
+        + `<td>${flatSpans(computeBreakevens(c.id, sols), 'sol', v => Math.round(v * 100) + '%', cur)}</td></tr>`;
+    });
+    sensHtml += '</tbody></table>';
+  } else if (proMode && sols.length >= 2) {
     sensHtml += printLegend(sols);
     orderedCriteria.forEach(c => {
       const segs = computeBreakevens(c.id, sols);
@@ -99,7 +144,19 @@ function generatePrintView(tradeName = '', exporter = '') {
   }
 
   let ratingHtml = '';
-  if (proMode && sols.length >= 2) {
+  if (proMode && sols.length >= 2 && flat) {
+    ratingHtml += `<table><thead><tr><th>${t('printThSolution')} / ${t('printThCriterion')}</th><th>${t('printThCurrent')}</th><th>${t('printThLeads')}</th></tr></thead><tbody>`;
+    sols.forEach((sol, si) => {
+      ratingHtml += `<tr><td colspan="3" style="color:${solText(si)};font-weight:600;padding-top:10px">${esc(sol.name)}</td></tr>`;
+      orderedCriteria.forEach(c => {
+        const cur = (explorationRatings[`${sol.id}|${c.id}`] ?? 0) / 4;
+        const segs = computeRatingBreakevens(sol, c.id, sols, sensWeights);
+        ratingHtml += `<tr><td style="padding-left:18px">${esc(c.name)}</td><td>${(cur * 4).toFixed(0)}</td>`
+          + `<td>${flatSpans(segs, 'winner', v => (v * 4).toFixed(1), cur)}</td></tr>`;
+      });
+    });
+    ratingHtml += '</tbody></table>';
+  } else if (proMode && sols.length >= 2) {
     ratingHtml += printLegend(sols);
     sols.forEach((sol, si) => {
       const solColor = SOL_COLORS[si % SOL_COLORS.length];
@@ -134,7 +191,10 @@ function generatePrintView(tradeName = '', exporter = '') {
       const ci = sols.findIndex(x => x.id === sol.id);
       vdiHtml += `<tr${isKO ? ' style="opacity:.55"' : ''}><td style="color:${solText(ci)};font-weight:600${isKO ? ';text-decoration:line-through' : ''}">${esc(sol.name)}${isKO ? ' ⊗' : ''}</td><td style="text-align:right">${wt.toFixed(2)}</td><td style="text-align:right">${we.toFixed(2)}</td><td style="text-align:right;font-weight:600">${s.toFixed(2)}</td></tr>`;
     });
-    vdiHtml += '</tbody></table>' + vdiDiagramSvg(vdiData, koSols, sols);
+    // The s-diagram is inline SVG: an HTML export keeps it, a Word export
+    // strips the geometry and leaves the labels floating. The Wt/We/s table
+    // above already carries every number it plots, so flat mode drops it.
+    vdiHtml += '</tbody></table>' + (flat ? '' : vdiDiagramSvg(vdiData, koSols, sols));
   }
 
   // Team ratings section (Pro): per-rater ratings with disagreements highlighted
@@ -218,6 +278,9 @@ th{font-weight:600;color:#aaa;font-size:0.73rem;text-transform:uppercase;letter-
 .bar-wrap{height:5px;background:#f0f0f0;border-radius:4px;overflow:hidden;width:120px}
 .bar{height:100%;border-radius:4px}
 .bar-pct{font-size:0.78rem;color:#666;white-space:nowrap}
+.glyph-bar{font-family:"DejaVu Sans Mono",Consolas,"Courier New",monospace;font-size:0.8rem;white-space:nowrap;letter-spacing:-.5px}
+.legend-dot-glyph{font-size:0.9rem;line-height:1;flex-shrink:0}
+.static-note{font-size:0.7rem;color:#aaa;margin-top:18px}
 .legend{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:14px}
 .legend-item{display:flex;align-items:center;gap:6px;font-size:0.82rem}
 .legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
@@ -260,6 +323,7 @@ ${teamHtml}
 ${pairs.length ? `<h2>${t('printCriteriaComparisons')}</h2><table><tbody>${pairListRows}</tbody></table>` : ''}
 ${knockoutHtml}${anchorsHtml}
 ${proMode && sols.length >= 2 ? `<h2>${t('criterionImpact')}</h2>${sensHtml}<h2>${t('ratingImpact')}</h2>${ratingHtml}` : ''}
+${flat ? `<p class="static-note">${t('printStaticNote')}</p>` : ''}
 </body>
 </html>`;
 }
@@ -452,6 +516,37 @@ function stripCapturePreamble(scriptText) {
   return scriptText.slice(0, si) + scriptText.slice(ei);
 }
 
+// ── The static twin ───────────────────────────────────────────
+// A Confluence page export — Scroll Documents into HTML or Word — renders the
+// stored page on the server, where no script runs. The embed's markup is an
+// empty template that the app fills in at load, so such an export used to carry
+// 61 characters of visible text: the decision simply vanished from the
+// document.
+//
+// So the payload ships both halves. The static report comes first and is plain
+// markup; the app template follows it, hidden. The embed script only ever runs
+// in a browser, and that is exactly the condition under which the live app is
+// the better half — so it reveals the template, renders, and then deletes the
+// static twin. A renderer without scripts keeps the report and never sees the
+// template. Neither half is a fallback bolted on afterwards: they are the same
+// decision, written twice for two kinds of reader.
+const STATIC_CLASS = 'dl-static';
+const LIVE_CLASS = 'dl-live';
+
+// Hides the static twin the moment the parser reaches it, rather than leaving
+// it to the app script at the end of a ~200 KB payload — long enough that the
+// browser may paint the report first and then snap to the app.
+function hideStaticScript() {
+  return '(function(){var d=document.currentScript&&document.currentScript.previousElementSibling;'
+    + 'if(d&&d.className===' + JSON.stringify(STATIC_CLASS) + ')d.style.display="none";})();';
+}
+
+// The <style> and <body> of a generated document, without the document.
+function innerOf(doc, tag) {
+  const open = '<' + tag + '>', close = '</' + tag + '>';
+  return doc.slice(doc.indexOf(open) + open.length, doc.indexOf(close));
+}
+
 // Each embed gets its own wrapper id so two on one page stay apart.
 function newEmbedId() {
   return 'dl-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
@@ -468,8 +563,23 @@ function embedScriptSource(scriptText, stateJson, rootId) {
   return '(function(){\n'
     + 'var _embedRoot=(document.currentScript&&document.currentScript.closest('
     + JSON.stringify(EMBED_SCOPE) + '))||document.getElementById(' + JSON.stringify(rootId) + ');\n'
+    // The payload ships both halves — see the note above buildEmbedPayload().
+    // Reaching this line proves scripts run, so the live half is revealed and
+    // the static half is dropped once the app has actually rendered.
+    + 'var _dlStatic=_embedRoot&&_embedRoot.querySelector(' + JSON.stringify('.' + STATIC_CLASS) + ');\n'
+    + 'var _dlLive=_embedRoot&&_embedRoot.querySelector(' + JSON.stringify('.' + LIVE_CLASS) + ');\n'
+    + 'if(_dlLive){_dlLive.removeAttribute("hidden");_dlLive.style.display="";}\n'
+    + 'try{\n'
     + bakeScript(stripCapturePreamble(scriptText), stateJson, true)
-    + '\n})();';
+    + '\nif(_dlStatic)_dlStatic.remove();\n'
+    // An app that fails to start would otherwise leave an empty box on the
+    // page. Put the report back, then let the error reach the console.
+    + '}catch(_e){\n'
+    + 'if(_dlLive)_dlLive.style.display="none";\n'
+    + 'if(_dlStatic)_dlStatic.style.display="";\n'
+    + 'throw _e;\n'
+    + '}\n'
+    + '})();';
 }
 
 // UTF-8 safe base64: btoa is Latin-1 only and the app carries umlauts and
@@ -530,9 +640,19 @@ function buildEmbedPayload() {
   const markup = _bodyHtml.replace('<div class="app-header">',
     '<div class="app-header">\n' + exportInfoBanner(decisionName, exporter));
 
+  // The report is written for a converter, not a browser: flat mode. Its sheet
+  // is scoped one level deeper than the app's so that where the two describe
+  // the same element — `table`, `h2` — the report's own rules win regardless of
+  // which <style> came first.
+  const staticDoc = generatePrintView(decisionName, exporter, true);
+  const staticCss = scopeCss(innerOf(staticDoc, 'style'), EMBED_SCOPE + ' .' + STATIC_CLASS, []);
+
   const payload = '<div class="' + EMBED_CLASS + '" id="' + rootId + '" data-readonly lang="' + lang + '">\n'
     + '<style>' + embedCss(_styleText) + '</style>\n'
-    + markup + '\n'
+    + '<style>' + staticCss + '</style>\n'
+    + '<div class="' + STATIC_CLASS + '">' + innerOf(staticDoc, 'body') + '</div>\n'
+    + '<script>' + hideStaticScript() + '<\/script>\n'
+    + '<div class="' + LIVE_CLASS + '" hidden style="display:none">\n' + markup + '\n</div>\n'
     + '<script>' + embedScript(_scriptText, state, rootId) + '<\/script>\n'
     + '</div>';
 
