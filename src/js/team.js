@@ -48,7 +48,7 @@ function renderTeam() {
   const container = byId('teamContainer');
   if (!section || !container) return;
   const sols = getSolutions();
-  const active = comparisonStarted && proMode && criteria.length > 0 && sols.length > 0;
+  const active = !readOnly && comparisonStarted && proMode && criteria.length > 0 && sols.length > 0;
   section.style.display = active ? '' : 'none';
   const exploreBtn = byId('teamExploreBtn');
   if (exploreBtn) exploreBtn.style.display = raters.length ? '' : 'none';

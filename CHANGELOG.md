@@ -1,5 +1,12 @@
 # DecisionLab — Changelog
 
+## v0.7.3 (2026-09-19)
+
+### Fixed
+- Remove team-rating instructions and individual rating comparisons from HTML, Confluence, and print/PDF reports (#39). Decision rankings and analysis remain available.
+- Exclude individual raters and their submissions from HTML and Confluence embedded state, including the encoded Confluence script. Editable JSON saves retain team data.
+- Correct English/German Confluence help and README guidance to reflect the export behavior.
+
 ## v0.7.2 (2026-08-28)
 
 ### Confluence page exports keep the decision
