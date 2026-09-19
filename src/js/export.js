@@ -197,29 +197,6 @@ function generatePrintView(tradeName = '', exporter = '', flat = false) {
     vdiHtml += '</tbody></table>' + (flat ? '' : vdiDiagramSvg(vdiData, koSols, sols));
   }
 
-  // Team ratings section (Pro): per-rater ratings with disagreements highlighted
-  let teamHtml = '';
-  if (proMode && raters.length && sols.length) {
-    const cols = teamColumns();
-    const mean = teamMeanRatings();
-    teamHtml = `<h2>${t('teamTitle')}</h2><table><thead><tr><th>${t('printThSolution')} / ${t('printThCriterion')}</th>` +
-      cols.map(col => `<th style="text-align:center">${esc(col.name)}</th>`).join('') +
-      `<th style="text-align:center">Ø</th></tr></thead><tbody>`;
-    sols.forEach(sol => {
-      const ci = sols.findIndex(x => x.id === sol.id);
-      teamHtml += `<tr><td colspan="${cols.length + 2}" style="color:${solText(ci)};font-weight:600;padding-top:10px">${esc(sol.name)}</td></tr>`;
-      orderedCriteria.forEach(c => {
-        const key = `${sol.id}|${c.id}`;
-        const vals = cols.map(col => col.ratings[key] ?? 0);
-        const warn = Math.max(...vals) - Math.min(...vals) >= 2;
-        teamHtml += `<tr${warn ? ' style="background:#fef3c7"' : ''}><td style="padding-left:18px;color:#666">${esc(c.name)}</td>` +
-          vals.map(v => `<td style="text-align:center${warn ? ';font-weight:600' : ''}">${v}</td>`).join('') +
-          `<td style="text-align:center;font-weight:600">${mean[key].toFixed(1)}</td></tr>`;
-      });
-    });
-    teamHtml += '</tbody></table>';
-  }
-
   const koActive = orderedCriteria.filter(c => knockoutCriteria[c.id]);
   let knockoutHtml = '';
   if (koActive.length > 0) {
@@ -319,7 +296,6 @@ ${(() => { const r = computeRobustness(); if (!r) return ''; const txt = r.stabl
 <table><thead><tr><th>${t('printThCriterion')}</th><th>${t('printThWeight')}</th><th></th></tr></thead><tbody>${criteriaRows}</tbody></table>
 ${customWeights ? `<h2>${t('printWeightAdjustments')}</h2><table><thead><tr><th>${t('printThCriterion')}</th><th>${t('printThPairwise')}</th><th>${t('printThAdjusted')}</th><th>${t('printThReason')}</th></tr></thead><tbody>${fineTuneRows}</tbody></table>` : ''}
 ${vdiHtml}
-${teamHtml}
 ${pairs.length ? `<h2>${t('printCriteriaComparisons')}</h2><table><tbody>${pairListRows}</tbody></table>` : ''}
 ${knockoutHtml}${anchorsHtml}
 ${proMode && sols.length >= 2 ? `<h2>${t('criterionImpact')}</h2>${sensHtml}<h2>${t('ratingImpact')}</h2>${ratingHtml}` : ''}
@@ -351,7 +327,7 @@ const READONLY_CSS = '\n/* Read-only export */\n' +
   '[data-readonly] .scenario-save-row{display:none}\n' +
   '[data-readonly] #resetFineBtn,[data-readonly] .sc-del,[data-readonly] .knockout-toggle{display:none}\n' +
   '[data-readonly] .eco-toggle{pointer-events:none}\n' +
-  '[data-readonly] .team-load{display:none}\n' +
+  '[data-readonly] #teamSection,[data-readonly] .team-load{display:none}\n' +
   '[data-readonly] .fine-tune-input,[data-readonly] .fine-tune-reason,[data-readonly] .fine-tune-bar,[data-readonly] .anchor-input,[data-readonly] .rating-note{pointer-events:none;opacity:.5}\n' +
   '.export-info{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px;padding:2px 80px 12px 0;border-bottom:1px solid rgba(var(--fg-rgb),.1);margin-bottom:6px}\n' +
   '.export-info-title{font-size:1.05rem;font-weight:700;color:var(--text);letter-spacing:-.01em}\n' +
@@ -630,13 +606,20 @@ function exportInfoBanner(tradeName, exporter) {
 // this file never contains it either.
 const CDATA_CLOSE = ']]' + '>';
 
+// Reports carry decision results, not individual teammates' submissions.
+// Keep buildState() complete for editable JSON saves and session history.
+function buildReportState() {
+  const { raters: omittedRaters, ...state } = buildState();
+  return state;
+}
+
 function buildEmbedPayload() {
   const exporter = bearbeiter || t('promptAnonymous');
   const rootId = newEmbedId();
   // A decision whose text contains the CDATA terminator is escaped rather than
   // rejected: inside the JS string literals of the baked state, `\u003e` is the
   // same character. (In JSON that sequence can only occur inside a string.)
-  const state = JSON.stringify(buildState()).split(CDATA_CLOSE).join(']]\\u003e');
+  const state = JSON.stringify(buildReportState()).split(CDATA_CLOSE).join(']]\\u003e');
   const markup = _bodyHtml.replace('<div class="app-header">',
     '<div class="app-header">\n' + exportInfoBanner(decisionName, exporter));
 
@@ -721,7 +704,7 @@ byId('exportHtmlBtn').onclick = () => {
   const tradeName = decisionName;
   const exporter = bearbeiter || t('promptAnonymous');
 
-  const state = JSON.stringify(buildState());
+  const state = JSON.stringify(buildReportState());
 
   const bakedScript = bakeScript(_scriptText, state, false);
 

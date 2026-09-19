@@ -142,7 +142,7 @@ Confluence **Cloud** has no HTML macro at all, so this route does not exist ther
 ### Steps
 
 1. Open `dist/index.html`, load or build your decision, and fill in the decision name and author — both appear in the embed's banner.
-2. **Turn on ⚡ Pro before exporting** if the embed should include Sensitivity, VDI, scenarios or team ratings. The export carries whatever Pro state was active; it does not force it on.
+2. **Turn on ⚡ Pro before exporting** if the embed should include Sensitivity, VDI or scenarios. The export carries whatever Pro state was active; it does not force it on.
 3. **File ▾ → ⧉ Copy for Confluence**. The toolbar button flashes *✓ Copied*. If the clipboard is blocked the block downloads instead and says so.
 4. Paste into an `{html-bobswift}` macro body on a **scratch page first**, and publish.
 
@@ -189,6 +189,7 @@ Related: colour is themed through tokens rather than literals, because the same 
 
 ## Versions
 
+- **v0.7.3** — Reports omit team-rating instructions and individual submissions, including embedded export data; editable JSON saves retain team data
 - **v0.7.2** — Confluence page exports (Scroll Documents HTML/Word, PDF) keep the decision: the embed carries a static report that the live tool replaces wherever scripts run
 - **v0.7.1** — Fix: the Confluence embed now follows the page's light/dark theme, and switches with it
 - **v0.7** — Confluence embed (`⧉ Copy for Confluence`); light/dark theme with automatic switching in exports; results shown first in exports; release-update check on the version badge

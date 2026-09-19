@@ -8,7 +8,7 @@ const fs = require('fs');
 const path = require('path');
 const SRC = path.join(__dirname, '..', 'src', 'js');
 const DIST = path.join(__dirname, '..', 'dist', 'index.html');
-const VERSION = 'v0.7.2';
+const VERSION = 'v0.7.3';
 
 let pass = 0, fail = 0;
 function check(name, cond, extra = '') {
@@ -338,6 +338,20 @@ all += `
   const teamOut = document.getElementById('teamContainer')._html;
   check('team table: rater column, mean, disagreement highlight',
     teamOut.includes('Anna') && teamOut.includes('tm-diff') && teamOut.includes('tm-mean'));
+  readOnly = true;
+  renderTeam();
+  check('read-only reports: team section hidden and individual ratings cleared',
+    byId('teamSection').style.display === 'none' && byId('teamContainer').innerHTML === '');
+  const savedRaters = raters;
+  raters = [];
+  renderTeam();
+  check('read-only reports: no empty-team instructions',
+    byId('teamSection').style.display === 'none' && byId('teamContainer').innerHTML === '');
+  raters = savedRaters;
+  readOnly = false;
+  renderTeam();
+  check('editable decision: team section restored',
+    byId('teamSection').style.display === '' && byId('teamContainer').innerHTML.includes('Anna'));
   document.getElementById('teamExploreBtn')._onclick();
   check('explore button loads team average into exploration', approx(explorationRatings['Alpha|Cost'], 2.5));
   explorationRatings = { ...ratings };
@@ -459,7 +473,7 @@ all += `
       svg.includes('var(--fg-rgb)') && svg.includes('var(--sol-')
         && svg.indexOf('#') === -1 && svg.indexOf('rgba(255,255,255') === -1);
   }
-  check('print: team section with rater + disagreement highlight', pv.includes(t('teamTitle')) && pv.includes('Anna') && pv.includes('#fef3c7'));
+  check('print: no team instructions or individual ratings', !pv.includes(t('teamTitle')) && !pv.includes('Anna') && !pv.includes(t('teamHint')));
 
   // ── Flat rendering ──────────────────────────────────────────
   // A Confluence page export (Scroll Documents into HTML or Word) converts the
@@ -472,6 +486,8 @@ all += `
   // it, so these read the body rather than the whole document.
   const bodyOf = doc => doc.slice(doc.indexOf('<body>'), doc.indexOf('</body>'));
   const flatBody = bodyOf(pvFlat), stdBody = bodyOf(pv);
+  check('flat print: no team instructions or individual ratings',
+    !pvFlat.includes(t('teamTitle')) && !pvFlat.includes('Anna') && !pvFlat.includes(t('teamHint')));
   check('flat print: same sections as the standard report',
     [t('printSolutionRanking'), t('printCriteriaWeights'), t('printScoreDefinitions'),
      t('criterionImpact'), t('ratingImpact'), t('vdiTitle')].every(h => pvFlat.includes(h)));
@@ -510,6 +526,14 @@ all += `
   check('HTML export: banner injected inside sticky header', /class="app-header">\\s*<div class="export-info"/.test(out));
   check('HTML export: replaces auto-load, keeps string literal', out.includes("const S = '// Auto-load saved session'") && !out.includes('OLD'));
   check('HTML export: carries current proMode', out.includes('"proMode":true'));
+  check('HTML export: individual rater data absent from baked state',
+    !out.includes('"raters":') && !out.includes('Anna'));
+  check('report export: preserves results and leaves editable team data intact',
+    JSON.stringify(buildReportState().ratings) === JSON.stringify(ratings)
+      && JSON.stringify(buildReportState().explorationRatings) === JSON.stringify(explorationRatings)
+      && !('raters' in buildReportState())
+      && buildState().raters.length === 1 && buildState().raters[0].name === 'Anna');
+
   check('HTML export: stylesheet stays unscoped (regression guard)', out.includes('CSS{}') && !out.includes('.dl-embed'));
 
   // ══ 9b. Embedded (Confluence) builds never touch storage ══════
@@ -678,6 +702,10 @@ all += `
   console.log('— Confluence embed payload —');
   decisionName = 'Server choice'; bearbeiter = 'Milan';
   const pay = buildEmbedPayload();
+  check('Confluence export: individual rater data absent, including encoded script',
+    !pay.includes('Anna') && !decodeEmbed(pay).includes('Anna')
+      && !decodeEmbed(pay).includes('"raters":'));
+
   check('embed payload: a fragment, not a document',
     !pay.includes('<!DOCTYPE') && !pay.includes('<html') && !pay.includes('<head') && !pay.includes('<body'));
   check('embed payload: one wrapper carrying id, read-only marker and language',
@@ -911,7 +939,7 @@ all += `
 
   check('print: the reorder drops nothing',
     [t('printCriteriaComparisons'), t('printCriteriaWeights'), t('printSolutionRanking'),
-     t('printScoreDefinitions'), t('vdiTitle'), t('teamTitle')].every(s => pvOrder.includes(s)));
+     t('printScoreDefinitions'), t('vdiTitle')].every(s => pvOrder.includes(s)));
 
   // ══ 10. New session ═══════════════════════════════════════════
   console.log('— New session —');
@@ -1103,7 +1131,7 @@ check('dist: capture-preamble sentinels survive minification',
   const scoped = scopeCss(READONLY_CSS, '.dl-embed', ['.pro-on', '[data-readonly]']);
   const controls = ['#criteriaInputSection', '.btn-remove', '.pair-buttons', '#solutionList',
     '#addSolutionBtn', '#proToggle', '.app-brand', '#helpBtn', '#printBtn', '#undoBtn', '#redoBtn',
-    '#fileMenuWrap', '.scenario-save-row', '#resetFineBtn', '.knockout-toggle', '.team-load'];
+    '#fileMenuWrap', '.scenario-save-row', '#resetFineBtn', '.knockout-toggle', '.team-load', '#teamSection'];
   const live = controls.filter(c => !scoped.includes('.dl-embed[data-readonly] ' + c));
   check('read-only: every editing control is hidden in an embed',
     live.length === 0, 'still visible: ' + live.join(', '));
